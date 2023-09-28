@@ -10,6 +10,7 @@ import Decrypt from "./pages/Decrypt.tsx";
 import {EncryptionManagerProvider} from "./providers/encryption.tsx";
 import ManualAccount from "./pages/ManualAccount.tsx";
 import {CreateAccount} from "./pages/CreateAccount.tsx";
+import EditAccount from "./pages/EditAccount.tsx";
 
 declare global {
     interface Window {
@@ -24,6 +25,7 @@ const router = createBrowserRouter(
             <Route path="new" element={<NewAccount />} />
             <Route path="manual" element={<ManualAccount />} />
             <Route path="create" element={<CreateAccount />} />
+            <Route path="edit" element={<EditAccount />} />
             <Route path="decrypt" element={<Decrypt />} />
             <Route path="settings" element={<Settings />} />
         </Route>
