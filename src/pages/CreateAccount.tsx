@@ -1,10 +1,12 @@
-import {Stack, TextField, Typography} from "@mui/material";
+import {Stack, Typography} from "@mui/material";
 import {useRef, useState} from "react";
 import Lottie, {LottieRefCurrentProps} from "lottie-react";
 import CreateAnimation from "../assets/create_lottie.json";
 import useTelegramMainButton from "../hooks/telegram/useTelegramMainButton.ts";
 import {TOTP} from "otpauth";
 import {useLocation} from "react-router-dom";
+import IconPicker from "../components/IconPicker.tsx";
+import TelegramTextField from "../components/TelegramTextField.tsx";
 
 export interface NewAccountState {
     otp: TOTP,
@@ -36,9 +38,8 @@ export function CreateAccount() {
         <Typography variant="subtitle2" align="center">
             Enter additional account information
         </Typography>
-        <TextField
+        <TelegramTextField
             fullWidth
-            variant="outlined"
             label="Label (required)"
             value={label}
             onChange={e => {
@@ -46,9 +47,8 @@ export function CreateAccount() {
                 setLabel(e.target.value);
             }}
         />
-        <TextField
+        <TelegramTextField
             fullWidth
-            variant="outlined"
             label="Service"
             value={issuer}
             onChange={e => {
@@ -56,5 +56,6 @@ export function CreateAccount() {
                 setIssuer(e.target.value);
             }}
         />
+        <IconPicker/>
     </Stack>;
 }

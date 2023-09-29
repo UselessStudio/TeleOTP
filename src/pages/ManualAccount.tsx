@@ -1,4 +1,4 @@
-import {Stack, TextField, Typography} from "@mui/material";
+import {Stack, Typography} from "@mui/material";
 import {useRef, useState} from "react";
 import Lottie, {LottieRefCurrentProps} from "lottie-react";
 import ManualAnimation from "../assets/manual_lottie.json";
@@ -6,6 +6,7 @@ import useTelegramMainButton from "../hooks/telegram/useTelegramMainButton.ts";
 import {useNavigate} from "react-router-dom";
 import {NewAccountState} from "./CreateAccount.tsx";
 import {TOTP} from "otpauth";
+import TelegramTextField from "../components/TelegramTextField.tsx";
 
 export default function ManualAccount() {
     const lottie = useRef<LottieRefCurrentProps | null>(null);
@@ -45,9 +46,8 @@ export default function ManualAccount() {
         <Typography variant="subtitle2" align="center">
             Enter provided account secret
         </Typography>
-        <TextField
+        <TelegramTextField
             fullWidth
-            variant="outlined"
             label="Secret"
             value={secret}
             error={invalid}

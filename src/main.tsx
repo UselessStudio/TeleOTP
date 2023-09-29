@@ -12,6 +12,8 @@ import ManualAccount from "./pages/ManualAccount.tsx";
 import {CreateAccount} from "./pages/CreateAccount.tsx";
 import EditAccount from "./pages/EditAccount.tsx";
 
+import "@fontsource/inter";
+
 declare global {
     interface Window {
         Telegram: Telegram;

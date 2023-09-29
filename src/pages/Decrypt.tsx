@@ -1,9 +1,10 @@
 import {FC, useContext, useRef, useState} from "react";
-import {Stack, TextField, Typography} from "@mui/material";
+import {Stack, Typography} from "@mui/material";
 import Lottie, {LottieRefCurrentProps} from "lottie-react";
 import PasswordAnimation from "../assets/unlock_lottie.json";
 import useTelegramMainButton from "../hooks/telegram/useTelegramMainButton.ts";
 import {EncryptionManagerContext} from "../providers/encryption.tsx";
+import TelegramTextField from "../components/TelegramTextField.tsx";
 
 const Decrypt: FC = () => {
     const lottie = useRef<LottieRefCurrentProps | null>(null);
@@ -33,10 +34,9 @@ const Decrypt: FC = () => {
             <Typography variant="subtitle2" align="center">
                 Enter your decryption password to get access to your accounts
             </Typography>
-            <TextField
+            <TelegramTextField
                 fullWidth
                 type="password"
-                variant="outlined"
                 label="Password"
                 value={password}
                 error={wrongPassword}

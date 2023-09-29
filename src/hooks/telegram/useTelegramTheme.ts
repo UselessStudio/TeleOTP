@@ -15,15 +15,23 @@ function materialThemeFromTelegramTheme(mode: "light" | "dark", themeParams?: Th
                 contrastText: themeParams.button_text_color,
             },
             background: {
-                default: themeParams.secondary_bg_color,
-                paper: themeParams.bg_color,
+                default: themeParams.bg_color,
+                paper: themeParams.secondary_bg_color,
             },
             text: {
                 primary: themeParams.text_color,
+                secondary: themeParams.hint_color,
             },
+            divider: themeParams.hint_color,
             mode
         },
         typography: {
+            fontFamily: [
+                'Inter',
+                '"Helvetica Neue"',
+                'Arial',
+                'sans-serif'
+            ].join(','),
             allVariants: {
                 color: themeParams.text_color,
             },
@@ -34,7 +42,6 @@ function materialThemeFromTelegramTheme(mode: "light" | "dark", themeParams?: Th
                 color: themeParams.hint_color,
             }
         },
-
     });
 }
 

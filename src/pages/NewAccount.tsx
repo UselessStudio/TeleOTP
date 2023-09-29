@@ -39,7 +39,7 @@ const NewAccount: FC = () => {
                 Add new account
             </Typography>
             <Typography variant="subtitle2" align="center">
-                Protect your account with 2FA authentication
+                Protect your account with two-factor authentication
             </Typography>
             <Button fullWidth variant="contained" startIcon={<QrCodeScannerIcon/>} onClick={() => {
                 scan()
@@ -54,13 +54,6 @@ const NewAccount: FC = () => {
             }}>
                 Enter manually
             </Button>
-            {/*<Typography variant="subtitle2" align="center">Enter your decryption password to get access to your accounts</Typography>*/}
-            {/*<TextField*/}
-            {/*    fullWidth*/}
-            {/*    type="password"*/}
-            {/*    variant="outlined"*/}
-            {/*    label="Password"*/}
-            {/*/>*/}
         </Stack>
     </>;
 }
