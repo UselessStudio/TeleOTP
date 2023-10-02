@@ -6,7 +6,7 @@ import {
     Typography,
     IconButton, Container, Grid, useTheme, Box
 } from "@mui/material";
-import * as copy from "copy-to-clipboard";
+import copy from 'copy-text-to-clipboard';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import SettingsIcon from "@mui/icons-material/Settings";
 import {useNavigate} from "react-router-dom";
