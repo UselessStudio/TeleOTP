@@ -51,12 +51,18 @@ export default function useTelegramTheme() {
         window.Telegram.WebApp.themeParams
     ));
     useEffect(() => {
-        window.Telegram.WebApp.onEvent("themeChanged", () => {
+        function themeChanged() {
             setTheme(materialThemeFromTelegramTheme(
                 window.Telegram.WebApp.colorScheme,
                 window.Telegram.WebApp.themeParams
             ));
-        });
+        }
+
+        window.Telegram.WebApp.onEvent("themeChanged", themeChanged);
+
+        return () => {
+            window.Telegram.WebApp.offEvent("themeChanged", themeChanged);
+        }
     });
 
     return theme;
