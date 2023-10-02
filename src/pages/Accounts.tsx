@@ -1,4 +1,4 @@
-import {FC, useEffect, useState} from "react";
+import {FC, useContext, useState} from "react";
 import {
     Button,
     LinearProgress,
@@ -12,35 +12,37 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import {useNavigate} from "react-router-dom";
 import useAccount from "../hooks/useAccount.ts";
 import EditIcon from '@mui/icons-material/Edit';
-import GitHubIcon from '@mui/icons-material/GitHub';
 import AccountSelectButton from "../components/AccountSelectButton.tsx";
 import NewAccountButton from "../components/NewAccountButton.tsx";
+import {StorageManagerContext} from "../providers/storage.tsx";
+import {icons} from "../globals.ts";
+import NewAccount from "./NewAccount.tsx";
 
 const Accounts: FC = () => {
     const navigate = useNavigate();
     const theme = useTheme();
-    // TODO: add storage and encryption
-    const {code, period} = useAccount("otpauth://totp/TeleOTP?secret=JBSWY3DPEHPK3PXP&algorithm=SHA1&digits=6&period=30");
 
-    const accounts = [1, 2, 3, 4, 5];
-    const [account, setAccount] = useState(accounts[0]);
+    const storageManager = useContext(StorageManagerContext);
 
-    const [time, setTime] = useState(0);
-    useEffect(() => {
-        const timer = setInterval(()=>{
-            setTime((Date.now() / 1000) % 30);
-        }, 300);
+    const [
+        selectedAccountId,
+        setSelectedAccountId
+    ] = useState<string | null>(storageManager ? Object.keys(storageManager.accounts)[0] : null);
+    const selectedAccount = selectedAccountId && storageManager ? storageManager.accounts[selectedAccountId] : null;
 
-        return () => {
-            clearInterval(timer);
-        };
-    });
+    const {code, progress} = useAccount(selectedAccount?.uri);
+
+    if (storageManager === null || Object.keys(storageManager.accounts).length < 1) {
+        return <NewAccount/>;
+    }
 
     return <Stack spacing={2}>
         <Container sx={{bgcolor: "background.paper", borderRadius: "6px", paddingY: theme.spacing(2)}}>
             <Stack spacing={1} direction="row" justifyContent="center" alignItems="center">
                 <Typography variant="body2">
-                    Github (LowderPlay)
+                    {selectedAccount?.issuer ?
+                        `${selectedAccount.issuer} (${selectedAccount.label})` :
+                        selectedAccount?.label}
                 </Typography>
                 <IconButton onClick={() => { navigate('/edit'); }}>
                     <EditIcon/>
@@ -57,32 +59,20 @@ const Accounts: FC = () => {
                     <ContentCopyIcon fontSize="large"/>
                 </IconButton>
             </Stack>
-            <LinearProgress sx={{marginY: theme.spacing(1), borderRadius: 100, height: 6}} variant="determinate" value={time/period*100} />
-            {/*<CardActions>*/}
-            {/*    <Button color="error" onClick={() => {*/}
-            {/*        window.Telegram.WebApp.showPopup({*/}
-            {/*            message: "Are you sure you want to remove your Github account forever? You might get locked out of this account!",*/}
-            {/*            buttons: [*/}
-            {/*                {type: "destructive", text: "Yes", id: "remove"},*/}
-            {/*                {type: "cancel", id: "cancel"},*/}
-            {/*            ]*/}
-            {/*        }, (id) => {*/}
-            {/*            console.log("delete", id);*/}
-            {/*        });*/}
-            {/*    }}>Delete account</Button>*/}
-            {/*</CardActions>*/}
+            <LinearProgress sx={{marginY: theme.spacing(1), borderRadius: 100, height: 6}} variant="determinate" value={progress*100} />
         </Container>
 
         <Container disableGutters>
             <Grid container spacing={1}>
-                {accounts.map((value) => (
-                    <Grid key={value} item xs={3}>
+                {Object.values(storageManager.accounts).map((account) => (
+                    <Grid key={account.id} item xs={3}>
                         <AccountSelectButton
-                            icon={GitHubIcon}
-                            label={"bebrabebra@gmail"}
-                            issuer={"Discord"}
-                            selected={value===account}
-                            onClick={() => { setAccount(value); }}/>
+                            icon={icons[account.icon]}
+                            label={account.label}
+                            issuer={account.issuer}
+                            selected={account.id === selectedAccountId}
+                            onClick={() => { setSelectedAccountId(account.id); }}
+                            color={account.color}/>
                     </Grid>
                 ))}
                 <Grid item xs={3}>

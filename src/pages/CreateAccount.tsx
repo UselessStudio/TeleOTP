@@ -1,37 +1,47 @@
 import {Stack, Typography} from "@mui/material";
-import {useRef, useState} from "react";
-import Lottie, {LottieRefCurrentProps} from "lottie-react";
+import {useContext, useState} from "react";
 import CreateAnimation from "../assets/create_lottie.json";
 import useTelegramMainButton from "../hooks/telegram/useTelegramMainButton.ts";
 import {TOTP} from "otpauth";
-import {useLocation} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import IconPicker from "../components/IconPicker.tsx";
 import TelegramTextField from "../components/TelegramTextField.tsx";
+import {StorageManagerContext} from "../providers/storage.tsx";
+import {nanoid} from "nanoid";
+import {Color, Icon} from "../globals.ts";
+import LottieAnimation from "../components/LottieAnimation.tsx";
 
 export interface NewAccountState {
     otp: TOTP,
 }
 
 export function CreateAccount() {
-    const lottie = useRef<LottieRefCurrentProps | null>(null);
+    const navigate = useNavigate();
     const location = useLocation();
     const state = location.state as NewAccountState;
+    const storageManager = useContext(StorageManagerContext);
 
+    const [id] = useState(nanoid());
     const [issuer, setIssuer] = useState(state.otp.issuer);
     const [label, setLabel] = useState(state.otp.label);
+    const [selectedIcon, setSelectedIcon] = useState<Icon>("github");
+    const [selectedColor, setSelectedColor] = useState<Color>("primary");
 
     useTelegramMainButton(() => {
-        console.log(state.otp.toString());
-        return false;
+        storageManager?.saveAccount({
+            id,
+            color: selectedColor,
+            icon: selectedIcon,
+            issuer,
+            label,
+            uri: state.otp.toString()
+        });
+        navigate("/");
+        return true;
     }, "Create");
 
     return <Stack spacing={2} alignItems="center">
-        <Lottie
-            onClick={() => lottie.current?.goToAndPlay(0)}
-            lottieRef={lottie} style={{width: '50%'}}
-            animationData={CreateAnimation}
-            loop={false}
-        />
+        <LottieAnimation animationData={CreateAnimation}/>
         <Typography variant="h5" fontWeight="bold" align="center">
             Add new account
         </Typography>
@@ -56,6 +66,6 @@ export function CreateAccount() {
                 setIssuer(e.target.value);
             }}
         />
-        <IconPicker/>
+        <IconPicker setSelectedIcon={setSelectedIcon} selectedIcon={selectedIcon} selectedColor={selectedColor} setSelectedColor={setSelectedColor}/>
     </Stack>;
 }

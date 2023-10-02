@@ -6,13 +6,13 @@ import {Telegram} from "@twa-dev/types";
 import Settings from "./pages/Settings.tsx";
 import Accounts from "./pages/Accounts.tsx";
 import NewAccount from "./pages/NewAccount.tsx";
-import Decrypt from "./pages/Decrypt.tsx";
 import {EncryptionManagerProvider} from "./providers/encryption.tsx";
 import ManualAccount from "./pages/ManualAccount.tsx";
 import {CreateAccount} from "./pages/CreateAccount.tsx";
 import EditAccount from "./pages/EditAccount.tsx";
 
 import "@fontsource/inter";
+import {StorageManagerProvider} from "./providers/storage.tsx";
 
 declare global {
     interface Window {
@@ -28,7 +28,6 @@ const router = createBrowserRouter(
             <Route path="manual" element={<ManualAccount />} />
             <Route path="create" element={<CreateAccount />} />
             <Route path="edit" element={<EditAccount />} />
-            <Route path="decrypt" element={<Decrypt />} />
             <Route path="settings" element={<Settings />} />
         </Route>
     )
@@ -38,7 +37,9 @@ const router = createBrowserRouter(
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
       <EncryptionManagerProvider>
-          <RouterProvider router={router}/>
+          <StorageManagerProvider>
+              <RouterProvider router={router}/>
+          </StorageManagerProvider>
       </EncryptionManagerProvider>
   </React.StrictMode>,
 )

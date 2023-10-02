@@ -1,28 +1,35 @@
-import {ThemeProvider} from "@mui/material";
-import {Outlet, useNavigate} from "react-router-dom";
-import {FC, useContext, useEffect} from "react";
+import {CircularProgress, Stack, ThemeProvider} from "@mui/material";
+import {Outlet} from "react-router-dom";
+import {FC, useContext} from "react";
 import useTelegramBackButton from "./hooks/telegram/useTelegramBackButton.ts";
 import useTelegramTheme from "./hooks/telegram/useTelegramTheme.ts";
 import {EncryptionManagerContext} from "./providers/encryption.tsx";
+import Decrypt from "./pages/Decrypt.tsx";
+import {StorageManagerContext} from "./providers/storage.tsx";
+import PasswordSetup from "./pages/PasswordSetup.tsx";
+
+function LoadingIndicator() {
+    return <Stack sx={{width: '100vw', height: '100vh', position: 'fixed'}}
+                  justifyContent="center"
+                  alignItems="center">
+        <CircularProgress/>
+    </Stack>;
+}
 
 const Root: FC = () => {
     useTelegramBackButton();
     const theme = useTelegramTheme();
-    const navigate = useNavigate();
     const encryptionManager = useContext(EncryptionManagerContext);
-
-    useEffect(() => {
-        if (encryptionManager?.isLocked) {
-            navigate("/decrypt", {replace: true});
-        } else {
-            navigate("/", {replace: true});
-        }
-    }, [encryptionManager?.isLocked, navigate]);
+    const storageManager = useContext(StorageManagerContext);
 
     return (
     <>
         <ThemeProvider theme={theme}>
-            <Outlet/>
+            {!encryptionManager?.storageChecked ? <LoadingIndicator/> :
+                (!encryptionManager.passwordCreated ? <PasswordSetup/> :
+                (encryptionManager.isLocked ? <Decrypt/> :
+                (storageManager?.ready ? <Outlet/> :
+                    <LoadingIndicator/>)))}
         </ThemeProvider>
     </>
   )

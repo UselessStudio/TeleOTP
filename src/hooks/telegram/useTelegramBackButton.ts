@@ -17,7 +17,7 @@ export default function useTelegramBackButton() {
     }, [navigate]);
 
     useEffect(()=>{
-        if(location.key != "default" && location.pathname !== "/decrypt" && location.pathname !== "/") {
+        if(location.key != "default" && location.pathname !== "/") {
             window.Telegram.WebApp.BackButton.show();
         } else {
             window.Telegram.WebApp.BackButton.hide();
