@@ -1,13 +1,12 @@
-import {FC, useContext, useRef, useState} from "react";
+import {FC, useContext, useState} from "react";
 import {Stack, Typography} from "@mui/material";
-import Lottie, {LottieRefCurrentProps} from "lottie-react";
 import PasswordAnimation from "../assets/unlock_lottie.json";
 import useTelegramMainButton from "../hooks/telegram/useTelegramMainButton.ts";
 import {EncryptionManagerContext} from "../providers/encryption.tsx";
 import TelegramTextField from "../components/TelegramTextField.tsx";
+import LottieAnimation from "../components/LottieAnimation.tsx";
 
 const Decrypt: FC = () => {
-    const lottie = useRef<LottieRefCurrentProps | null>(null);
     const [password, setPassword] = useState("");
     const [wrongPassword, setWrongPassword] = useState(false);
     const encryptionManager = useContext(EncryptionManagerContext);
@@ -22,12 +21,7 @@ const Decrypt: FC = () => {
 
     return <>
         <Stack spacing={2} alignItems="center">
-            <Lottie
-                onClick={() => lottie.current?.goToAndPlay(0)}
-                lottieRef={lottie} style={{width: '50%'}}
-                animationData={PasswordAnimation}
-                loop={false}
-            />
+            <LottieAnimation animationData={PasswordAnimation}/>
             <Typography variant="h5" fontWeight="bold" align="center">
                 Decrypt your accounts
             </Typography>

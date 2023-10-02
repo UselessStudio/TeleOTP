@@ -1,15 +1,14 @@
-import {FC, useCallback, useRef} from "react";
+import {FC, useCallback} from "react";
 import {Button, Divider, Stack, Typography} from "@mui/material";
-import Lottie, {LottieRefCurrentProps} from "lottie-react";
 import NewAccountAnimation from "../assets/new_account_lottie.json";
 import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
 import useTelegramQrScanner from "../hooks/telegram/useTelegramQrScanner.ts";
 import {useNavigate} from "react-router-dom";
 import {NewAccountState} from "./CreateAccount.tsx";
 import {HOTP, URI} from "otpauth";
+import LottieAnimation from "../components/LottieAnimation.tsx";
 
 const NewAccount: FC = () => {
-    const lottie = useRef<LottieRefCurrentProps | null>(null);
     const navigate = useNavigate();
     const scan = useTelegramQrScanner(useCallback((scanned) => {
         try {
@@ -28,13 +27,7 @@ const NewAccount: FC = () => {
 
     return <>
         <Stack spacing={2} alignItems="center">
-            <Lottie
-                onClick={() => lottie.current?.goToAndPlay(0)}
-                lottieRef={lottie}
-                style={{width: '50%'}}
-                animationData={NewAccountAnimation}
-                loop={false}
-            />
+            <LottieAnimation animationData={NewAccountAnimation}/>
             <Typography variant="h5" fontWeight="bold" align="center">
                 Add new account
             </Typography>
