@@ -53,13 +53,18 @@ const Accounts: FC = () => {
                 <Typography variant="h3">
                     {code.match(/.{1,3}/g)?.join(" ")}
                 </Typography>
-                <IconButton color="primary" onClick={() => {
+                <IconButton color={selectedAccount?.color} onClick={() => {
                     copy(code);
                 }}>
                     <ContentCopyIcon fontSize="large"/>
                 </IconButton>
             </Stack>
-            <LinearProgress sx={{marginY: theme.spacing(1), borderRadius: 100, height: 6}} variant="determinate" value={progress*100} />
+            <LinearProgress
+                sx={{marginY: theme.spacing(1), borderRadius: 100, height: 6}}
+                variant="determinate"
+                value={progress*100}
+                color={selectedAccount?.color}
+            />
         </Container>
 
         <Container disableGutters>
