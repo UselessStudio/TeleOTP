@@ -16,7 +16,7 @@ const TelegramTextField = styled((props: TextFieldProps) => (
     },
     '& .MuiInput-root': {
         '--TextField-brandBorderColor': theme.palette.divider,
-        '&:before': {
+        '&:not(.Mui-disabled, .Mui-error):before': {
             borderBottom: '1px solid var(--TextField-brandBorderColor)',
         },
         '&:hover:not(.Mui-disabled, .Mui-error):before': {
