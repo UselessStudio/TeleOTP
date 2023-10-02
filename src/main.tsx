@@ -30,7 +30,10 @@ const router = createBrowserRouter(
             <Route path="edit" element={<EditAccount />} />
             <Route path="settings" element={<Settings />} />
         </Route>
-    )
+    ),
+    {
+        basename: import.meta.env.BASE_URL,
+    },
 );
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
