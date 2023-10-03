@@ -29,11 +29,18 @@ interface EncryptedData {
 
 export const EncryptionManagerContext = createContext<EncryptionManager | null>(null);
 
+function checkKey(key: crypto.lib.WordArray, salt: crypto.lib.WordArray, keyCheckValue: string): boolean {
+    const kcv = crypto.AES.encrypt(keyCheckValuePlaintext, key, {iv: salt}).toString(crypto.format.OpenSSL);
+    return kcv === keyCheckValue;
+}
+
+function getStoredKey(): crypto.lib.WordArray | null {
+    const key = localStorage.getItem("key");
+    return key !== null ? crypto.enc.Base64.parse(key) : null;
+}
+
 export const EncryptionManagerProvider: FC<PropsWithChildren> = ({ children }) => {
-    const [key, setKey] = useState<crypto.lib.WordArray | null>(() => {
-        const key = localStorage.getItem("key");
-        return key !== null ? crypto.enc.Base64.parse(key) : null;
-    });
+    const [key, setKey] = useState<crypto.lib.WordArray | null>(getStoredKey);
     const [storageChecked, setStorageChecked] = useState(false);
     const [salt, setSalt] = useState<crypto.lib.WordArray | null>(null);
     const [keyCheckValue, setKeyCheckValue] = useState<string | null>(null);
@@ -57,8 +64,14 @@ export const EncryptionManagerProvider: FC<PropsWithChildren> = ({ children }) =
                 window.Telegram.WebApp.showAlert(`Failed to get salt: ${error}`);
                 return;
             }
-            setSalt(result?.salt ? crypto.enc.Base64.parse(result.salt) : null);
-            setKeyCheckValue(result?.kcv ?? null);
+            const salt = result?.salt ? crypto.enc.Base64.parse(result.salt) : null;
+            const kcv = result?.kcv ?? null;
+            setSalt(salt);
+            setKeyCheckValue(kcv);
+            const key = getStoredKey();
+            if (salt === null || kcv === null || key === null || !checkKey(key, salt, kcv)) {
+                setKey(null);
+            }
             setStorageChecked(true);
         });
     }, []);
@@ -95,9 +108,8 @@ export const EncryptionManagerProvider: FC<PropsWithChildren> = ({ children }) =
                 return false;
             }
             const key = crypto.PBKDF2(enteredPassword, salt, kdfOptions);
-            const kcv = crypto.AES.encrypt(keyCheckValuePlaintext, key, {iv: salt}).toString(crypto.format.OpenSSL);
 
-            if(kcv === keyCheckValue) {
+            if(checkKey(key, salt, keyCheckValue)) {
                 setKey(key);
                 return true;
             }
