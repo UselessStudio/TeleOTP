@@ -6,7 +6,7 @@ import {TOTP} from "otpauth";
 import {useLocation, useNavigate} from "react-router-dom";
 import IconPicker from "../components/IconPicker.tsx";
 import TelegramTextField from "../components/TelegramTextField.tsx";
-import {StorageManagerContext} from "../providers/storage.tsx";
+import {StorageManagerContext} from "../managers/storage.tsx";
 import {nanoid} from "nanoid";
 import {Color, Icon} from "../globals.ts";
 import LottieAnimation from "../components/LottieAnimation.tsx";

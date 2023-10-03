@@ -6,15 +6,19 @@ import {Telegram} from "@twa-dev/types";
 import Settings from "./pages/Settings.tsx";
 import Accounts from "./pages/Accounts.tsx";
 import NewAccount from "./pages/NewAccount.tsx";
-import {EncryptionManagerProvider} from "./providers/encryption.tsx";
+import {EncryptionManagerProvider} from "./managers/encryption.tsx";
 import ManualAccount from "./pages/ManualAccount.tsx";
 import {CreateAccount} from "./pages/CreateAccount.tsx";
 import EditAccount from "./pages/EditAccount.tsx";
 
 import "@fontsource/inter";
-import {StorageManagerProvider} from "./providers/storage.tsx";
+import "@fontsource/inter/500.css";
+import "@fontsource/inter/700.css";
+import {StorageManagerProvider} from "./managers/storage.tsx";
 
 import "./global.css";
+import {SettingsManagerProvider} from "./managers/settings.tsx";
+import PasswordSetup from "./pages/PasswordSetup.tsx";
 
 declare global {
     interface Window {
@@ -31,6 +35,7 @@ const router = createBrowserRouter(
             <Route path="create" element={<CreateAccount />} />
             <Route path="edit" element={<EditAccount />} />
             <Route path="settings" element={<Settings />} />
+            <Route path="changePassword" element={<PasswordSetup change/>} />
         </Route>
     ),
     {
@@ -41,10 +46,12 @@ const router = createBrowserRouter(
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-      <EncryptionManagerProvider>
-          <StorageManagerProvider>
-              <RouterProvider router={router}/>
-          </StorageManagerProvider>
-      </EncryptionManagerProvider>
+      <SettingsManagerProvider>
+          <EncryptionManagerProvider>
+              <StorageManagerProvider>
+                  <RouterProvider router={router}/>
+              </StorageManagerProvider>
+          </EncryptionManagerProvider>
+      </SettingsManagerProvider>
   </React.StrictMode>,
 )

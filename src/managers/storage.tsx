@@ -15,6 +15,7 @@ export interface StorageManager {
     ready: boolean,
     accounts: Record<string, Account>;
     saveAccount(account: Account): void;
+    removeAccount(id: string): void;
     clearStorage(): void;
 }
 
@@ -61,8 +62,19 @@ export const StorageManagerProvider: FC<PropsWithChildren> = ({children}) => {
         saveAccount(account) {
             const encrypted = encryptionManager?.encrypt(JSON.stringify(account));
             if (!encrypted) return;
-            window.Telegram.WebApp.CloudStorage.setItem("account"+account.id, encrypted);
-            setAccounts({...accounts, [account.id]: account});
+            window.Telegram.WebApp.CloudStorage.setItem("account"+account.id, encrypted, (error, result) => {
+                if (error ?? !result) return;
+
+                setAccounts({...accounts, [account.id]: account});
+            });
+        },
+        removeAccount(id: string) {
+            window.Telegram.WebApp.CloudStorage.removeItem("account"+id, (error, result) => {
+                if (error ?? !result) return;
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                const {[id]: _, ...newAccounts} = accounts;
+                setAccounts(newAccounts);
+            });
         },
         clearStorage(): void {
             window.Telegram.WebApp.CloudStorage.getKeys((error, result) => {
@@ -76,6 +88,24 @@ export const StorageManagerProvider: FC<PropsWithChildren> = ({children}) => {
             });
         },
     };
+
+    const [keyChanged, setKeyChanged] = useState(false);
+
+    useEffect(() => {
+        if(!encryptionManager?.oldKey) return;
+        setKeyChanged(true);
+    }, [encryptionManager?.oldKey]);
+
+    useEffect(() => {
+        if(!keyChanged) return;
+        setKeyChanged(false);
+        
+        Object.values(accounts).forEach(account => {
+            const encrypted = encryptionManager?.encrypt(JSON.stringify(account));
+            if (!encrypted) return;
+            window.Telegram.WebApp.CloudStorage.setItem("account"+account.id, encrypted);
+        });
+    }, [accounts, encryptionManager, keyChanged]);
 
     return <StorageManagerContext.Provider value={storageManager}>
         {children}

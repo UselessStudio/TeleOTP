@@ -2,7 +2,7 @@ import {FC, useContext, useState} from "react";
 import {Stack, Typography} from "@mui/material";
 import PasswordAnimation from "../assets/unlock_lottie.json";
 import useTelegramMainButton from "../hooks/telegram/useTelegramMainButton.ts";
-import {EncryptionManagerContext} from "../providers/encryption.tsx";
+import {EncryptionManagerContext} from "../managers/encryption.tsx";
 import TelegramTextField from "../components/TelegramTextField.tsx";
 import LottieAnimation from "../components/LottieAnimation.tsx";
 

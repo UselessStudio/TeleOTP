@@ -1,5 +1,6 @@
-import {createContext, FC, PropsWithChildren, useEffect, useState} from "react";
+import {createContext, FC, PropsWithChildren, useContext, useEffect, useState} from "react";
 import * as crypto from "crypto-js";
+import {SettingsManagerContext} from "./settings.tsx";
 
 const kdfOptions = {keySize: 256 / 8};
 const saltBytes = 128 / 8;
@@ -16,6 +17,7 @@ export interface EncryptionManager {
     unlock(password: string): boolean;
     lock(): void;
 
+    oldKey: crypto.lib.WordArray | null;
     encrypt(data: string): string | null;
     decrypt(data: string): string | null;
 }
@@ -35,6 +37,19 @@ export const EncryptionManagerProvider: FC<PropsWithChildren> = ({ children }) =
     const [storageChecked, setStorageChecked] = useState(false);
     const [salt, setSalt] = useState<crypto.lib.WordArray | null>(null);
     const [keyCheckValue, setKeyCheckValue] = useState<string | null>(null);
+    const [oldKey, setOldKey] = useState<crypto.lib.WordArray | null>(null);
+
+    const settingsManager = useContext(SettingsManagerContext);
+
+    useEffect(() => {
+        if(settingsManager?.shouldKeepUnlocked) {
+            if(key !== null) {
+                localStorage.setItem("key", crypto.enc.Base64.stringify(key));
+            }
+        } else {
+            localStorage.removeItem("key");
+        }
+    }, [key, settingsManager?.shouldKeepUnlocked]);
 
     useEffect(() => {
         window.Telegram.WebApp.CloudStorage.getItems(["salt", "kcv"], (error, result) => {
@@ -49,12 +64,14 @@ export const EncryptionManagerProvider: FC<PropsWithChildren> = ({ children }) =
     }, []);
 
     const encryptionManager: EncryptionManager = {
+        oldKey,
         storageChecked,
         passwordCreated: storageChecked ? salt !== null : null,
         createPassword(password: string) {
+            setOldKey(key);
             const salt = crypto.lib.WordArray.random(saltBytes);
-            const key = crypto.PBKDF2(password, salt, kdfOptions);
-            const kcv = crypto.AES.encrypt(keyCheckValuePlaintext, key, {iv: salt}).toString(crypto.format.OpenSSL);
+            const newKey = crypto.PBKDF2(password, salt, kdfOptions);
+            const kcv = crypto.AES.encrypt(keyCheckValuePlaintext, newKey, {iv: salt}).toString(crypto.format.OpenSSL);
 
             setSalt(salt);
             window.Telegram.WebApp.CloudStorage.setItem("salt", crypto.enc.Base64.stringify(salt));
@@ -62,8 +79,7 @@ export const EncryptionManagerProvider: FC<PropsWithChildren> = ({ children }) =
             setKeyCheckValue(kcv);
             window.Telegram.WebApp.CloudStorage.setItem("kcv", kcv);
 
-            setKey(key);
-            localStorage.setItem("key", crypto.enc.Base64.stringify(key)); // TODO: add condition
+            setKey(newKey);
         },
         removePassword() {
             window.Telegram.WebApp.CloudStorage.removeItems(["kcv", "salt"]);
@@ -83,7 +99,6 @@ export const EncryptionManagerProvider: FC<PropsWithChildren> = ({ children }) =
 
             if(kcv === keyCheckValue) {
                 setKey(key);
-                localStorage.setItem("key", crypto.enc.Base64.stringify(key)); // TODO: add condition
                 return true;
             }
 
@@ -105,11 +120,16 @@ export const EncryptionManagerProvider: FC<PropsWithChildren> = ({ children }) =
         },
         decrypt(data) {
             if(key === null) return null;
-            const {iv, cipher}: EncryptedData = JSON.parse(data) as EncryptedData;
+            try {
+                const {iv, cipher}: EncryptedData = JSON.parse(data) as EncryptedData;
 
-            return crypto.enc.Utf8.stringify(crypto.AES.decrypt(cipher, key, {
-                iv: crypto.enc.Base64.parse(iv)
-            }));
+                return crypto.enc.Utf8.stringify(crypto.AES.decrypt(cipher, key, {
+                    iv: crypto.enc.Base64.parse(iv)
+                }));
+            } catch (e) {
+                console.log(e);
+                return null;
+            }
         },
     };
 
