@@ -1,5 +1,7 @@
 html, body, #root, #root>div {
     margin: 0;
-    height: 100%;
+    min-height: 100%;
+    display: flex;
+    flex-grow: 1;
     box-sizing: border-box;
 }

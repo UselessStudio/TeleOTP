@@ -36,7 +36,7 @@ const Accounts: FC = () => {
         return <NewAccount/>;
     }
 
-    return <Stack justifyContent="space-between" sx={{height: '100%'}} spacing={2}>
+    return <Stack justifyContent="space-between" sx={{flex: 1}} spacing={2}>
         <Stack spacing={2}>
             <Container sx={{bgcolor: "background.paper", borderRadius: "6px", paddingY: theme.spacing(2)}}>
                 <Stack spacing={1} direction="row" justifyContent="center" alignItems="center">

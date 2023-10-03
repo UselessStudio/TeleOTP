@@ -56,7 +56,7 @@ const Settings: FC = () => {
     const settingsManager = useContext(SettingsManagerContext);
 
 
-    return <Stack spacing={1}>
+    return <Stack spacing={1} sx={{flex: 1}}>
         <Typography fontWeight="800" color="primary" fontSize="small" sx={{paddingY: theme.spacing(0.5)}}>
             Security
         </Typography>
