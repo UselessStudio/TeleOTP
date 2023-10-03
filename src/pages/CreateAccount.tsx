@@ -8,7 +8,7 @@ import IconPicker from "../components/IconPicker.tsx";
 import TelegramTextField from "../components/TelegramTextField.tsx";
 import {StorageManagerContext} from "../managers/storage.tsx";
 import {nanoid} from "nanoid";
-import {Color, Icon} from "../globals.ts";
+import {Color, Icon} from "../globals.tsx";
 import LottieAnimation from "../components/LottieAnimation.tsx";
 
 export interface NewAccountState {

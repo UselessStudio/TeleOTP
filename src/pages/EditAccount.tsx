@@ -1,7 +1,7 @@
 import {useLocation, useNavigate} from "react-router-dom";
 import {useContext, useState} from "react";
 import {Account, StorageManagerContext} from "../managers/storage.tsx";
-import {Color, Icon} from "../globals.ts";
+import {Color, Icon} from "../globals.tsx";
 import useTelegramMainButton from "../hooks/telegram/useTelegramMainButton.ts";
 import {Button, Stack, Typography} from "@mui/material";
 import LottieAnimation from "../components/LottieAnimation.tsx";

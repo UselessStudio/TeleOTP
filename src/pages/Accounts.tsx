@@ -15,7 +15,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import AccountSelectButton from "../components/AccountSelectButton.tsx";
 import NewAccountButton from "../components/NewAccountButton.tsx";
 import {StorageManagerContext} from "../managers/storage.tsx";
-import {icons} from "../globals.ts";
+import {icons} from "../globals.tsx";
 import NewAccount from "./NewAccount.tsx";
 import {EditAccountState} from "./EditAccount.tsx";
 

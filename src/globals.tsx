@@ -1,3 +1,5 @@
+/// <reference types="vite-plugin-svgr/client" />
+
 import {SvgIconComponent} from "@mui/icons-material";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import GoogleIcon from "@mui/icons-material/Google";
@@ -12,6 +14,19 @@ import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import StoreIcon from "@mui/icons-material/Store";
 import CommentIcon from "@mui/icons-material/Comment";
 import EmailIcon from "@mui/icons-material/Email";
+import {createSvgIcon} from "@mui/material";
+
+import Discord from "./assets/icons/discord.svg?react";
+import Vk from "./assets/icons/vk.svg?react";
+import Pterodactyl from "./assets/icons/pterodactyl.svg?react";
+import Docker from "./assets/icons/docker.svg?react";
+import Npm from "./assets/icons/npm.svg?react";
+
+const DiscordIcon = createSvgIcon(<Discord/>, "Discord");
+const VkIcon = createSvgIcon(<Vk viewBox="-4 -4 32 32"/>, "Vk");
+const PterodactylIcon = createSvgIcon(<Pterodactyl/>, "Pterodactyl");
+const DockerIcon = createSvgIcon(<Docker/>, "Docker");
+const NpmIcon = createSvgIcon(<Npm viewBox="-4 -4 32 32"/>, "Npm");
 
 export const icons: Record<string, SvgIconComponent> = {
     "github": GitHubIcon,
@@ -27,6 +42,11 @@ export const icons: Record<string, SvgIconComponent> = {
     "store": StoreIcon,
     "comment": CommentIcon,
     "email": EmailIcon,
+    "discord": DiscordIcon,
+    "vk": VkIcon,
+    "pterodactyl": PterodactylIcon,
+    "docker": DockerIcon,
+    "npm": NpmIcon,
 } as const;
 
 type Icons = keyof typeof icons;

@@ -2,7 +2,7 @@ import {FC} from "react";
 import {alpha, Grid, IconButton, Stack, useTheme} from "@mui/material";
 import CircleIcon from '@mui/icons-material/Circle';
 import RadioButtonCheckedIcon from '@mui/icons-material/RadioButtonChecked';
-import {Color, colors, Icon, icons} from "../globals.ts";
+import {Color, colors, Icon, icons} from "../globals.tsx";
 
 interface IconPickerProps {
     selectedIcon: Icon;
@@ -38,7 +38,7 @@ const IconPicker: FC<IconPickerProps> = ({selectedIcon, setSelectedIcon, selecte
                             borderColor: selectedIcon === key ? theme.palette[selectedColor].main : theme.palette.divider,
                             bgcolor: selectedIcon === key ? alpha(theme.palette[selectedColor].main, 0.15) : undefined,
                         }}
-                        onClick={() => { setSelectedIcon(key as Icon); }}>
+                        onClick={() => { setSelectedIcon(key ); }}>
                         <Icon sx={{color: selectedIcon === key ? theme.palette[selectedColor].main : alpha(theme.palette.text.primary, 0.8)}}/>
                     </IconButton>
                 </Grid>;

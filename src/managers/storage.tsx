@@ -1,6 +1,6 @@
 import {createContext, FC, PropsWithChildren, useContext, useEffect, useState} from "react";
 import {EncryptionManagerContext} from "./encryption.tsx";
-import {Color, Icon} from "../globals.ts";
+import {Color, Icon} from "../globals.tsx";
 
 export interface Account {
     id: string;

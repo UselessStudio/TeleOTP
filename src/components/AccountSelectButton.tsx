@@ -1,7 +1,7 @@
 import {Box, ButtonBase, Stack, Typography, useTheme} from "@mui/material";
 import {FC} from "react";
 import {SvgIconComponent} from "@mui/icons-material";
-import {Color} from "../globals.ts";
+import {Color} from "../globals.tsx";
 interface AccountSelectButtonProps {
     selected?: boolean,
     label: string,
