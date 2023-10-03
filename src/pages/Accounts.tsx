@@ -36,55 +36,57 @@ const Accounts: FC = () => {
         return <NewAccount/>;
     }
 
-    return <Stack spacing={2}>
-        <Container sx={{bgcolor: "background.paper", borderRadius: "6px", paddingY: theme.spacing(2)}}>
-            <Stack spacing={1} direction="row" justifyContent="center" alignItems="center">
-                <Typography variant="body2">
-                    {selectedAccount?.issuer ?
-                        `${selectedAccount.issuer} (${selectedAccount.label})` :
-                        selectedAccount?.label}
-                </Typography>
-                <IconButton onClick={() => { navigate('/edit'); }}>
-                    <EditIcon/>
-                </IconButton>
-            </Stack>
+    return <Stack justifyContent="space-between" sx={{height: '100%'}} spacing={2}>
+        <Stack spacing={2}>
+            <Container sx={{bgcolor: "background.paper", borderRadius: "6px", paddingY: theme.spacing(2)}}>
+                <Stack spacing={1} direction="row" justifyContent="center" alignItems="center">
+                    <Typography variant="body2">
+                        {selectedAccount?.issuer ?
+                            `${selectedAccount.issuer} (${selectedAccount.label})` :
+                            selectedAccount?.label}
+                    </Typography>
+                    <IconButton onClick={() => { navigate('/edit'); }}>
+                        <EditIcon/>
+                    </IconButton>
+                </Stack>
 
-            <Stack spacing={1} direction="row" justifyContent="center" alignItems="center">
-                <Typography variant="h3">
-                    {code.match(/.{1,3}/g)?.join(" ")}
-                </Typography>
-                <IconButton color={selectedAccount?.color} onClick={() => {
-                    copy(code);
-                }}>
-                    <ContentCopyIcon fontSize="large"/>
-                </IconButton>
-            </Stack>
-            <LinearProgress
-                sx={{marginY: theme.spacing(1), borderRadius: 100, height: 6}}
-                variant="determinate"
-                value={progress*100}
-                color={selectedAccount?.color}
-            />
-        </Container>
+                <Stack spacing={1} direction="row" justifyContent="center" alignItems="center">
+                    <Typography variant="h3">
+                        {code.match(/.{1,3}/g)?.join(" ")}
+                    </Typography>
+                    <IconButton color={selectedAccount?.color} onClick={() => {
+                        copy(code);
+                    }}>
+                        <ContentCopyIcon fontSize="large"/>
+                    </IconButton>
+                </Stack>
+                <LinearProgress
+                    sx={{marginY: theme.spacing(1), borderRadius: 100, height: 6}}
+                    variant="determinate"
+                    value={progress*100}
+                    color={selectedAccount?.color}
+                />
+            </Container>
 
-        <Container disableGutters>
-            <Grid container spacing={1}>
-                {Object.values(storageManager.accounts).map((account) => (
-                    <Grid key={account.id} item xs={3}>
-                        <AccountSelectButton
-                            icon={icons[account.icon]}
-                            label={account.label}
-                            issuer={account.issuer}
-                            selected={account.id === selectedAccountId}
-                            onClick={() => { setSelectedAccountId(account.id); }}
-                            color={account.color}/>
+            <Container disableGutters>
+                <Grid container spacing={1}>
+                    {Object.values(storageManager.accounts).map((account) => (
+                        <Grid key={account.id} item xs={3}>
+                            <AccountSelectButton
+                                icon={icons[account.icon]}
+                                label={account.label}
+                                issuer={account.issuer}
+                                selected={account.id === selectedAccountId}
+                                onClick={() => { setSelectedAccountId(account.id); }}
+                                color={account.color}/>
+                        </Grid>
+                    ))}
+                    <Grid item xs={3}>
+                        <NewAccountButton/>
                     </Grid>
-                ))}
-                <Grid item xs={3}>
-                    <NewAccountButton/>
                 </Grid>
-            </Grid>
-        </Container>
+            </Container>
+        </Stack>
 
         <Box sx={{bgcolor: "background.paper", borderRadius: "6px"}}>
             <Button

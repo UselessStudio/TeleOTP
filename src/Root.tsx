@@ -1,4 +1,4 @@
-import {CircularProgress, Stack, ThemeProvider} from "@mui/material";
+import {Box, CircularProgress, Stack, ThemeProvider} from "@mui/material";
 import {Outlet} from "react-router-dom";
 import {FC, useContext} from "react";
 import useTelegramBackButton from "./hooks/telegram/useTelegramBackButton.ts";
@@ -25,11 +25,13 @@ const Root: FC = () => {
     return (
     <>
         <ThemeProvider theme={theme}>
-            {!encryptionManager?.storageChecked ? <LoadingIndicator/> :
-                (!encryptionManager.passwordCreated ? <PasswordSetup/> :
-                (encryptionManager.isLocked ? <Decrypt/> :
-                (storageManager?.ready ? <Outlet/> :
-                    <LoadingIndicator/>)))}
+            <Box sx={{padding: 1.5}}>
+                {!encryptionManager?.storageChecked ? <LoadingIndicator/> :
+                    (!encryptionManager.passwordCreated ? <PasswordSetup/> :
+                        (encryptionManager.isLocked ? <Decrypt/> :
+                            (storageManager?.ready ? <Outlet/> :
+                                <LoadingIndicator/>)))}
+            </Box>
         </ThemeProvider>
     </>
   )

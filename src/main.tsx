@@ -14,6 +14,8 @@ import EditAccount from "./pages/EditAccount.tsx";
 import "@fontsource/inter";
 import {StorageManagerProvider} from "./providers/storage.tsx";
 
+import "./global.css";
+
 declare global {
     interface Window {
         Telegram: Telegram;

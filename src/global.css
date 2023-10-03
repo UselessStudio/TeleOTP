@@ -1,0 +1,5 @@
+html, body, #root, #root>div {
+    margin: 0;
+    height: 100%;
+    box-sizing: border-box;
+}
