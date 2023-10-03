@@ -1,4 +1,4 @@
-import {FC, useContext, useState} from "react";
+import {FC, useContext, useEffect, useState} from "react";
 import {
     Button,
     LinearProgress,
@@ -17,6 +17,7 @@ import NewAccountButton from "../components/NewAccountButton.tsx";
 import {StorageManagerContext} from "../managers/storage.tsx";
 import {icons} from "../globals.ts";
 import NewAccount from "./NewAccount.tsx";
+import {EditAccountState} from "./EditAccount.tsx";
 
 const Accounts: FC = () => {
     const navigate = useNavigate();
@@ -27,7 +28,15 @@ const Accounts: FC = () => {
     const [
         selectedAccountId,
         setSelectedAccountId
-    ] = useState<string | null>(storageManager ? Object.keys(storageManager.accounts)[0] : null);
+    ] = useState<string | null>(null);
+
+    useEffect(() => {
+        if(!storageManager?.accounts ||
+            Object.keys(storageManager.accounts).length < 1 ||
+            selectedAccountId !== null) return;
+        setSelectedAccountId(Object.keys(storageManager.accounts)[0]);
+    }, [selectedAccountId, storageManager?.accounts]);
+
     const selectedAccount = selectedAccountId && storageManager ? storageManager.accounts[selectedAccountId] : null;
 
     const {code, progress} = useAccount(selectedAccount?.uri);
@@ -45,7 +54,11 @@ const Accounts: FC = () => {
                             `${selectedAccount.issuer} (${selectedAccount.label})` :
                             selectedAccount?.label}
                     </Typography>
-                    <IconButton onClick={() => { navigate('/edit'); }}>
+                    <IconButton onClick={() => {
+                        navigate('/edit', {state: {
+                            account: selectedAccount
+                        } as EditAccountState});
+                    }}>
                         <EditIcon/>
                     </IconButton>
                 </Stack>
