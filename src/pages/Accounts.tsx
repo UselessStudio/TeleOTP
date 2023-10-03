@@ -31,9 +31,8 @@ const Accounts: FC = () => {
     ] = useState<string | null>(null);
 
     useEffect(() => {
-        if(!storageManager?.accounts ||
-            Object.keys(storageManager.accounts).length < 1 ||
-            selectedAccountId !== null) return;
+        if(!storageManager?.accounts || Object.keys(storageManager.accounts).length < 1) return;
+        if(selectedAccountId !== null && selectedAccountId in storageManager.accounts) return;
         setSelectedAccountId(Object.keys(storageManager.accounts)[0]);
     }, [selectedAccountId, storageManager?.accounts]);
 
