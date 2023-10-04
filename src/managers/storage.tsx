@@ -12,7 +12,7 @@ export interface Account {
 }
 
 export interface StorageManager {
-    ready: boolean,
+    ready: boolean;
     accounts: Record<string, Account>;
     saveAccount(account: Account): void;
     removeAccount(id: string): void;
