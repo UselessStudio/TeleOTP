@@ -58,7 +58,7 @@ the attacker won't have access to your tokens without the encryption password.
 
 ## ⚙️ Setup guide
 
-TeleOTP is made with **React** and **[Material UI](https://mui.com/material-ui/)**. 
+TeleOTP is made with **React**, **Typescript**, and **[Material UI](https://mui.com/material-ui/)**. 
 Vite frontend tooling is used for rapid development and easy deployment.
 
 Starting the development server is easy:
@@ -487,12 +487,14 @@ export const icons: Record<string, SvgIconComponent> = {
 ## 👋 Acknowledgements
 
 ### 🖌️ Content
+
 * Emoji animations from [Telegram stickers](https://t.me/addstickers/AnimatedEmojies).
 * [Duck stickers](https://t.me/addstickers/UtyaDuck)
 * Brand icons from [Simple Icons](https://simpleicons.org/)
 
 ### 📚 Libraries used
 
+* [@twa-dev/types](https://github.com/twa-dev/types) - Typescript types for Telegram Mini App SDK 
 * [OTPAuth](https://www.npmjs.com/package/otpauth) - generating TOTP codes
 * [nanoid](https://www.npmjs.com/package/nanoid) - generating unique ids for accounts
 * [lottie-react](https://www.npmjs.com/package/lottie-react) - rendering lottie animations
