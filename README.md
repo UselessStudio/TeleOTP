@@ -1,6 +1,7 @@
-# 🔐 [TeleOTP](http://t.me/TeleOTPapp_bot/TeleOTP) ![deploy status](https://github.com/UselessStudio/TeleOTP/actions/workflows/deploy.yml/badge.svg)
+# 🔐 [TeleOTP](http://t.me/TeleOTPapp_bot/TeleOTP) 
+![deploy status](https://github.com/UselessStudio/TeleOTP/actions/workflows/deploy.yml/badge.svg)
 
-Telegram Mini App that allows you to generate one-time passwords inside Telegram.
+Telegram Mini App that allows you to generate one-time 2FA passwords inside Telegram.
 
 ## ✨ Features
 
@@ -9,8 +10,51 @@ Telegram Mini App that allows you to generate one-time passwords inside Telegram
 so you can access them anywhere you can use Telegram. 
 * 🔒 **Secure:** All accounts are encrypted using AES. 
 That means even if your Telegram account is breached, 
-the attacker wouldn't have access to your tokens without the encryption password. 
+the attacker won't have access to your tokens without the encryption password. 
 * 🥰 **User-friendly:** TeleOTP is designed to look like Telegram and follows your color theme.
+
+## Table of contents
+<!-- TOC -->
+* [🔐 TeleOTP](#-teleotp-)
+  * [✨ Features](#-features)
+  * [Table of contents](#table-of-contents)
+  * [⚙️ Setup guide](#-setup-guide)
+    * [🔁 CI/CD](#-cicd-)
+* [💻 Structure](#-structure)
+  * [🛣️ Routing](#-routing)
+  * [🤖 Data and business logic](#-data-and-business-logic)
+    * [🪝 Hooks](#-hooks)
+      * [⬅️ Telegram Back Button](#-telegram-back-button)
+      * [✅ Telegram Main Button](#-telegram-main-button)
+      * [📷 Telegram QR Scanner](#-telegram-qr-scanner)
+      * [🎨 Telegram Theme](#-telegram-theme)
+      * [🔑 Account](#-account)
+    * [⚙️ Settings manager](#-settings-manager)
+      * [shouldKeepUnlocked](#shouldkeepunlocked)
+      * [setKeepUnlocked](#setkeepunlocked)
+    * [🔐 Encryption manager](#-encryption-manager)
+      * [storageChecked](#storagechecked)
+      * [passwordCreated](#passwordcreated)
+      * [createPassword](#createpassword)
+      * [removePassword](#removepassword)
+      * [isLocked](#islocked)
+      * [unlock](#unlock)
+      * [lock](#lock)
+      * [oldKey](#oldkey)
+      * [encrypt](#encrypt)
+      * [decrypt](#decrypt)
+    * [💾 Storage manager](#-storage-manager)
+      * [ready](#ready)
+      * [accounts](#accounts)
+      * [saveAccount](#saveaccount)
+      * [removeAccount](#removeaccount)
+      * [clearStorage](#clearstorage)
+    * [🤗 Icons and colors](#-icons-and-colors)
+      * [➕ Adding custom icons](#-adding-custom-icons)
+  * [👋 Acknowledgements](#-acknowledgements)
+    * [🖌️ Content](#-content)
+    * [📚 Libraries used](#-libraries-used)
+<!-- TOC -->
 
 ## ⚙️ Setup guide
 
@@ -447,7 +491,7 @@ export const icons: Record<string, SvgIconComponent> = {
 * [Duck stickers](https://t.me/addstickers/UtyaDuck)
 * Brand icons from [Simple Icons](https://simpleicons.org/)
 
-### 📚 Libraries used:
+### 📚 Libraries used
 
 * [OTPAuth](https://www.npmjs.com/package/otpauth) - generating TOTP codes
 * [nanoid](https://www.npmjs.com/package/nanoid) - generating unique ids for accounts
