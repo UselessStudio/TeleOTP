@@ -17,7 +17,6 @@
     "@mui/icons-material": "^5.14.9",
     "@mui/material": "^5.14.10",
     "copy-text-to-clipboard": "^3.2.0",
-    "copy-to-clipboard": "github:LowderPlay/copy-to-clipboard",
     "crypto-js": "^4.1.1",
     "lottie-react": "^2.4.0",
     "nanoid": "^5.0.1",
