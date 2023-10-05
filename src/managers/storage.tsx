@@ -16,6 +16,7 @@ export interface StorageManager {
     ready: boolean;
     accounts: Record<string, Account>;
     saveAccount(account: Account): void;
+    saveAccounts(accounts: Account[]): void;
     removeAccount(id: string): void;
     clearStorage(): void;
 }
@@ -61,14 +62,19 @@ export const StorageManagerProvider: FC<PropsWithChildren> = ({children}) => {
     const storageManager: StorageManager = {
         ready,
         accounts,
-        saveAccount(account) {
-            const encrypted = encryptionManager?.encrypt(JSON.stringify(account));
-            if (!encrypted) return;
-            window.Telegram.WebApp.CloudStorage.setItem("account"+account.id, encrypted, (error, result) => {
-                if (error ?? !result) return;
+        saveAccounts(accounts: Account[]) {
+            const newAccounts: Record<string, Account> = {};
+            for (const account of accounts) {
+                const encrypted = encryptionManager?.encrypt(JSON.stringify(account));
+                if (!encrypted) continue;
+                window.Telegram.WebApp.CloudStorage.setItem("account"+account.id, encrypted);
+                newAccounts[account.id] = account;
+            }
 
-                setAccounts({...accounts, [account.id]: account});
-            });
+            setAccounts({...this.accounts, ...newAccounts});
+        },
+        saveAccount(account) {
+            this.saveAccounts([account]);
         },
         removeAccount(id: string) {
             window.Telegram.WebApp.CloudStorage.removeItem("account"+id, (error, result) => {
@@ -117,13 +123,11 @@ export const StorageManagerProvider: FC<PropsWithChildren> = ({children}) => {
         if(!param) return;
 
         const accounts = decodeGoogleAuthenticator(`otpauth-migration://offline?data=${param}`);
-        console.log(accounts);
         if(!accounts) return;
 
-        accounts.filter(account => !Object.values(storageManager.accounts)
-                .map(a => a.uri)
-                .includes(account.uri))
-            .forEach(account => { storageManager.saveAccount(account); });
+        storageManager.saveAccounts(accounts.filter(account => !Object.values(storageManager.accounts)
+            .map(a => a.uri)
+            .includes(account.uri)));
         setImported(true);
     }, [ready, imported, storageManager]);
 

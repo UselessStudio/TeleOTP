@@ -46,7 +46,7 @@ const NewAccount: FC = () => {
                 return;
             }
 
-            accounts.forEach(account => storageManager?.saveAccount(account));
+            storageManager?.saveAccounts(accounts);
             navigate("/");
         } else {
             invalidPopup();
