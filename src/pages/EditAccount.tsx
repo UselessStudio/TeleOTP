@@ -9,6 +9,7 @@ import CreateAnimation from "../assets/create_lottie.json";
 import TelegramTextField from "../components/TelegramTextField.tsx";
 import IconPicker from "../components/IconPicker.tsx";
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
+import useTelegramHaptics from "../hooks/telegram/useTelegramHaptics.ts";
 
 export interface EditAccountState {
     account: Account;
@@ -17,6 +18,7 @@ export interface EditAccountState {
 export default function EditAccount() {
     const navigate = useNavigate();
     const location = useLocation();
+    const { notificationOccurred, } = useTelegramHaptics();
     const state = location.state as EditAccountState;
     const storageManager = useContext(StorageManagerContext);
 
@@ -68,6 +70,7 @@ export default function EditAccount() {
             setSelectedColor={setSelectedColor}/>
 
         <Button startIcon={<DeleteOutlinedIcon/>} color="error" onClick={() => {
+            notificationOccurred("warning");
             window.Telegram.WebApp.showPopup({
                 message: `Are you sure you want to delete ${state.account.issuer ? 
                     `${state.account.issuer} (${state.account.label})` : 

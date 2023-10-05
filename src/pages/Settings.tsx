@@ -10,6 +10,7 @@ import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
 import {SvgIconComponent} from "@mui/icons-material";
 import {useNavigate} from "react-router-dom";
 import {SettingsManagerContext} from "../managers/settings.tsx";
+import useTelegramHaptics from "../hooks/telegram/useTelegramHaptics.ts";
 
 interface OptionParams {
     onClick(): void;
@@ -51,6 +52,7 @@ const SettingsOption: FC<OptionParams> = ({ onClick, text, icon, value, }) => {
 const Settings: FC = () => {
     const theme = useTheme();
     const navigate = useNavigate();
+    const { impactOccurred, notificationOccurred } = useTelegramHaptics();
     const storageManager = useContext(StorageManagerContext);
     const encryptionManager = useContext(EncryptionManagerContext);
     const settingsManager = useContext(SettingsManagerContext);
@@ -67,7 +69,10 @@ const Settings: FC = () => {
             icon={LockOutlinedIcon}/>
 
         <SettingsOption
-            onClick={() => { settingsManager?.setKeepUnlocked(!settingsManager.shouldKeepUnlocked) }}
+            onClick={() => {
+                impactOccurred("light");
+                settingsManager?.setKeepUnlocked(!settingsManager.shouldKeepUnlocked);
+            }}
             text="Keep unlocked" value={settingsManager?.shouldKeepUnlocked ? "Enabled" : "Disabled"}
             icon={KeyOutlinedIcon}/>
 
@@ -85,6 +90,7 @@ const Settings: FC = () => {
             icon={PersonOutlineOutlinedIcon}/>
 
         <SettingsOption onClick={() => {
+            notificationOccurred("warning");
             window.Telegram.WebApp.showPopup({
                 message: "Are you sure you want to delete ALL your accounts?",
                 buttons: [

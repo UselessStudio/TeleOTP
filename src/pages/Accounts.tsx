@@ -18,10 +18,12 @@ import {StorageManagerContext} from "../managers/storage.tsx";
 import {icons} from "../globals.tsx";
 import NewAccount from "./NewAccount.tsx";
 import {EditAccountState} from "./EditAccount.tsx";
+import useTelegramHaptics from "../hooks/telegram/useTelegramHaptics.ts";
 
 const Accounts: FC = () => {
     const navigate = useNavigate();
     const theme = useTheme();
+    const { selectionChanged, } = useTelegramHaptics();
 
     const storageManager = useContext(StorageManagerContext);
 
@@ -89,7 +91,10 @@ const Accounts: FC = () => {
                                 label={account.label}
                                 issuer={account.issuer}
                                 selected={account.id === selectedAccountId}
-                                onClick={() => { setSelectedAccountId(account.id); }}
+                                onClick={() => {
+                                    setSelectedAccountId(account.id);
+                                    selectionChanged();
+                                }}
                                 color={account.color}/>
                         </Grid>
                     ))}

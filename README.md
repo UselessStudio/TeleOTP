@@ -25,6 +25,7 @@ the attacker won't have access to your tokens without the encryption password.
   * [🤖 Data and business logic](#-data-and-business-logic)
     * [🪝 Hooks](#-hooks)
       * [⬅️ Telegram Back Button](#-telegram-back-button)
+      * [📳 Telegram Haptics](#-telegram-haptics)
       * [✅ Telegram Main Button](#-telegram-main-button)
       * [📷 Telegram QR Scanner](#-telegram-qr-scanner)
       * [🎨 Telegram Theme](#-telegram-theme)
@@ -119,6 +120,35 @@ This hook sends a request to telegram to display button to navigate back in hist
 It is used only once in `Root.tsx`. 
 This hook automatically shows the button if the current route is not root (`/`).
 To navigate back, `useNavigate(-1)` hook from React Router is used.
+
+#### 📳 Telegram Haptics
+
+```ts
+import useTelegramHaptics from "./useTelegramHaptics";
+
+useTelegramHaptics(): {
+  impactOccurred: (style: "light" | "medium" | "heavy" | "rigid" | "soft") => void,
+  notificationOccurred: (style: "error" | "success" | "warning") => void,
+  selectionChanged: () => void,
+}
+```
+
+This hook wraps the Telegram [HapticFeedback](https://core.telegram.org/bots/webapps#hapticfeedback) object.
+
+_Returns:_
+* `impactOccurred` A method tells that an impact occurred.
+  * `style` 
+    - `light`, indicates a collision between small or lightweight UI objects,
+    - `medium`, indicates a collision between medium-sized or medium-weight UI objects,
+    - `heavy`, indicates a collision between large or heavyweight UI objects,
+    - `rigid`, indicates a collision between hard or inflexible UI objects,
+    - `soft`, indicates a collision between soft or flexible UI objects.
+* `notificationOccurred` A method tells that a task or action has succeeded, failed, or produced a warning.
+  * `style`
+    - error, indicates that a task or action has failed,
+    - success, indicates that a task or action has completed successfully,
+    - warning, indicates that a task or action produced a warning.
+* `selectionChanged` A method tells that the user has changed a selection.
 
 #### ✅ Telegram Main Button
 
