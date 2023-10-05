@@ -1,5 +1,6 @@
-# 🔐 [TeleOTP](http://t.me/TeleOTPapp_bot/TeleOTP) 
-![deploy status](https://github.com/UselessStudio/TeleOTP/actions/workflows/deploy.yml/badge.svg)
+# 🔐 [TeleOTP](http://t.me/TeleOTPapp_bot/TeleOTP)
+[![Deploy static content to Pages](https://github.com/UselessStudio/TeleOTP/actions/workflows/deploy.yml/badge.svg)](https://github.com/UselessStudio/TeleOTP/actions/workflows/deploy.yml)
+[![Build Telegram bot image](https://github.com/UselessStudio/TeleOTP/actions/workflows/bot.yml/badge.svg)](https://github.com/UselessStudio/TeleOTP/actions/workflows/bot.yml)
 
 Telegram Mini App that allows you to generate one-time 2FA passwords inside Telegram.
 
@@ -12,14 +13,25 @@ so you can access them anywhere you can use Telegram.
 That means even if your Telegram account is breached, 
 the attacker won't have access to your tokens without the encryption password. 
 * 🥰 **User-friendly:** TeleOTP is designed to look like Telegram and follows your color theme.
+* 🤗 **Open:** TeleOTP supports account migration to and from Google Authenticator. 
+You can switch the platforms at any time without any hassle! 
 
 ## Table of contents
 <!-- TOC -->
-* [🔐 TeleOTP](#-teleotp-)
+* [🔐 TeleOTP](#-teleotp)
   * [✨ Features](#-features)
   * [Table of contents](#table-of-contents)
-  * [⚙️ Setup guide](#-setup-guide)
-    * [🔁 CI/CD](#-cicd-)
+* [⚙️ Setup guide](#-setup-guide)
+  * [📱 Mini App](#-mini-app)
+    * [Installing the dependencies](#installing-the-dependencies)
+    * [Starting the development server](#starting-the-development-server)
+    * [Building the app](#building-the-app)
+    * [🔁 CI/CD](#-cicd)
+  * [💬 Bot](#-bot)
+    * [Starting bot](#starting-bot)
+    * [Environment variables](#environment-variables)
+    * [Running in Docker](#running-in-docker)
+    * [🔁 CI/CD](#-cicd-1)
 * [💻 Structure](#-structure)
   * [🛣️ Routing](#-routing)
   * [🤖 Data and business logic](#-data-and-business-logic)
@@ -50,33 +62,107 @@ the attacker won't have access to your tokens without the encryption password.
       * [saveAccount](#saveaccount)
       * [removeAccount](#removeaccount)
       * [clearStorage](#clearstorage)
+    * [✈️ Migration](#-migration)
+      * [Caveats](#caveats)
     * [🤗 Icons and colors](#-icons-and-colors)
       * [➕ Adding custom icons](#-adding-custom-icons)
-  * [👋 Acknowledgements](#-acknowledgements)
-    * [🖌️ Content](#-content)
-    * [📚 Libraries used](#-libraries-used)
+* [📋 TODOs](#-todos)
+* [👋 Acknowledgements](#-acknowledgements)
+  * [🖌️ Content](#-content)
+  * [📚 Libraries used](#-libraries-used)
 <!-- TOC -->
 
-## ⚙️ Setup guide
+# ⚙️ Setup guide
+
+## 📱 Mini App
 
 TeleOTP is made with **React**, **Typescript**, and **[Material UI](https://mui.com/material-ui/)**. 
-Vite frontend tooling is used for rapid development and easy deployment.
+**Vite** frontend tooling is used for rapid development and easy deployment.
 
-Starting the development server is easy:
+### Installing the dependencies
+
+To begin working with the project, 
+you should install the dependencies by running this command:
+
+```shell
+npm install
+```
+
+### Starting the development server
+To start the development server with hot reload, run:
+
 ```shell
 npm run dev
 ```
 
-To build the app, run:
+After that, the server will be accessible on http://localhost:5173/
+
+> [!NOTE]
+> If you want the app to be accessible on your local network, you should add `--host` argument to the command
+
+```shell
+npm run dev -- --host
+```
+
+### Building the app
+
 ```shell
 npm run build
 ```
 After a successful build, app bundle will be available in `./dist`.
 
-### 🔁 CI/CD 
+### 🔁 CI/CD
 GitHub Actions is used to automate the deployment of the app to the **GitHub Pages**. 
 The workflow is defined in the [`deploy.yml` file](.github/workflows/deploy.yml) 
 and ran on every push to `main`.
+
+## 💬 Bot
+
+TeleOTP uses a helper bot to send user a link to the app and assist with account migration.
+The bot is written in **Python** using [Python Telegram Bot library](https://github.com/python-telegram-bot/python-telegram-bot).
+
+### Starting bot
+
+To start the bot, you have to run the `main.py` script with environment variables.
+```shell
+python main.py
+```
+
+### Environment variables
+
+* `TOKEN` - Telegram bot token provided by @BotFather
+* `TG_APP` - A link to the Mini App in Telegram (e.g. https://t.me/TeleOTPapp_bot/TeleOTP)
+* `WEBAPP_URL` - Deployed Mini App URL (e.g. https://uselessstudio.github.io/TeleOTP/)
+
+### Running in Docker
+
+We recommend running the bot inside the Docker container. 
+The latest image is available at `ghcr.io/uselessstudio/teleotp-bot:main`.
+
+Example `docker-compose.yml` file:
+
+```yaml
+services:
+  bot:
+    image: ghcr.io/uselessstudio/teleotp-bot:main
+    restart: unless-stopped
+    environment:
+      - TG_APP=https://t.me/TeleOTPapp_bot/TeleOTP
+      - WEBAPP_URL=https://uselessstudio.github.io/TeleOTP/
+      - TOKEN=<insert your token>
+```
+
+And running is as simple as:
+```shell
+docker compose up
+```
+
+### 🔁 CI/CD
+GitHub Actions is used to automate the building of the bot container.
+The workflow is defined in the [`bot.yml` file](.github/workflows/bot.yml)
+and ran on every push to `main`. After a successful build, 
+the container is published in the GitHub Container Registry.  
+
 
 # 💻 Structure
 
@@ -389,6 +475,12 @@ StorageManager is responsible for saving and restoring accounts from Telegram's 
 StorageManager encrypts the accounts by calling [`encrypt`](#encrypt)/[`decrypt`](#decrypt) 
 methods on the [EncryptionManager](#-encryption-manager).
 
+Telegram CloudStorage is limited to 1024 keys. A few of these keys are used to store 
+the data for the decryption and more could be used later for other features. 
+Each account is stored as the different CloudStorage item, 
+so the limit of the accounts is around 1000. We do not limit the amount of the accounts that user has 
+because this number is somewhat impractical in real-world use.  
+
 Account object is defined as:
 
 ```ts
@@ -472,6 +564,20 @@ It removes accounts and password salt with KCV.
 After this method is executed, the [`removePassword` method](#removepassword) 
 on EncryptionManager is executed to ensure that the account was deleted. 
 
+### ✈️ Migration
+
+TeleOTP implements the `otpauth-migration` URI standard. 
+During the migration, accounts are serialized using Protocol Buffers 
+and sent to the bot via `sendData` method. Bot then generates the QR-code and a link, 
+that can be used for migrating to another instance of TeleOTP.
+
+#### Caveats
+
+The length of the data that can be sent using `sendData` is limited to 4096 bytes. 
+So the quantity of the accounts that could be migrated from TeleOTP is limited. 
+Although, this number theoretically is pretty big, it is still smaller than 
+the amount of the accounts that can be stored in CloudStorage (around 1000).   
+
 ### 🤗 Icons and colors
 
 All the icons and colors for accounts are defined in the `globals.tsx` file.
@@ -514,15 +620,22 @@ export const icons: Record<string, SvgIconComponent> = {
 } as const;
 ```
 
-## 👋 Acknowledgements
+# 📋 TODOs
 
-### 🖌️ Content
+* [ ] Implement counter-based HOTP
+* [ ] Ask for the password on destructive actions (deleting an account, etc.)
+* [ ] Add more icons
+* [ ] Add localization
+
+# 👋 Acknowledgements
+
+## 🖌️ Content
 
 * Emoji animations from [Telegram stickers](https://t.me/addstickers/AnimatedEmojies).
 * [Duck stickers](https://t.me/addstickers/UtyaDuck)
 * Brand icons from [Simple Icons](https://simpleicons.org/)
 
-### 📚 Libraries used
+## 📚 Libraries used
 
 * [@twa-dev/types](https://github.com/twa-dev/types) - Typescript types for Telegram Mini App SDK 
 * [OTPAuth](https://www.npmjs.com/package/otpauth) - generating TOTP codes
