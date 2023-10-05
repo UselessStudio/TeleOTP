@@ -1,6 +1,7 @@
 import {createContext, FC, PropsWithChildren, useContext, useEffect, useState} from "react";
 import {EncryptionManagerContext} from "./encryption.tsx";
 import {Color, Icon} from "../globals.tsx";
+import decodeGoogleAuthenticator from "../migration/import.ts";
 
 export interface Account {
     id: string;
@@ -56,6 +57,7 @@ export const StorageManagerProvider: FC<PropsWithChildren> = ({children}) => {
         });
     }, [encryptionManager, encryptionManager?.isLocked]);
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const storageManager: StorageManager = {
         ready,
         accounts,
@@ -106,6 +108,24 @@ export const StorageManagerProvider: FC<PropsWithChildren> = ({children}) => {
             window.Telegram.WebApp.CloudStorage.setItem("account"+account.id, encrypted);
         });
     }, [accounts, encryptionManager, keyChanged]);
+
+    const [imported, setImported] = useState(false);
+    useEffect(() => {
+        if(!ready || imported) return;
+
+        const param = window.Telegram.WebApp.initDataUnsafe.start_param;
+        if(!param) return;
+
+        const accounts = decodeGoogleAuthenticator(`otpauth-migration://offline?data=${param}`);
+        console.log(accounts);
+        if(!accounts) return;
+
+        accounts.filter(account => !Object.values(storageManager.accounts)
+                .map(a => a.uri)
+                .includes(account.uri))
+            .forEach(account => { storageManager.saveAccount(account); });
+        setImported(true);
+    }, [ready, imported, storageManager]);
 
     return <StorageManagerContext.Provider value={storageManager}>
         {children}

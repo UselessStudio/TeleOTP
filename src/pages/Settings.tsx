@@ -7,10 +7,12 @@ import KeyOutlinedIcon from '@mui/icons-material/KeyOutlined';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
+import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
 import {SvgIconComponent} from "@mui/icons-material";
 import {useNavigate} from "react-router-dom";
 import {SettingsManagerContext} from "../managers/settings.tsx";
 import useTelegramHaptics from "../hooks/telegram/useTelegramHaptics.ts";
+import exportGoogleAuthenticator from "../migration/export.ts";
 
 interface OptionParams {
     onClick(): void;
@@ -88,6 +90,18 @@ const Settings: FC = () => {
             text="Accounts"
             value={storageManager ? Object.keys(storageManager.accounts).length.toString() : "0"}
             icon={PersonOutlineOutlinedIcon}/>
+
+        <SettingsOption
+            onClick={() => {
+                const accounts = storageManager?.accounts;
+                if (!accounts) return;
+                window.Telegram.WebApp.sendData(exportGoogleAuthenticator(Object.values(accounts)));
+                setTimeout(() => {
+                    window.Telegram.WebApp.showAlert("Start the app from a keyboard button to export accounts");
+                }, 500);
+            }}
+            text="Export accounts"
+            icon={FileDownloadOutlinedIcon}/>
 
         <SettingsOption onClick={() => {
             notificationOccurred("warning");
