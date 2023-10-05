@@ -1,4 +1,4 @@
-import {FC, useCallback} from "react";
+import {FC, useCallback, useContext} from "react";
 import {Button, Divider, Stack, Typography} from "@mui/material";
 import NewAccountAnimation from "../assets/new_account_lottie.json";
 import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
@@ -7,23 +7,52 @@ import {useNavigate} from "react-router-dom";
 import {NewAccountState} from "./CreateAccount.tsx";
 import {HOTP, URI} from "otpauth";
 import LottieAnimation from "../components/LottieAnimation.tsx";
+import decodeGoogleAuthenticator from "../migration/import.ts";
+import useTelegramHaptics from "../hooks/telegram/useTelegramHaptics.ts";
+import {StorageManagerContext} from "../managers/storage.tsx";
 
 const NewAccount: FC = () => {
     const navigate = useNavigate();
+    const { notificationOccurred } = useTelegramHaptics();
+    const storageManager = useContext(StorageManagerContext);
+
     const scan = useTelegramQrScanner(useCallback((scanned) => {
-        try {
-            const otp = URI.parse(scanned);
+        function invalidPopup() {
+            window.Telegram.WebApp.showAlert("Invalid QR code");
+            notificationOccurred("error");
+        }
+
+        if (scanned.startsWith("otpauth://")) {
+            let otp;
+            try {
+                otp = URI.parse(scanned);
+            } catch (e) {
+                invalidPopup();
+                return;
+            }
+
             if (otp instanceof HOTP) {
                 window.Telegram.WebApp.showAlert("HOTP support is not implemented yet :(");
+                notificationOccurred("error");
                 return;
             }
             navigate("/create", {state: {
-                otp,
-            } as NewAccountState});
-        } catch (e) {
-            window.Telegram.WebApp.showAlert("Invalid QR code");
+                    otp,
+                } as NewAccountState});
+        } else if (scanned.startsWith("otpauth-migration://offline")) {
+            const accounts = decodeGoogleAuthenticator(scanned);
+            if (accounts === null) {
+                invalidPopup();
+                return;
+            }
+
+            accounts.forEach(account => storageManager?.saveAccount(account));
+            navigate("/");
+        } else {
+            invalidPopup();
         }
-    }, [navigate]));
+
+    }, [navigate, notificationOccurred]));
 
     return <>
         <Stack spacing={2} alignItems="center">
@@ -32,7 +61,7 @@ const NewAccount: FC = () => {
                 Add new account
             </Typography>
             <Typography variant="subtitle2" align="center">
-                Protect your account with two-factor authentication
+                Protect your account with two-factor authentication (Google Authenticator import is also supported)
             </Typography>
             <Button fullWidth variant="contained" startIcon={<QrCodeScannerIcon/>} onClick={() => {
                 scan()
