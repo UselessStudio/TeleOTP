@@ -1,5 +1,6 @@
 import logging
 import os
+import urllib.parse
 from io import BytesIO
 
 import qrcode
@@ -40,7 +41,7 @@ async def migrate(update: Update, context: ContextTypes.DEFAULT_TYPE, data: str)
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.message.web_app_data is not None:
-        return await migrate(update, context, update.message.web_app_data.data)
+        return await migrate(update, context, urllib.parse.quote_plus(update.message.web_app_data.data))
 
     keyboard = ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text="Open TeleOTP", web_app=WebAppInfo(url=app_url))]])
     await context.bot.send_message(chat_id=update.effective_chat.id,
