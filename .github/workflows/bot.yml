@@ -29,7 +29,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
-          images: ghcr.io/{{ github.repository_owner }}/teleotp-bot
+          images: ghcr.io/${{ github.repository_owner }}/teleotp-bot
       -
         name: Build and push
         uses: docker/build-push-action@v5
