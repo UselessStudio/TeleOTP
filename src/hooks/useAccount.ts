@@ -29,6 +29,7 @@ export default function useAccount(accountUri?: string): { code: string, period:
 
     const [progress, setProgress] = useState(0);
     useEffect(() => {
+        if (!accountUri) return;
         const timer = setInterval(()=>{
             setProgress(((Date.now() / 1000) % period) / period);
         }, 300);
@@ -36,6 +37,6 @@ export default function useAccount(accountUri?: string): { code: string, period:
         return () => {
             clearInterval(timer);
         };
-    }, [period]);
+    }, [accountUri, period]);
     return {code, period, progress};
 }
