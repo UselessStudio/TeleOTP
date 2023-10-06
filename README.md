@@ -542,8 +542,21 @@ This object is updated every time a new account is saved/removed.
 saveAccount(account: Account): void;
 ```
 
-This method saves the provided account in the CloudStorage. 
+> [!NOTE]
+> If you need to save multiple accounts, use `saveAccounts`
+
+This method saves the provided account in the CloudStorage.
 If the account with the same id exists, it is overridden.
+
+#### saveAccounts
+
+```ts
+saveAccount(accounts: Account[]): void;
+```
+
+This method is should be used if needed to save multiple accounts.
+The only difference in this method and running `saveAccount` in a loop is 
+that `saveAccounts` doesn't update the state for each account. 
 
 #### removeAccount
 
