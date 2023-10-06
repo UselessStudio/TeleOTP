@@ -122,12 +122,14 @@ export const StorageManagerProvider: FC<PropsWithChildren> = ({children}) => {
         const param = window.Telegram.WebApp.initDataUnsafe.start_param;
         if(!param) return;
 
-        const accounts = decodeGoogleAuthenticator(`otpauth-migration://offline?data=${param}`);
+        const url = new URL("otpauth-migration://offline");
+        url.searchParams.set("data", param)
+        const accounts = decodeGoogleAuthenticator(url.toString());
         if(!accounts) return;
 
-        storageManager.saveAccounts(accounts.filter(account => !Object.values(storageManager.accounts)
-            .map(a => a.uri)
-            .includes(account.uri)));
+        const uris = Object.values(storageManager.accounts).map(a => a.uri);
+
+        storageManager.saveAccounts(accounts.filter(account => !uris.includes(account.uri)));
         setImported(true);
     }, [ready, imported, storageManager]);
 
