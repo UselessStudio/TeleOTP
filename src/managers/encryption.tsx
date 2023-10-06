@@ -102,7 +102,7 @@ export const EncryptionManagerProvider: FC<PropsWithChildren> = ({ children }) =
             setKeyCheckValue(null);
         },
 
-        isLocked: key === null,
+        isLocked: !storageChecked || key === null,
         unlock(enteredPassword) {
             if (salt === null || keyCheckValue === null) {
                 return false;
