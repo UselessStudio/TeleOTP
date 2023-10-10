@@ -7,8 +7,16 @@ export default function decodeGoogleAuthenticator(uri: string): Account[] | null
     if (!uri.startsWith("otpauth-migration://offline")) return null;
 
     const url = new URL(uri);
-    const dataParam = url.searchParams.get("data");
+    let dataParam = url.searchParams.get("data");
     if (!dataParam) return null;
+
+    // Convert from base64url
+    dataParam = dataParam
+        .replace(/-/g, '+')
+        .replace(/_/g, '/');
+
+    const pad = dataParam.length % 4;
+    dataParam += "=".repeat(pad);
 
     const buffer = Uint8Array.from(atob(dataParam), (c) => c.charCodeAt(0));
 

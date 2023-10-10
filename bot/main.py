@@ -19,13 +19,17 @@ app_url = os.environ['WEBAPP_URL']
 
 
 async def migrate(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    data = urllib.parse.quote_plus(update.message.web_app_data.data)
+    data = update.message.web_app_data.data
 
-    qr = qrcode.make(f"otpauth-migration://offline?data={data}")
+    urlencoded = urllib.parse.quote_plus(data)
+
+    qr = qrcode.make(f"otpauth-migration://offline?data={urlencoded}")
     qr_bytes = BytesIO()
     qr_bytes.name = "image.png"
     qr.save(qr_bytes, "png")
     qr_bytes.seek(0)
+
+    data = data.replace("+", "-").replace("/", "_").replace("=", "")
 
     url = f"{app_tg}?startapp={data}"
 
