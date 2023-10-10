@@ -12,7 +12,6 @@ import {SvgIconComponent} from "@mui/icons-material";
 import {useNavigate} from "react-router-dom";
 import {SettingsManagerContext} from "../managers/settings.tsx";
 import useTelegramHaptics from "../hooks/telegram/useTelegramHaptics.ts";
-import exportGoogleAuthenticator from "../migration/export.ts";
 
 interface OptionParams {
     onClick(): void;
@@ -93,12 +92,7 @@ const Settings: FC = () => {
 
         <SettingsOption
             onClick={() => {
-                const accounts = storageManager?.accounts;
-                if (!accounts) return;
-                window.Telegram.WebApp.sendData(exportGoogleAuthenticator(Object.values(accounts)));
-                setTimeout(() => {
-                    window.Telegram.WebApp.showAlert("Start the app from a keyboard button to export accounts");
-                }, 500);
+                window.Telegram.WebApp.openTelegramLink(`https://t.me/${import.meta.env.VITE_BOT_USERNAME}?start=export`);
             }}
             text="Export accounts"
             icon={FileDownloadOutlinedIcon}/>

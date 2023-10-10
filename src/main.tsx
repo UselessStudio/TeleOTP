@@ -19,6 +19,7 @@ import {StorageManagerProvider} from "./managers/storage.tsx";
 import "./global.css";
 import {SettingsManagerProvider} from "./managers/settings.tsx";
 import PasswordSetup from "./pages/PasswordSetup.tsx";
+import ExportAccounts from "./pages/ExportAccounts.tsx";
 
 declare global {
     interface Window {
@@ -36,6 +37,7 @@ const router = createBrowserRouter(
             <Route path="edit" element={<EditAccount />} />
             <Route path="settings" element={<Settings />} />
             <Route path="changePassword" element={<PasswordSetup change/>} />
+            <Route path="export" element={<ExportAccounts/>}/>
         </Route>
     ),
     {

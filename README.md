@@ -1,4 +1,4 @@
-# 🔐 [TeleOTP](http://t.me/TeleOTPapp_bot/TeleOTP)
+# 🔐 [TeleOTP](http://t.me/TeleOTPAppBot/TeleOTP)
 [![Deploy static content to Pages](https://github.com/UselessStudio/TeleOTP/actions/workflows/deploy.yml/badge.svg)](https://github.com/UselessStudio/TeleOTP/actions/workflows/deploy.yml)
 [![Build Telegram bot image](https://github.com/UselessStudio/TeleOTP/actions/workflows/bot.yml/badge.svg)](https://github.com/UselessStudio/TeleOTP/actions/workflows/bot.yml)
 
@@ -24,6 +24,7 @@ You can switch the platforms at any time without any hassle!
 * [⚙️ Setup guide](#-setup-guide)
   * [📱 Mini App](#-mini-app)
     * [Installing the dependencies](#installing-the-dependencies)
+    * [Configuring the environment](#configuring-the-environment)
     * [Starting the development server](#starting-the-development-server)
     * [Building the app](#building-the-app)
     * [🔁 CI/CD](#-cicd)
@@ -60,6 +61,7 @@ You can switch the platforms at any time without any hassle!
       * [ready](#ready)
       * [accounts](#accounts)
       * [saveAccount](#saveaccount)
+      * [saveAccounts](#saveaccounts)
       * [removeAccount](#removeaccount)
       * [clearStorage](#clearstorage)
     * [✈️ Migration](#-migration)
@@ -87,6 +89,19 @@ you should install the dependencies by running this command:
 ```shell
 npm install
 ```
+
+### Configuring the environment
+
+Before starting the server or building the app, make sure that 
+your project directory has a file named `.env`. 
+It should follow the `.env.example` file structure.
+You could also set these variables directly when running the app.
+
+The app uses following environment variables:
+
+* `VITE_BOT_USERNAME` - This value contains the bot username. 
+It is used to send export requests to the bot. 
+_Example: `VITE_BOT_USERNAME=TeleOTPAppBot`_
 
 ### Starting the development server
 To start the development server with hot reload, run:
@@ -131,8 +146,12 @@ python main.py
 ### Environment variables
 
 * `TOKEN` - Telegram bot token provided by @BotFather
-* `TG_APP` - A link to the Mini App in Telegram (e.g. https://t.me/TeleOTPapp_bot/TeleOTP)
-* `WEBAPP_URL` - Deployed Mini App URL (e.g. https://uselessstudio.github.io/TeleOTP/)
+* `TG_APP` - A link to the Mini App in Telegram (e.g. https://t.me/TeleOTPAppBot/app)
+* `WEBAPP_URL` - Deployed Mini App URL (e.g. https://uselessstudio.github.io/TeleOTP)
+
+> ![NOTE]
+> Make sure that `WEBAPP_URL` doesn't end with a `/`! 
+> It is added automatically by the bot.
 
 ### Running in Docker
 
@@ -147,8 +166,8 @@ services:
     image: ghcr.io/uselessstudio/teleotp-bot:main
     restart: unless-stopped
     environment:
-      - TG_APP=https://t.me/TeleOTPapp_bot/TeleOTP
-      - WEBAPP_URL=https://uselessstudio.github.io/TeleOTP/
+      - TG_APP=https://t.me/TeleOTPAppBot/app
+      - WEBAPP_URL=https://uselessstudio.github.io/TeleOTP
       - TOKEN=<insert your token>
 ```
 
@@ -189,6 +208,9 @@ This screen allows user to change issuer and label and to select an icon with a 
 user to edit or delete an account. 
 * `Settings.tsx` is a menu screen with a few options. User can delete all accounts, 
 encrypt them, change the password, or set preferences.
+* `ExportAccounts.tsx` is a page that handles the export logic. 
+This page could be opened only by pressing the keyboard button in the chat. 
+It sends the exported accounts back to the bot.
 
 ## 🤖 Data and business logic
 
@@ -424,7 +446,7 @@ unlock(password: string): boolean;
 
 This method takes in the plaintext password from the user, 
 verifies the validity using KCV, and stores the key locally in case of success.
-After the successful execution of this method, [`isLocked`](isLocked) 
+After the successful execution of this method, [`isLocked`](#islocked) 
 would change to `false`.
 
 _Returns:_ a boolean indicating whether the provided password is correct.
@@ -436,7 +458,7 @@ lock(): void;
 ```
 
 This method removes the stored key from `localStorage`
-After the execution of this method, [`isLocked`](isLocked) 
+After the execution of this method, [`isLocked`](#islocked) 
 would change to `true`.
 
 #### oldKey

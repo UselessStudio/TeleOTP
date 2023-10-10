@@ -39,6 +39,8 @@ jobs:
         run: npm install
       - name: Build
         run: npm run build -- --base=/TeleOTP/
+        env:
+          VITE_BOT_USERNAME: ${{ vars.VITE_BOT_USERNAME }}
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload artifact
