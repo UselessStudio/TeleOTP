@@ -53,7 +53,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def migrate_button(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = ReplyKeyboardMarkup.from_button(
-        button=KeyboardButton(text="Export accounts", web_app=WebAppInfo(url=f"{app_url}/export")),
+        button=KeyboardButton(text="Export accounts", web_app=WebAppInfo(url=f"{app_url}?export")),
         resize_keyboard=True)
 
     await context.bot.send_message(chat_id=update.effective_chat.id,

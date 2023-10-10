@@ -1,4 +1,4 @@
-# 🔐 [TeleOTP](http://t.me/TeleOTPAppBot/TeleOTP)
+# 🔐 [TeleOTP](http://t.me/TeleOTPAppBot)
 [![Deploy static content to Pages](https://github.com/UselessStudio/TeleOTP/actions/workflows/deploy.yml/badge.svg)](https://github.com/UselessStudio/TeleOTP/actions/workflows/deploy.yml)
 [![Build Telegram bot image](https://github.com/UselessStudio/TeleOTP/actions/workflows/bot.yml/badge.svg)](https://github.com/UselessStudio/TeleOTP/actions/workflows/bot.yml)
 
