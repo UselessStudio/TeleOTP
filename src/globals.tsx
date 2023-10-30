@@ -16,6 +16,9 @@ import CommentIcon from "@mui/icons-material/Comment";
 import EmailIcon from "@mui/icons-material/Email";
 import {createSvgIcon} from "@mui/material";
 import KeyIcon from '@mui/icons-material/Key';
+import CloudIcon from '@mui/icons-material/Cloud';
+import StorageIcon from '@mui/icons-material/Storage';
+
 
 import Discord from "./assets/icons/discord.svg?react";
 import Vk from "./assets/icons/vk.svg?react";
@@ -24,6 +27,7 @@ import Docker from "./assets/icons/docker.svg?react";
 import Npm from "./assets/icons/npm.svg?react";
 import Twitch from "./assets/icons/twitch.svg?react";
 import Paypal from "./assets/icons/paypal.svg?react";
+import Cloudflare from "./assets/icons/cloudflare.svg?react";
 
 const DiscordIcon = createSvgIcon(<Discord/>, "Discord");
 const VkIcon = createSvgIcon(<Vk viewBox="-4 -4 32 32"/>, "Vk");
@@ -32,6 +36,7 @@ const DockerIcon = createSvgIcon(<Docker/>, "Docker");
 const NpmIcon = createSvgIcon(<Npm viewBox="-4 -4 32 32"/>, "Npm");
 const TwitchIcon = createSvgIcon(<Twitch viewBox="-4 -4 32 32"/>, "Twitch");
 const PaypalIcon = createSvgIcon(<Paypal viewBox="-4 -4 32 32"/>, "Paypal");
+const CloudflareIcon = createSvgIcon(<Cloudflare/>, "Cloudflare");
 
 export const icons: Record<string, SvgIconComponent> = {
     "github": GitHubIcon,
@@ -55,6 +60,9 @@ export const icons: Record<string, SvgIconComponent> = {
     "comment": CommentIcon,
     "email": EmailIcon,
     "key": KeyIcon,
+    "cloud": CloudIcon,
+    "storage": StorageIcon,
+    "cloudflare": CloudflareIcon,
 } as const;
 
 type Icons = keyof typeof icons;
