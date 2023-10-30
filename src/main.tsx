@@ -1,7 +1,12 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import Root from './Root.tsx'
-import {createBrowserRouter, createRoutesFromElements, Route, RouterProvider} from "react-router-dom";
+import {
+    createMemoryRouter,
+    createRoutesFromElements,
+    Route,
+    RouterProvider
+} from "react-router-dom";
 import {Telegram} from "@twa-dev/types";
 import Settings from "./pages/Settings.tsx";
 import Accounts from "./pages/Accounts.tsx";
@@ -26,7 +31,7 @@ declare global {
     }
 }
 
-const router = createBrowserRouter(
+const router = createMemoryRouter(
     createRoutesFromElements(
         <Route path="/" element={<Root />}>
             <Route index={true} element={<Accounts />} />
