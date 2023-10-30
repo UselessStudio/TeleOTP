@@ -19,6 +19,7 @@ import {icons} from "../globals.tsx";
 import NewAccount from "./NewAccount.tsx";
 import {EditAccountState} from "./EditAccount.tsx";
 import useTelegramHaptics from "../hooks/telegram/useTelegramHaptics.ts";
+import {SettingsManagerContext} from "../managers/settings.tsx";
 
 const Accounts: FC = () => {
     const navigate = useNavigate();
@@ -26,6 +27,7 @@ const Accounts: FC = () => {
     const { selectionChanged, } = useTelegramHaptics();
 
     const storageManager = useContext(StorageManagerContext);
+    const settingsManager = useContext(SettingsManagerContext);
 
     const [
         selectedAccountId,
@@ -35,8 +37,10 @@ const Accounts: FC = () => {
     useEffect(() => {
         if(!storageManager?.accounts || Object.keys(storageManager.accounts).length < 1) return;
         if(selectedAccountId !== null && selectedAccountId in storageManager.accounts) return;
-        setSelectedAccountId(Object.keys(storageManager.accounts)[0]);
-    }, [selectedAccountId, storageManager?.accounts]);
+        const accounts = Object.keys(storageManager.accounts);
+        const account = settingsManager?.lastSelectedAccount ?? accounts[accounts.length - 1];
+        setSelectedAccountId(accounts.includes(account) ? account : accounts[accounts.length - 1]);
+    }, [selectedAccountId, storageManager?.accounts, settingsManager?.lastSelectedAccount]);
 
     const selectedAccount = selectedAccountId && storageManager ? storageManager.accounts[selectedAccountId] : null;
 
@@ -92,6 +96,7 @@ const Accounts: FC = () => {
                                 issuer={account.issuer}
                                 selected={account.id === selectedAccountId}
                                 onClick={() => {
+                                    settingsManager?.setLastSelectedAccount(account.id);
                                     setSelectedAccountId(account.id);
                                     selectionChanged();
                                 }}

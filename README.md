@@ -46,6 +46,8 @@ You can switch the platforms at any time without any hassle!
     * [⚙️ Settings manager](#-settings-manager)
       * [shouldKeepUnlocked](#shouldkeepunlocked)
       * [setKeepUnlocked](#setkeepunlocked)
+      * [lastSelectedAccount](#lastselectedaccount)
+      * [setLastSelectedAccount](#setlastselectedaccount)
     * [🔐 Encryption manager](#-encryption-manager)
       * [storageChecked](#storagechecked)
       * [passwordCreated](#passwordcreated)
@@ -149,7 +151,7 @@ python main.py
 * `TG_APP` - A link to the Mini App in Telegram (e.g. https://t.me/TeleOTPAppBot/app)
 * `WEBAPP_URL` - Deployed Mini App URL (e.g. https://uselessstudio.github.io/TeleOTP)
 
-> ![NOTE]
+> [!NOTE]
 > Make sure that `WEBAPP_URL` doesn't end with a `/`! 
 > It is added automatically by the bot.
 
@@ -354,6 +356,26 @@ setKeepUnlocked(keep: boolean): void;
 ```
 
 This method changes the value of the [`shouldKeepUnlocked` flag](#shouldkeepunlocked).
+
+#### lastSelectedAccount
+
+```ts
+lastSelectedAccount: string | null;
+```
+
+This value contains the id of the account that was previously selected. If this value is missing in the storage, 
+returns null.
+
+> [!NOTE]
+> The id returned in this method is NOT checked to be a valid account id.
+
+#### setLastSelectedAccount
+
+```ts
+setLastSelectedAccount(id: string): void;
+```
+
+This method updates the [last selected account value](#lastselectedaccount) in the storage. 
 
 ### 🔐 Encryption manager
 

@@ -10,6 +10,7 @@ import {StorageManagerContext} from "../managers/storage.tsx";
 import {nanoid} from "nanoid";
 import {Color, Icon} from "../globals.tsx";
 import LottieAnimation from "../components/LottieAnimation.tsx";
+import {SettingsManagerContext} from "../managers/settings.tsx";
 
 export interface NewAccountState {
     otp: TOTP,
@@ -20,6 +21,7 @@ export function CreateAccount() {
     const location = useLocation();
     const state = location.state as NewAccountState;
     const storageManager = useContext(StorageManagerContext);
+    const settingsManager = useContext(SettingsManagerContext);
 
     const [id] = useState(nanoid());
     const [issuer, setIssuer] = useState(state.otp.issuer);
@@ -36,6 +38,7 @@ export function CreateAccount() {
             label,
             uri: state.otp.toString()
         });
+        settingsManager?.setLastSelectedAccount(id);
         navigate("/");
         return true;
     }, "Create");
