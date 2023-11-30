@@ -15,8 +15,10 @@ export default function decodeGoogleAuthenticator(uri: string): Account[] | null
         .replace(/-/g, '+')
         .replace(/_/g, '/');
 
-    const pad = dataParam.length % 4;
-    dataParam += "=".repeat(pad);
+    if (dataParam.length % 4 !== 0) {
+        const pad = 4 - (dataParam.length % 4);
+        dataParam += "=".repeat(pad);
+    }
 
     const buffer = Uint8Array.from(atob(dataParam), (c) => c.charCodeAt(0));
 
