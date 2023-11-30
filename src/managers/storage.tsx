@@ -29,7 +29,12 @@ export const StorageManagerProvider: FC<PropsWithChildren> = ({children}) => {
     const [ready, setReady] = useState(false);
     const [accounts, setAccounts] = useState<Record<string, Account>>({});
     useEffect(() => {
-        if(encryptionManager?.isLocked) return;
+        if(encryptionManager?.isLocked) {
+            setReady(true);
+            return;
+        } else {
+            setReady(false);
+        }
 
         window.Telegram.WebApp.CloudStorage.getKeys((error, result) => {
             if (error) {
@@ -85,12 +90,14 @@ export const StorageManagerProvider: FC<PropsWithChildren> = ({children}) => {
             });
         },
         clearStorage(): void {
+            setReady(false);
             window.Telegram.WebApp.CloudStorage.getKeys((error, result) => {
                 if (error ?? !result) return;
                 window.Telegram.WebApp.CloudStorage.removeItems(result, (error, result) => {
                     if (!error && result) {
                         setAccounts({});
                         encryptionManager?.removePassword();
+                        setReady(true);
                     }
                 });
             });

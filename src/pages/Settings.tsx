@@ -99,16 +99,7 @@ const Settings: FC = () => {
 
         <SettingsOption onClick={() => {
             notificationOccurred("warning");
-            window.Telegram.WebApp.showPopup({
-                message: "Are you sure you want to delete ALL your accounts?",
-                buttons: [
-                    {type: "destructive", text: "Yes", id: "remove"},
-                    {type: "cancel", id: "cancel"},
-                ]
-            }, (id) => {
-                if (id !== "remove") return;
-                storageManager?.clearStorage();
-            });
+            navigate("/reset");
         }} text="Remove all accounts" icon={CloseOutlinedIcon}/>
 
         <Typography color="text.secondary" fontSize="small" align="center" sx={{paddingY: theme.spacing(1)}}>

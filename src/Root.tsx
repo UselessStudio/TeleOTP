@@ -23,7 +23,7 @@ const Root: FC = () => {
     const encryptionManager = useContext(EncryptionManagerContext);
     const storageManager = useContext(StorageManagerContext);
 
-    const { search } = useLocation();
+    const { search, pathname } = useLocation();
 
     return (
     <>
@@ -32,7 +32,7 @@ const Root: FC = () => {
             <Box sx={{padding: 1.5}}>
                 {!encryptionManager?.storageChecked ? <LoadingIndicator/> :
                     (!encryptionManager.passwordCreated ? <PasswordSetup/> :
-                        (encryptionManager.isLocked ? <Decrypt/> :
+                        (encryptionManager.isLocked ? (pathname === "/reset" ? <Outlet/> : <Decrypt/>) :
                             (storageManager?.ready ? (search === "?export" ? <ExportAccounts/> :  <Outlet/>) :
                                 <LoadingIndicator/>)))}
             </Box>

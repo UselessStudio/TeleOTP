@@ -213,6 +213,8 @@ encrypt them, change the password, or set preferences.
 * `ExportAccounts.tsx` is a page that handles the export logic. 
 This page could be opened only by pressing the keyboard button in the chat. 
 It sends the exported accounts back to the bot.
+* `ResetAccounts.tsx` is a page that verifies that the user wants to delete all accounts and reset the password. 
+This page can be accessed through the settings, or by typing in the password incorrectly when decrypting.
 
 ## 🤖 Data and business logic
 
@@ -680,7 +682,6 @@ export const icons: Record<string, SvgIconComponent> = {
 # 📋 TODOs
 
 * [ ] Implement counter-based HOTP
-* [ ] Ask for the password on destructive actions (deleting an account, etc.)
 * [ ] Add more icons
 * [ ] Add localization
 

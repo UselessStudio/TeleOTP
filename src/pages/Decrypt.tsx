@@ -1,10 +1,12 @@
 import {FC, useContext, useState} from "react";
-import {Stack, Typography} from "@mui/material";
+import {Button, Stack, Typography} from "@mui/material";
 import PasswordAnimation from "../assets/unlock_lottie.json";
 import useTelegramMainButton from "../hooks/telegram/useTelegramMainButton.ts";
 import {EncryptionManagerContext} from "../managers/encryption.tsx";
 import TelegramTextField from "../components/TelegramTextField.tsx";
 import LottieAnimation from "../components/LottieAnimation.tsx";
+import ClearIcon from '@mui/icons-material/Clear';
+import {useNavigate} from "react-router-dom";
 
 const Decrypt: FC = () => {
     const [password, setPassword] = useState("");
@@ -18,6 +20,8 @@ const Decrypt: FC = () => {
             return false;
         }
     }, "Decrypt");
+
+    const navigate = useNavigate();
 
     return <>
         <Stack spacing={2} alignItems="center">
@@ -40,6 +44,19 @@ const Decrypt: FC = () => {
                     setWrongPassword(false);
                 }}
             />
+            {wrongPassword ?
+                <Button
+                    startIcon={<ClearIcon />}
+                    variant="text"
+                    size="small"
+                    sx={{width: 1}}
+                    color="error"
+                    onClick={() => {
+                        navigate("/reset");
+                    }}>
+                    Reset password...
+                </Button>
+                : null}
         </Stack>
     </>;
 }

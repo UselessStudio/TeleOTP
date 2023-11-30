@@ -1,6 +1,6 @@
 import {useEffect} from "react";
 
-export default function useTelegramMainButton(onClick: () => boolean, text: string) {
+export default function useTelegramMainButton(onClick: () => boolean, text: string, disabled = false) {
     useEffect(() => {
         window.Telegram.WebApp.MainButton.setText(text);
         window.Telegram.WebApp.MainButton.show();
@@ -21,4 +21,12 @@ export default function useTelegramMainButton(onClick: () => boolean, text: stri
             window.Telegram.WebApp.MainButton.offClick(handler);
         }
     }, [onClick]);
+
+    useEffect(() => {
+        if (disabled) {
+            window.Telegram.WebApp.MainButton.disable();
+        } else {
+            window.Telegram.WebApp.MainButton.enable();
+        }
+    }, [disabled]);
 }
