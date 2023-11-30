@@ -61,7 +61,7 @@ export const StorageManagerProvider: FC<PropsWithChildren> = ({children}) => {
                 setReady(true);
             });
         });
-    }, [encryptionManager, encryptionManager?.isLocked]);
+    }, [encryptionManager?.isLocked]);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const storageManager: StorageManager = {
