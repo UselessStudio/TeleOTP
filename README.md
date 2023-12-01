@@ -267,12 +267,13 @@ _Returns:_
 ```ts
 import useTelegramMainButton from "./useTelegramMainButton";
 
-useTelegramMainButton(onClick: () => boolean, text: string): void
+useTelegramMainButton(onClick: () => boolean, text: string, disabled: boolean = false): void
 ```
 _Params:_
 * `onClick` is a callback that is executed when user presses the button.
 If the callback returns true, the button will be hidden.
 * `text` is a string which contains the text that should be displayed on the button.
+* `disabled` (default `false`) is a boolean flag that indicates, whether the button should be disabled or not.
 
 This hook shows a main button and adds the callback as the listener for clicks.
 The button is automatically hidden if the component using this hook is disposed.
