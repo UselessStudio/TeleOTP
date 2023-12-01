@@ -29,7 +29,7 @@ export const StorageManagerProvider: FC<PropsWithChildren> = ({children}) => {
     const [ready, setReady] = useState(false);
     const [accounts, setAccounts] = useState<Record<string, Account>>({});
     useEffect(() => {
-        if(encryptionManager?.isLocked) {
+        if(encryptionManager?.isLocked && encryptionManager.storageChecked) {
             setReady(true);
             return;
         } else {
