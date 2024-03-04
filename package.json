@@ -12,7 +12,7 @@
     "generate": "npx mkdirp src/migration/proto/generated && pbjs -t static-module -w es6 src/migration/proto/migration.proto -o src/migration/proto/generated/migration.js && pbts -o src/migration/proto/generated/migration.d.ts src/migration/proto/generated/migration.js"
   },
   "dependencies": {
-    "@emotion/react": "^11.11.1",
+    "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.0",
     "@fontsource/inter": "^5.0.8",
     "@mui/icons-material": "^5.14.9",
