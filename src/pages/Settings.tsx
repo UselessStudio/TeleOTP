@@ -8,10 +8,12 @@ import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
+import FingerprintIcon from '@mui/icons-material/Fingerprint';
 import {SvgIconComponent} from "@mui/icons-material";
 import {useNavigate} from "react-router-dom";
 import {SettingsManagerContext} from "../managers/settings.tsx";
 import useTelegramHaptics from "../hooks/telegram/useTelegramHaptics.ts";
+import {BiometricsManagerContext} from "../managers/biometrics.tsx";
 
 interface OptionParams {
     onClick(): void;
@@ -54,6 +56,7 @@ const Settings: FC = () => {
     const theme = useTheme();
     const navigate = useNavigate();
     const { impactOccurred, notificationOccurred } = useTelegramHaptics();
+    const biometricsManager = useContext(BiometricsManagerContext);
     const storageManager = useContext(StorageManagerContext);
     const encryptionManager = useContext(EncryptionManagerContext);
     const settingsManager = useContext(SettingsManagerContext);
@@ -76,6 +79,18 @@ const Settings: FC = () => {
             }}
             text="Keep unlocked" value={settingsManager?.shouldKeepUnlocked ? "Enabled" : "Disabled"}
             icon={KeyOutlinedIcon}/>
+
+        {biometricsManager?.isAvailable ? <SettingsOption
+            onClick={() => {
+                impactOccurred("light");
+                if(biometricsManager.isSaved) {
+                    encryptionManager?.removeBiometricToken();
+                } else {
+                    encryptionManager?.saveBiometricToken();
+                }
+            }}
+            text="Use biometrics" value={biometricsManager.isSaved ? "Enabled" : "Disabled"}
+            icon={FingerprintIcon}/> : <></>}
 
         <SettingsOption onClick={() => {
             encryptionManager?.lock();
