@@ -37,7 +37,7 @@ export const BiometricsManagerProvider: FC<PropsWithChildren<BiometricsManagerPr
         updateToken: (token: string) => {
             if(!isAvailable) return;
             if(!window.Telegram.WebApp.BiometricManager.isAccessGranted) {
-                window.Telegram.WebApp.BiometricManager.openSettings();
+                // window.Telegram.WebApp.BiometricManager.openSettings();
                 window.Telegram.WebApp.BiometricManager.requestAccess({
                     reason: requestReason
                 }, (success) => {
