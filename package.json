@@ -22,6 +22,7 @@
     "lottie-react": "^2.4.0",
     "nanoid": "^5.0.1",
     "otpauth": "^9.1.4",
+    "plausible-tracker": "^0.3.8",
     "protobufjs": "^7.2.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

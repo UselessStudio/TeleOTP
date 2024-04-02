@@ -14,6 +14,7 @@ import {useNavigate} from "react-router-dom";
 import {SettingsManagerContext} from "../managers/settings.tsx";
 import useTelegramHaptics from "../hooks/telegram/useTelegramHaptics.ts";
 import {BiometricsManagerContext} from "../managers/biometrics.tsx";
+import {PlausibleAnalyticsContext} from "../components/PlausibleAnalytics.tsx";
 
 interface OptionParams {
     onClick(): void;
@@ -66,7 +67,7 @@ const Settings: FC = () => {
     const storageManager = useContext(StorageManagerContext);
     const encryptionManager = useContext(EncryptionManagerContext);
     const settingsManager = useContext(SettingsManagerContext);
-
+    const analytics = useContext(PlausibleAnalyticsContext);
 
     return <Stack spacing={1}>
         <Typography fontWeight="800" color="primary" fontSize="small" sx={{paddingY: theme.spacing(0.5)}}>
@@ -97,6 +98,7 @@ const Settings: FC = () => {
                     encryptionManager?.removeBiometricToken();
                 } else {
                     encryptionManager?.saveBiometricToken();
+                    analytics?.trackEvent("Biometrics enabled");
                 }
             }}
             text="Use biometrics"
