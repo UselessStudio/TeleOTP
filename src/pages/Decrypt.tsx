@@ -1,4 +1,4 @@
-import {FC, useContext, useState} from "react";
+import {FC, useContext, useEffect, useState} from "react";
 import {Button, Stack, Typography} from "@mui/material";
 import PasswordAnimation from "../assets/unlock_lottie.json";
 import useTelegramMainButton from "../hooks/telegram/useTelegramMainButton.ts";
@@ -7,11 +7,14 @@ import TelegramTextField from "../components/TelegramTextField.tsx";
 import LottieAnimation from "../components/LottieAnimation.tsx";
 import ClearIcon from '@mui/icons-material/Clear';
 import {useNavigate} from "react-router-dom";
+import {BiometricsManagerContext} from "../managers/biometrics.tsx";
 
 const Decrypt: FC = () => {
     const [password, setPassword] = useState("");
     const [wrongPassword, setWrongPassword] = useState(false);
     const encryptionManager = useContext(EncryptionManagerContext);
+    const biometricsManager = useContext(BiometricsManagerContext);
+
     useTelegramMainButton(() => {
         if(encryptionManager?.unlock(password)) {
             return true;
@@ -20,6 +23,13 @@ const Decrypt: FC = () => {
             return false;
         }
     }, "Decrypt");
+
+    const [biometricsRequested, setBiometricsRequested] = useState(false);
+    useEffect(() => {
+        if(!biometricsManager?.isSaved || biometricsRequested) return;
+        setBiometricsRequested(true);
+        encryptionManager?.unlockBiometrics();
+    }, [biometricsManager, biometricsManager?.isSaved, encryptionManager, biometricsRequested]);
 
     const navigate = useNavigate();
 
