@@ -8,8 +8,8 @@ export default function ExportAccounts() {
     const storageManager = useContext(StorageManagerContext);
     const analytics = useContext(PlausibleAnalyticsContext);
     useEffect(() => {
-        if (!storageManager?.accounts || !storageManager.ready) return;
-        analytics?.trackEvent("Account export");
+        if (!storageManager?.accounts || !storageManager.ready || !analytics) return;
+        analytics.trackEvent("Account export");
         window.Telegram.WebApp.sendData(exportGoogleAuthenticator(Object.values(storageManager.accounts)));
     }, [storageManager?.accounts, storageManager?.ready, analytics]);
 
