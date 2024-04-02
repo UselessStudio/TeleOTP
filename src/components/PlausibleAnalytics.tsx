@@ -1,4 +1,4 @@
-import {createContext, FC, PropsWithChildren, useMemo} from "react";
+import {createContext, FC, PropsWithChildren, useEffect, useMemo} from "react";
 import Plausible from "plausible-tracker";
 import {EventOptions} from "plausible-tracker/src/lib/request.ts";
 import {PlausibleOptions} from "plausible-tracker/src/lib/tracker.ts";
@@ -24,6 +24,10 @@ export const PlausibleAnalyticsProvider: FC<PropsWithChildren<PlausibleAnalytics
             apiHost
         })
     }, [domain, apiHost]);
+
+    useEffect(() => {
+        plausible.enableAutoPageviews();
+    }, [plausible]);
 
     return <PlausibleAnalyticsContext.Provider value={plausible}>
         {children}
