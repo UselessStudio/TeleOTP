@@ -29,7 +29,7 @@
     "react-router-dom": "^6.16.0"
   },
   "devDependencies": {
-    "@twa-dev/types": "^6.9.0",
+    "@twa-dev/types": "github:UselessStudio/twa-types",
     "@types/crypto-js": "^4.1.2",
     "@types/node": "^20.8.2",
     "@types/react": "^18.2.15",
