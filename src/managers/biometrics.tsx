@@ -37,25 +37,27 @@ export const BiometricsManagerProvider: FC<PropsWithChildren<BiometricsManagerPr
         updateToken: (token: string) => {
             if(!isAvailable) return;
             if(!window.Telegram.WebApp.BiometricManager.isAccessGranted) {
-                // window.Telegram.WebApp.BiometricManager.openSettings();
                 window.Telegram.WebApp.BiometricManager.requestAccess({
                     reason: requestReason
                 }, (success) => {
-                    if (success) {
-                        window.Telegram.WebApp.BiometricManager.updateBiometricToken(token, () => {
-                            settingsManager?.setBiometricsEnabled(token !== '' && success);
-                        });
+                    if (!success) {
+                        window.Telegram.WebApp.BiometricManager.openSettings();
                     }
+                    window.Telegram.WebApp.BiometricManager.updateBiometricToken(token, () => {
+                        settingsManager?.setBiometricsEnabled(token !== '' && success);
+                    });
                 });
             } else {
                 window.Telegram.WebApp.BiometricManager.updateBiometricToken(token, (success) => {
+                    if(!success) {
+                        window.Telegram.WebApp.BiometricManager.openSettings();
+                    }
                     settingsManager?.setBiometricsEnabled(token !== '' && success);
                 });
             }
         },
         getToken: (callback: (token?: string) => void) => {
             if(!isAvailable || !isSaved || isRequested) return;
-            console.log(window.Telegram.WebApp.BiometricManager.isAccessRequested);
             setIsRequested(true);
             try {
                 window.Telegram.WebApp.BiometricManager.authenticate({
