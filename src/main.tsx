@@ -20,6 +20,7 @@ import "./global.css";
 import {SettingsManagerProvider} from "./managers/settings.tsx";
 import PasswordSetup from "./pages/PasswordSetup.tsx";
 import ResetAccounts from "./pages/ResetAccounts.tsx";
+import {PlausibleAnalyticsProvider} from "./components/PlausibleAnalytics.tsx";
 
 declare global {
     interface Window {
@@ -48,12 +49,14 @@ const router = createBrowserRouter(
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-      <SettingsManagerProvider>
-          <EncryptionManagerProvider>
-              <StorageManagerProvider>
-                  <RouterProvider router={router}/>
-              </StorageManagerProvider>
-          </EncryptionManagerProvider>
-      </SettingsManagerProvider>
+      <PlausibleAnalyticsProvider domain="teleotp.pages.dev" apiHost="https://analytics.gesti.tech/">
+          <SettingsManagerProvider>
+              <EncryptionManagerProvider>
+                  <StorageManagerProvider>
+                      <RouterProvider router={router}/>
+                  </StorageManagerProvider>
+              </EncryptionManagerProvider>
+          </SettingsManagerProvider>
+      </PlausibleAnalyticsProvider>
   </React.StrictMode>,
 )

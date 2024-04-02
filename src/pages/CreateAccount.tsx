@@ -11,6 +11,7 @@ import {nanoid} from "nanoid";
 import {Color, Icon} from "../globals.tsx";
 import LottieAnimation from "../components/LottieAnimation.tsx";
 import {SettingsManagerContext} from "../managers/settings.tsx";
+import {PlausibleAnalyticsContext} from "../components/PlausibleAnalytics.tsx";
 
 export interface NewAccountState {
     otp: TOTP,
@@ -22,6 +23,7 @@ export function CreateAccount() {
     const state = location.state as NewAccountState;
     const storageManager = useContext(StorageManagerContext);
     const settingsManager = useContext(SettingsManagerContext);
+    const analytics = useContext(PlausibleAnalyticsContext);
 
     const [id] = useState(nanoid());
     const [issuer, setIssuer] = useState(state.otp.issuer);
@@ -30,6 +32,7 @@ export function CreateAccount() {
     const [selectedColor, setSelectedColor] = useState<Color>("primary");
 
     useTelegramMainButton(() => {
+        analytics?.trackEvent("New account");
         storageManager?.saveAccount({
             id,
             color: selectedColor,
