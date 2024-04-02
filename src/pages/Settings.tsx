@@ -19,10 +19,15 @@ interface OptionParams {
     onClick(): void;
     text: string;
     value?: string;
+    disabled?: boolean;
     icon: SvgIconComponent;
 }
 
-const SettingsOption: FC<OptionParams> = ({ onClick, text, icon, value, }) => {
+const SettingsOption: FC<OptionParams> = ({ onClick,
+                                              text,
+                                              icon,
+                                              value,
+                                              disabled = false }) => {
     const theme = useTheme();
     const Icon = icon;
     return <ButtonBase
@@ -34,6 +39,7 @@ const SettingsOption: FC<OptionParams> = ({ onClick, text, icon, value, }) => {
             bgcolor: "background.paper",
             borderRadius: "6px"
         }}
+        disabled={disabled}
         onClick={onClick}
     >
         <Stack direction="row" alignItems="center" sx={{width: '100%'}} spacing={1.5}>
@@ -80,8 +86,12 @@ const Settings: FC = () => {
             text="Keep unlocked" value={settingsManager?.shouldKeepUnlocked ? "Enabled" : "Disabled"}
             icon={KeyOutlinedIcon}/>
 
-        {biometricsManager?.isAvailable ? <SettingsOption
+        <SettingsOption
             onClick={() => {
+                if(!biometricsManager?.isAvailable) {
+                    notificationOccurred("error");
+                    return;
+                }
                 impactOccurred("light");
                 if(biometricsManager.isSaved) {
                     encryptionManager?.removeBiometricToken();
@@ -89,8 +99,12 @@ const Settings: FC = () => {
                     encryptionManager?.saveBiometricToken();
                 }
             }}
-            text="Use biometrics" value={biometricsManager.isSaved ? "Enabled" : "Disabled"}
-            icon={FingerprintIcon}/> : <></>}
+            text="Use biometrics"
+            value={
+                biometricsManager?.isAvailable ? (biometricsManager.isSaved ? "Enabled" : "Disabled") : "Not available"
+            }
+            disabled={!biometricsManager?.isAvailable}
+            icon={FingerprintIcon}/>
 
         <SettingsOption onClick={() => {
             encryptionManager?.lock();
