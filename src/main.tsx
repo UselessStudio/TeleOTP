@@ -20,6 +20,7 @@ import "./global.css";
 import {SettingsManagerProvider} from "./managers/settings.tsx";
 import PasswordSetup from "./pages/PasswordSetup.tsx";
 import ResetAccounts from "./pages/ResetAccounts.tsx";
+import {PlausibleAnalyticsProvider} from "./components/PlausibleAnalytics.tsx";
 import {BiometricsManagerProvider} from "./managers/biometrics.tsx";
 
 declare global {
@@ -49,6 +50,7 @@ const router = createBrowserRouter(
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
+    <PlausibleAnalyticsProvider domain="teleotp.pages.dev" apiHost="https://analytics.gesti.tech/">
       <SettingsManagerProvider>
           <BiometricsManagerProvider requestReason="Allow access to biometrics to be able to decrypt your accounts"
                                      authenticateReason="Authenticate to decrypt your accounts">
@@ -58,6 +60,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                       </StorageManagerProvider>
                   </EncryptionManagerProvider>
           </BiometricsManagerProvider>
-    </SettingsManagerProvider>
+      </SettingsManagerProvider>
+    </PlausibleAnalyticsProvider>
   </React.StrictMode>,
 )
