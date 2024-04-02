@@ -24,10 +24,12 @@ const Decrypt: FC = () => {
         }
     }, "Decrypt");
 
+    const [biometricsRequested, setBiometricsRequested] = useState(false);
     useEffect(() => {
-        if(!biometricsManager?.isSaved) return;
+        if(!biometricsManager?.isSaved || biometricsRequested) return;
+        setBiometricsRequested(true);
         encryptionManager?.unlockBiometrics();
-    }, [biometricsManager, biometricsManager?.isSaved, encryptionManager]);
+    }, [biometricsManager, biometricsManager?.isSaved, encryptionManager, biometricsRequested]);
 
     const navigate = useNavigate();
 
