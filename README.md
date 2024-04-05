@@ -1,6 +1,7 @@
 # 🔐 [TeleOTP](http://t.me/TeleOTPAppBot)
 [![Deploy static content to Pages](https://github.com/UselessStudio/TeleOTP/actions/workflows/deploy.yml/badge.svg)](https://github.com/UselessStudio/TeleOTP/actions/workflows/deploy.yml)
 [![Build Telegram bot image](https://github.com/UselessStudio/TeleOTP/actions/workflows/bot.yml/badge.svg)](https://github.com/UselessStudio/TeleOTP/actions/workflows/bot.yml)
+[![Plausible analytics](https://img.shields.io/badge/Plausible-analytics-blue)](https://analytics.gesti.tech/teleotp.pages.dev)
 
 Telegram Mini App that allows you to generate one-time 2FA passwords inside Telegram.
 
@@ -43,6 +44,11 @@ You can switch the platforms at any time without any hassle!
       * [📷 Telegram QR Scanner](#-telegram-qr-scanner)
       * [🎨 Telegram Theme](#-telegram-theme)
       * [🔑 Account](#-account)
+    * [👁️ Biometrics manager](#-biometrics-manager)
+      * [isAvailable](#isavailable)
+      * [isSaved](#issaved)
+      * [updateToken](#updatetoken)
+      * [getToken](#gettoken)
     * [⚙️ Settings manager](#-settings-manager)
       * [shouldKeepUnlocked](#shouldkeepunlocked)
       * [setKeepUnlocked](#setkeepunlocked)
@@ -336,6 +342,77 @@ This hook generates the actual 2FA code. Progress is updated every 300ms.
 If `accountUri` is not provided or invalid, the code returned is "N/A". 
 
 Generation of codes is implemented in the [otpauth library](https://github.com/hectorm/otpauth).
+
+### 👁️ Biometrics manager
+
+`BiometricsManager` is used as an interface to Telegram's `WebApp.BiometricManager`. 
+It allows to store the encryption key inside secure storage on device, locked by a biometric lock.
+
+To get an instance of BiometricsManager, you should use the `useContext` hook:
+
+```ts
+import {BiometricsManagerContext} from "./biometrics";
+
+const biometricsManager = useContext(BiometricsManagerContext);
+```
+
+BiometricsManager is created using `BiometricsManagerProvider` component:
+
+> [!IMPORTANT]
+> BiometricsManagerProvider must be used inside the [SettingsManagerProvider](#-settings-manager)
+
+- `requestReason` is a message when user is prompted to provide necessary permissions
+- `authenticateReason` is a message shown to the user, when the key is requested
+
+```tsx
+import {BiometricsManagerProvider} from "./biometrics";
+
+<BiometricsManagerProvider requestReason="Allow access to biometrics to be able to decrypt your accounts"
+                           authenticateReason="Authenticate to decrypt your accounts">
+  ... rest of the app code ...
+</BiometricsManagerProvider>
+```
+
+#### isAvailable
+
+```ts
+isAvailable: boolean;
+```
+
+Boolean flag indicating whether biometric storage is available on the current device.
+
+#### isSaved
+
+```ts
+isSaved: boolean;
+```
+
+Boolean flag indicating whether the encryption key is saved inside the storage. 
+This flag is stored using the [`SettingsManager`](#-settings-manager).
+
+> [!NOTE]
+> Behaviour of this flag is different to `WebApp.BiometricManager.isBiometricTokenSaved`, as
+> in the current implementation `isBiometricTokenSaved` returns `true` even if a token is empty.  
+
+#### updateToken
+
+```ts
+updateToken(token: string): void;
+```
+
+This method saves the key inside secure storage. 
+It may ask the user for necessary permissions.
+To delete the stored key, pass empty string to the `token` parameter.
+
+#### getToken
+
+```ts
+getToken(callback: (token?: string) => void): void;
+```
+
+This method requests a token from the storage. If a request is successful, 
+the token is passed in the `token` parameter inside a callback. In case of a failure, 
+callback is called with empty `token`.
 
 ### ⚙️ Settings manager
 

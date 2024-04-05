@@ -1,6 +1,7 @@
 import {createContext, FC, PropsWithChildren, useContext, useEffect, useState} from "react";
 import * as crypto from "crypto-js";
 import {SettingsManagerContext} from "./settings.tsx";
+import {BiometricsManagerContext} from "./biometrics.tsx";
 
 const kdfOptions = {keySize: 256 / 8};
 const saltBytes = 128 / 8;
@@ -12,9 +13,12 @@ export interface EncryptionManager {
     passwordCreated: boolean | null;
     createPassword(password: string): void;
     removePassword(): void;
+    saveBiometricToken(): void;
+    removeBiometricToken(): void;
 
     isLocked: boolean;
     unlock(password: string): boolean;
+    unlockBiometrics(): void;
     lock(): void;
 
     oldKey: crypto.lib.WordArray | null;
@@ -45,6 +49,8 @@ export const EncryptionManagerProvider: FC<PropsWithChildren> = ({ children }) =
     const [salt, setSalt] = useState<crypto.lib.WordArray | null>(null);
     const [keyCheckValue, setKeyCheckValue] = useState<string | null>(null);
     const [oldKey, setOldKey] = useState<crypto.lib.WordArray | null>(null);
+
+    const biometricsManager = useContext(BiometricsManagerContext);
 
     const settingsManager = useContext(SettingsManagerContext);
 
@@ -101,6 +107,13 @@ export const EncryptionManagerProvider: FC<PropsWithChildren> = ({ children }) =
             setSalt(null);
             setKeyCheckValue(null);
         },
+        saveBiometricToken() {
+            if (key === null) return;
+            biometricsManager?.updateToken(crypto.enc.Base64.stringify(key));
+        },
+        removeBiometricToken() {
+            biometricsManager?.updateToken("");
+        },
 
         isLocked: !storageChecked || key === null,
         unlock(enteredPassword) {
@@ -119,6 +132,21 @@ export const EncryptionManagerProvider: FC<PropsWithChildren> = ({ children }) =
         lock() {
             setKey(null);
             localStorage.removeItem("key");
+        },
+        unlockBiometrics() {
+            if (salt === null || keyCheckValue === null) {
+                return;
+            }
+
+            biometricsManager?.getToken((token?) => {
+                if (token) {
+                    const key = crypto.enc.Base64.parse(token);
+                    if(checkKey(key, salt, keyCheckValue)) {
+                        setKey(key);
+                    }
+                }
+            });
+
         },
 
         encrypt(data) {

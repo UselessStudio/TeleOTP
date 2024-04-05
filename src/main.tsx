@@ -20,6 +20,8 @@ import "./global.css";
 import {SettingsManagerProvider} from "./managers/settings.tsx";
 import PasswordSetup from "./pages/PasswordSetup.tsx";
 import ResetAccounts from "./pages/ResetAccounts.tsx";
+import {PlausibleAnalyticsProvider} from "./components/PlausibleAnalytics.tsx";
+import {BiometricsManagerProvider} from "./managers/biometrics.tsx";
 
 declare global {
     interface Window {
@@ -48,12 +50,18 @@ const router = createBrowserRouter(
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
+    <PlausibleAnalyticsProvider domain={import.meta.env.VITE_PLAUSIBLE_DOMAIN}
+                                apiHost={import.meta.env.VITE_PLAUSIBLE_API_HOST}>
       <SettingsManagerProvider>
-          <EncryptionManagerProvider>
-              <StorageManagerProvider>
-                  <RouterProvider router={router}/>
-              </StorageManagerProvider>
-          </EncryptionManagerProvider>
+          <BiometricsManagerProvider requestReason="Allow access to biometrics to be able to decrypt your accounts"
+                                     authenticateReason="Authenticate to decrypt your accounts">
+                  <EncryptionManagerProvider>
+                      <StorageManagerProvider>
+                          <RouterProvider router={router}/>
+                      </StorageManagerProvider>
+                  </EncryptionManagerProvider>
+          </BiometricsManagerProvider>
       </SettingsManagerProvider>
+    </PlausibleAnalyticsProvider>
   </React.StrictMode>,
 )

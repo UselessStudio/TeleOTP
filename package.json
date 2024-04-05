@@ -1,7 +1,7 @@
 {
   "name": "teleotp",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "homepage": "https://github.com/UselessStudio/TeleOTP",
   "scripts": {
@@ -22,27 +22,28 @@
     "lottie-react": "^2.4.0",
     "nanoid": "^5.0.1",
     "otpauth": "^9.1.4",
+    "plausible-tracker": "^0.3.8",
     "protobufjs": "^7.2.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.16.0"
   },
   "devDependencies": {
-    "@twa-dev/types": "^6.9.0",
+    "@twa-dev/types": "github:UselessStudio/twa-types",
     "@types/crypto-js": "^4.1.2",
-    "@types/node": "^20.8.2",
-    "@types/react": "^18.2.15",
-    "@types/react-dom": "^18.2.7",
-    "@typescript-eslint/eslint-plugin": "^6.0.0",
-    "@typescript-eslint/parser": "^6.0.0",
-    "@vitejs/plugin-react": "^4.0.3",
-    "eslint": "^8.50.0",
-    "eslint-plugin-react": "^7.33.2",
+    "@types/node": "^20.12.2",
+    "@types/react": "^18.2.73",
+    "@types/react-dom": "^18.2.23",
+    "@typescript-eslint/eslint-plugin": "^7.5.0",
+    "@typescript-eslint/parser": "^7.5.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "eslint": "^8.57.0",
+    "eslint-plugin-react": "^7.34.1",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-react-refresh": "^0.4.3",
+    "eslint-plugin-react-refresh": "^0.4.6",
     "protobufjs-cli": "^1.1.2",
-    "typescript": "^5.0.2",
-    "vite": "^4.4.5",
-    "vite-plugin-svgr": "^4.1.0"
+    "typescript": "^5.4.3",
+    "vite": "5.2.7",
+    "vite-plugin-svgr": "^4.2.0"
   }
 }
