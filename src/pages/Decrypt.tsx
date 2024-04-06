@@ -1,5 +1,5 @@
 import {FC, useContext, useEffect, useState} from "react";
-import {Button, Stack, Typography} from "@mui/material";
+import {Button, IconButton, Stack, Typography} from "@mui/material";
 import PasswordAnimation from "../assets/unlock_lottie.json";
 import useTelegramMainButton from "../hooks/telegram/useTelegramMainButton.ts";
 import {EncryptionManagerContext} from "../managers/encryption.tsx";
@@ -8,6 +8,7 @@ import LottieAnimation from "../components/LottieAnimation.tsx";
 import ClearIcon from '@mui/icons-material/Clear';
 import {useNavigate} from "react-router-dom";
 import {BiometricsManagerContext} from "../managers/biometrics.tsx";
+import { Fingerprint } from "@mui/icons-material";
 
 const Decrypt: FC = () => {
     const [password, setPassword] = useState("");
@@ -54,6 +55,19 @@ const Decrypt: FC = () => {
                     setWrongPassword(false);
                 }}
             />
+            {biometricsManager?.isSaved  && 
+                <Button
+                    size="small"
+                    sx={{
+                        borderRadius: 1000,
+                        width: 64,
+                        height: 64,
+                    }}
+                    onClick={() => {encryptionManager?.unlockBiometrics()}}
+                >
+                    <Fingerprint fontSize="large" />
+                </Button>
+            }
             {wrongPassword ?
                 <Button
                     startIcon={<ClearIcon />}
