@@ -31,7 +31,7 @@
   "devDependencies": {
     "@twa-dev/types": "github:UselessStudio/twa-types",
     "@types/crypto-js": "^4.1.2",
-    "@types/node": "^20.12.2",
+    "@types/node": "^20.12.10",
     "@types/react": "^18.2.73",
     "@types/react-dom": "^18.2.23",
     "@typescript-eslint/eslint-plugin": "^7.5.0",
