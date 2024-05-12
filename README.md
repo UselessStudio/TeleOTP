@@ -1,7 +1,7 @@
 # 🔐 [TeleOTP](http://t.me/TeleOTPAppBot)
 [![Deploy static content to Pages](https://github.com/UselessStudio/TeleOTP/actions/workflows/deploy.yml/badge.svg)](https://github.com/UselessStudio/TeleOTP/actions/workflows/deploy.yml)
 [![Build Telegram bot image](https://github.com/UselessStudio/TeleOTP/actions/workflows/bot.yml/badge.svg)](https://github.com/UselessStudio/TeleOTP/actions/workflows/bot.yml)
-[![Plausible analytics](https://img.shields.io/badge/Plausible-analytics-blue)](https://analytics.gesti.tech/teleotp.pages.dev)
+[![Plausible analytics](https://img.shields.io/badge/Plausible-analytics-blue)](https://analytics.gesti.tech/teleotp.gesti.tech)
 
 Telegram Mini App that allows you to generate one-time 2FA passwords inside Telegram.
 
