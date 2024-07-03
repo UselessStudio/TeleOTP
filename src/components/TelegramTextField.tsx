@@ -4,6 +4,9 @@ const TelegramTextField = styled((props: TextFieldProps) => (
     <TextField
         {...props}
         variant="standard"
+        onFocus={(e) => {
+            e.target.scrollIntoView({behavior: "smooth"});
+        }}
     />
 ))(({ theme }) => ({
     'label': {
