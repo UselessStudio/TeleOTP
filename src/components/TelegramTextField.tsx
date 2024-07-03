@@ -4,6 +4,8 @@ const TelegramTextField = styled((props: TextFieldProps) => (
     <TextField
         {...props}
         variant="standard"
+        //@ts-expect-error invoking onSubmit without args for customisation purposes  
+        onKeyUp={({ key }) => {key === "Enter" ? props.onSubmit ? props.onSubmit() : void 0 : void 0}}
     />
 ))(({ theme }) => ({
     'label': {

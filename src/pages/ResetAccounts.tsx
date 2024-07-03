@@ -1,6 +1,6 @@
 import {FC, useContext, useState} from "react";
 import {Stack, Typography} from "@mui/material";
-import {StorageManagerContext} from "../managers/storage.tsx";
+import {StorageManagerContext} from "../managers/storage/storage.tsx";
 import useTelegramMainButton from "../hooks/telegram/useTelegramMainButton.ts";
 import LottieAnimation from "../components/LottieAnimation.tsx";
 import TelegramTextField from "../components/TelegramTextField.tsx";

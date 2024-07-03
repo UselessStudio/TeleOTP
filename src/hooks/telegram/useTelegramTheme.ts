@@ -1,8 +1,11 @@
-import {useEffect, useState} from "react";
-import {createTheme, Theme} from "@mui/material";
-import {ThemeParams} from "@twa-dev/types";
+import { useEffect, useState } from "react";
+import { createTheme, Theme } from "@mui/material";
+import { ThemeParams } from "@twa-dev/types";
 
-function materialThemeFromTelegramTheme(mode: "light" | "dark", themeParams?: ThemeParams): Theme {
+function materialThemeFromTelegramTheme(
+    mode: "light" | "dark",
+    themeParams?: ThemeParams
+): Theme {
     // Create a default theme if not supplied by Telegram (i.e. when testing in a browser)
     if (themeParams?.button_color == undefined) {
         return createTheme();
@@ -18,20 +21,23 @@ function materialThemeFromTelegramTheme(mode: "light" | "dark", themeParams?: Th
                 default: themeParams.bg_color,
                 paper: themeParams.secondary_bg_color,
             },
+            action: {
+                disabled: "#9E9E9E",
+            },
             text: {
                 primary: themeParams.text_color,
                 secondary: themeParams.hint_color,
             },
             divider: themeParams.hint_color,
-            mode
+            mode,
         },
         typography: {
             fontFamily: [
-                'Inter',
+                "Inter",
                 '"Helvetica Neue"',
-                'Arial',
-                'sans-serif'
-            ].join(','),
+                "Arial",
+                "sans-serif",
+            ].join(","),
             allVariants: {
                 color: themeParams.text_color,
             },
@@ -40,29 +46,33 @@ function materialThemeFromTelegramTheme(mode: "light" | "dark", themeParams?: Th
             },
             subtitle2: {
                 color: themeParams.hint_color,
-            }
+            },
         },
     });
 }
 
 export default function useTelegramTheme() {
-    const [theme, setTheme] = useState(materialThemeFromTelegramTheme(
-        window.Telegram.WebApp.colorScheme,
-        window.Telegram.WebApp.themeParams
-    ));
+    const [theme, setTheme] = useState(
+        materialThemeFromTelegramTheme(
+            window.Telegram.WebApp.colorScheme,
+            window.Telegram.WebApp.themeParams
+        )
+    );
     useEffect(() => {
         function themeChanged() {
-            setTheme(materialThemeFromTelegramTheme(
-                window.Telegram.WebApp.colorScheme,
-                window.Telegram.WebApp.themeParams
-            ));
+            setTheme(
+                materialThemeFromTelegramTheme(
+                    window.Telegram.WebApp.colorScheme,
+                    window.Telegram.WebApp.themeParams
+                )
+            );
         }
 
         window.Telegram.WebApp.onEvent("themeChanged", themeChanged);
 
         return () => {
             window.Telegram.WebApp.offEvent("themeChanged", themeChanged);
-        }
+        };
     });
 
     return theme;

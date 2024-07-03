@@ -24,3 +24,5 @@ dist-ssr
 *.sw?
 /src/migration/proto/generated/
 /.env
+
+docker-compose.yml

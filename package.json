@@ -1,15 +1,16 @@
 {
   "name": "teleotp",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.3.0",
   "type": "module",
   "homepage": "https://github.com/UselessStudio/TeleOTP",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "build": "npm run generate && tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "generate": "npx mkdirp src/migration/proto/generated && pbjs -t static-module -w es6 src/migration/proto/migration.proto -o src/migration/proto/generated/migration.js && pbts -o src/migration/proto/generated/migration.d.ts src/migration/proto/generated/migration.js"
+    "generate": "npx mkdirp src/migration/proto/generated && pbjs -t static-module -w es6 src/migration/proto/migration.proto -o src/migration/proto/generated/migration.js && pbts -o src/migration/proto/generated/migration.d.ts src/migration/proto/generated/migration.js",
+    "test": "vitest"
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
@@ -17,8 +18,11 @@
     "@fontsource/inter": "^5.0.8",
     "@mui/icons-material": "^5.14.9",
     "@mui/material": "^5.14.10",
+    "@uiw/color-convert": "^2.1.1",
+    "@uiw/react-color-colorful": "^2.0.6",
     "copy-text-to-clipboard": "^3.2.0",
-    "crypto-js": "^4.1.1",
+    "crypto-js": "4.1.1",
+    "fuse.js": "^7.0.0",
     "lottie-react": "^2.4.0",
     "nanoid": "^5.0.1",
     "otpauth": "^9.1.4",
@@ -26,11 +30,16 @@
     "protobufjs": "^7.2.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.16.0"
+    "react-inlinesvg": "^4.1.3",
+    "react-router-dom": "^6.16.0",
+    "use-debounce": "^10.0.0"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.4.1",
+    "@testing-library/react": "^14.2.1",
     "@twa-dev/types": "github:UselessStudio/twa-types",
     "@types/crypto-js": "^4.1.2",
+    "@types/jest": "^29.5.12",
     "@types/node": "^20.12.2",
     "@types/react": "^18.2.73",
     "@types/react-dom": "^18.2.23",
@@ -41,9 +50,11 @@
     "eslint-plugin-react": "^7.34.1",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.6",
+    "jsdom": "^24.0.0",
     "protobufjs-cli": "^1.1.2",
     "typescript": "^5.4.3",
     "vite": "5.2.7",
-    "vite-plugin-svgr": "^4.2.0"
+    "vite-plugin-svgr": "^4.2.0",
+    "vitest": "^1.5.2"
   }
 }

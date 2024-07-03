@@ -1,5 +1,5 @@
 import {CircularProgress, Stack} from "@mui/material";
-import {StorageManagerContext} from "../managers/storage.tsx";
+import {StorageManagerContext} from "../managers/storage/storage.tsx";
 import {useContext, useEffect} from "react";
 import exportGoogleAuthenticator from "../migration/export.ts";
 import {PlausibleAnalyticsContext} from "../components/PlausibleAnalytics.tsx";

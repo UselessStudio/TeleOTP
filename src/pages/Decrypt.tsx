@@ -15,14 +15,16 @@ const Decrypt: FC = () => {
     const encryptionManager = useContext(EncryptionManagerContext);
     const biometricsManager = useContext(BiometricsManagerContext);
 
-    useTelegramMainButton(() => {
+    const decryptAccounts = () => {
         if(encryptionManager?.unlock(password)) {
             return true;
         } else {
             setWrongPassword(true);
             return false;
         }
-    }, "Decrypt");
+    }
+
+    useTelegramMainButton(decryptAccounts, "Decrypt");
 
     const [biometricsRequested, setBiometricsRequested] = useState(false);
     useEffect(() => {
@@ -44,6 +46,7 @@ const Decrypt: FC = () => {
             </Typography>
             <TelegramTextField
                 fullWidth
+                autoFocus={true}
                 type="password"
                 label="Password"
                 value={password}
@@ -53,6 +56,7 @@ const Decrypt: FC = () => {
                     setPassword(e.target.value);
                     setWrongPassword(false);
                 }}
+                onSubmit={decryptAccounts}
             />
             {wrongPassword ?
                 <Button

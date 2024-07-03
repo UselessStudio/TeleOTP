@@ -1,6 +1,9 @@
 import {useEffect} from "react";
+import useTelegramTheme from "./useTelegramTheme";
 
 export default function useTelegramMainButton(onClick: () => boolean, text: string, disabled = false) {
+    const { palette } = useTelegramTheme();
+    
     useEffect(() => {
         window.Telegram.WebApp.MainButton.setText(text);
         window.Telegram.WebApp.MainButton.show();
@@ -25,8 +28,12 @@ export default function useTelegramMainButton(onClick: () => boolean, text: stri
     useEffect(() => {
         if (disabled) {
             window.Telegram.WebApp.MainButton.disable();
+            window.Telegram.WebApp.MainButton.color = palette.mode === "light" 
+                ? palette.action.disabled as `#${string}`
+                : '#858585' as `#${string}`;
         } else {
             window.Telegram.WebApp.MainButton.enable();
+            window.Telegram.WebApp.MainButton.color = palette.primary.main as `#${string}`;
         }
     }, [disabled]);
 }

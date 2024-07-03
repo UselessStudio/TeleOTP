@@ -1,13 +1,15 @@
-import {Box, ButtonBase, Stack, Typography, useTheme} from "@mui/material";
-import {FC} from "react";
-import {SvgIconComponent} from "@mui/icons-material";
-import {Color} from "../globals.tsx";
+import { Box, ButtonBase, CircularProgress, Stack, SvgIcon, Typography } from "@mui/material";
+import { FC } from "react";
+import { icons } from "../globals";
+import SVG from 'react-inlinesvg';
+import useAccountTheme from "../hooks/useAccountTheme";
+import { iconUrl } from "../icons/iconUtils";
 interface AccountSelectButtonProps {
     selected?: boolean,
     label: string,
     issuer?: string,
-    icon: SvgIconComponent,
-    color: Color,
+    icon: string,
+    color: string,
     onClick: () => void,
 }
 
@@ -20,12 +22,26 @@ const AccountSelectButton: FC<AccountSelectButtonProps> = (
         onClick,
         color,
 }) => {
-    const theme = useTheme();
-    const Icon = icon;
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const theme = useAccountTheme(color)!;
+
     return <ButtonBase component="div" sx={{display: 'block', borderRadius: "6px"}} onClick={onClick}>
-        <Box sx={{bgcolor: selected ? `${color}.main` : "background.paper", padding: theme.spacing(1), borderRadius: "6px"}}>
+        <Box sx={{bgcolor: selected ? theme.palette.primary.main : theme.palette.background.paper , padding: theme.spacing(1), borderRadius: "6px"}}>
             <Stack alignItems="center" spacing={1} justifyContent="space-between">
-                <Icon sx={{color: selected ? `${color}.contrastText` : `${color}.main`}} fontSize="large" />
+                {
+                    Object.keys(icons).includes(icon) 
+                    // shorthand for const Icon = icons[icon]; <Icon />;
+                    ? ((Icon) => <Icon sx={{ height:35, width:35, color: selected ? theme.palette.primary.contrastText : color }}/>)(icons[icon])
+                    : <SvgIcon sx={{height: 35, width:35, color: selected ? theme.palette.primary.contrastText : color }} component="center">
+                        <SVG 
+                            // only for dev purposes
+                            title={import.meta.env.DEV ? icon : ""}
+                            cacheRequests={true}
+                            loader={<CircularProgress color="primary" />}
+                            src={iconUrl(icon)}>
+                        </SVG>
+                    </SvgIcon>
+                }
                 <Stack justifyContent="center" sx={{width: '100%', height: '2em'}}>
                     <Typography
                         align="center"
@@ -33,7 +49,7 @@ const AccountSelectButton: FC<AccountSelectButtonProps> = (
                         sx={{lineHeight: '1.2em', verticalAlign: 'center'}}
                         variant="subtitle2"
                         fontWeight={selected ? "bold" : "lighter"}
-                        color={selected ? `${color}.contrastText` : "text.primary"}
+                        color={selected ? theme.palette.primary.contrastText : theme.palette.text.primary}
                     >
                         {issuer ? issuer : label}
                     </Typography>
@@ -44,7 +60,7 @@ const AccountSelectButton: FC<AccountSelectButtonProps> = (
                         sx={{lineHeight: '1.2em', verticalAlign: 'center'}}
                         variant="subtitle2"
                         fontWeight={selected ? "bold" : "lighter"}
-                        color={selected ? `${color}.contrastText` : "text.primary"}
+                        color={selected ? theme.palette.primary.contrastText : theme.palette.text.primary}
                     >
                         ({label})
                     </Typography> : null}

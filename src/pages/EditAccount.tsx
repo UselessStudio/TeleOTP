@@ -1,7 +1,7 @@
 import {useLocation, useNavigate} from "react-router-dom";
-import {useContext, useState} from "react";
-import {Account, StorageManagerContext} from "../managers/storage.tsx";
-import {Color, Icon} from "../globals.tsx";
+import {Ref, createRef, useContext, useState} from "react";
+import {Account, StorageManagerContext} from "../managers/storage/storage.tsx";
+import {Icon} from "../globals.tsx";
 import useTelegramMainButton from "../hooks/telegram/useTelegramMainButton.ts";
 import {Button, Stack, Typography} from "@mui/material";
 import LottieAnimation from "../components/LottieAnimation.tsx";
@@ -18,16 +18,21 @@ export interface EditAccountState {
 export default function EditAccount() {
     const navigate = useNavigate();
     const location = useLocation();
-    const { notificationOccurred, } = useTelegramHaptics();
+    const { notificationOccurred } = useTelegramHaptics();
     const state = location.state as EditAccountState;
     const storageManager = useContext(StorageManagerContext);
 
     const [issuer, setIssuer] = useState(state.account.issuer);
     const [label, setLabel] = useState(state.account.label);
     const [selectedIcon, setSelectedIcon] = useState<Icon>(state.account.icon);
-    const [selectedColor, setSelectedColor] = useState<Color>(state.account.color);
+    const [selectedColor, setSelectedColor] = useState<string>(state.account.color);
+    const labelInput: Ref<HTMLInputElement> = createRef();
 
     useTelegramMainButton(() => {
+        if (!label || !labelInput.current?.checkValidity()) {
+            window.Telegram.WebApp.showAlert("Label field cannot be empty!");
+            return false;
+        }
         storageManager?.saveAccount({
             ...state.account,
             color: selectedColor,
@@ -48,8 +53,10 @@ export default function EditAccount() {
             Modify account information
         </Typography>
         <TelegramTextField
+            required
+            inputRef={labelInput}
             fullWidth
-            label="Label (required)"
+            label="Label"
             value={label}
             onChange={e => {
                 setLabel(e.target.value);

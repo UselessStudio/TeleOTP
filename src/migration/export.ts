@@ -1,8 +1,8 @@
 import { Payload } from "./proto/generated/migration.js";
-import {Account} from "../managers/storage.tsx";
+import {AccountBase} from "../managers/storage/storage.tsx";
 import {URI} from "otpauth";
 
-export default function exportGoogleAuthenticator(accounts: Account[]): string {
+export default function exportGoogleAuthenticator(accounts: AccountBase[]): string {
     const otpParameters: Payload.OtpParameters[] = [];
     for (const account of accounts) {
         const otp = URI.parse(account.uri);

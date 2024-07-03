@@ -1,5 +1,5 @@
 import { Payload } from "./proto/generated/migration.js";
-import {Account} from "../managers/storage.tsx";
+import {Account} from "../managers/storage/storage.tsx";
 import {Secret, TOTP} from "otpauth";
 import {nanoid} from "nanoid";
 
@@ -52,9 +52,10 @@ export default function decodeGoogleAuthenticator(uri: string): Account[] | null
             id: nanoid(),
             label: totp.label,
             issuer: otp.issuer ?? undefined,
-            color: "primary",
+            color: "#1976d2", // primary
             icon: "key",
             uri: totp.toString(),
+            order: -1,
         });
     }
 

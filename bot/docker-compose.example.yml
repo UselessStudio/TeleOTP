@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  bot:
+    image: ghcr.io/uselessstudio/teleotp-bot:main
+    restart: unless-stopped
+    environment:
+      - TG_APP=https://t.me/TeleOTPAppBot/app
+      # For testing on localhost use http://127.0.0.1 instead of http://localhost
+      #! Do not use trailing slash
+      - WEBAPP_URL=https://uselessstudio.github.io/TeleOTP
+      # For using on beta server use token like: <token>/test 
+      - TOKEN=<insert your token>
