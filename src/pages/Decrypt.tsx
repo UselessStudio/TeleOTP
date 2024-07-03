@@ -1,5 +1,5 @@
 import {FC, useContext, useEffect, useState} from "react";
-import {Button, IconButton, Stack, Typography} from "@mui/material";
+import {Button, Stack, Typography} from "@mui/material";
 import PasswordAnimation from "../assets/unlock_lottie.json";
 import useTelegramMainButton from "../hooks/telegram/useTelegramMainButton.ts";
 import {EncryptionManagerContext} from "../managers/encryption.tsx";
