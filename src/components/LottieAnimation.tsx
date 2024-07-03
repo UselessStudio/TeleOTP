@@ -23,10 +23,10 @@ const LottieAnimation: FC<LottieProps> = ({ animationData, initialSegment, loop,
     useEffect(() => {
         lottie.current?.goToAndPlay(0);
     }, []);
-    // useEffect(() => {
-    //     if (speed)
-    //         lottie.current?.setSpeed(speed)
-    // }, [speed])
+    useEffect(() => {
+        if (speed)
+            lottie.current?.setSpeed(speed)
+    }, [speed])
 
     return <Lottie
         onClick={() => {

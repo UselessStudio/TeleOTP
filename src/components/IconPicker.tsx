@@ -1,5 +1,5 @@
 import {FC, useEffect, useState} from "react";
-import {alpha, Grid, IconButton, Stack, useTheme, Divider, Button, SvgIcon, CircularProgress, Typography} from "@mui/material";
+import {alpha, Grid, IconButton, Stack, useTheme, Divider, Button, SvgIcon, CircularProgress} from "@mui/material";
 import CircleIcon from '@mui/icons-material/Circle';
 import RadioButtonCheckedIcon from '@mui/icons-material/RadioButtonChecked';
 import {Icon, colors, icons} from "../globals.tsx";
@@ -48,6 +48,7 @@ const IconPicker: FC<IconPickerProps> = ({ selectedIcon, setSelectedIcon, select
                     </IconButton>
                 
             })}
+            {/* @ts-ignore */}
             <ColorPicker selected={!colors.includes(selectedColor)} color={pickerColor?.hsva ?? hexToHsva(selectedColor)} onChange={color => {setPickerColor(color)}} />
         </Stack>
         <Stack direction="column" justifyContent="center" justifyItems="center" sx={{width: '100%'}} spacing={1}>
