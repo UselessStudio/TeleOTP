@@ -191,7 +191,7 @@ const Settings: FC = () => {
                     rel="noopener"
                     href={APP_HOMEPAGE}
                 >
-                    Star us on github
+                    Star us on GitHub
                 </Link>
                 {import.meta.env.DEV && (
                     <>
