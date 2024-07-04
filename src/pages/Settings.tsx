@@ -9,7 +9,7 @@ import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
 import FingerprintIcon from '@mui/icons-material/Fingerprint';
-import {SvgIconComponent} from "@mui/icons-material";
+import {Newspaper,SvgIconComponent} from "@mui/icons-material";
 import {useNavigate} from "react-router-dom";
 import {SettingsManagerContext} from "../managers/settings.tsx";
 import useTelegramHaptics from "../hooks/telegram/useTelegramHaptics.ts";
@@ -68,16 +68,41 @@ const Settings: FC = () => {
     const encryptionManager = useContext(EncryptionManagerContext);
     const settingsManager = useContext(SettingsManagerContext);
     const analytics = useContext(PlausibleAnalyticsContext);
+    return (
+        <Stack spacing={1}>
+            <Typography
+                fontWeight="800"
+                color="primary"
+                fontSize="small"
+                sx={{ paddingY: theme.spacing(0.5) }}
+            >
+                General
+            </Typography>
+            <SettingsOption
+                onClick={() => {
+                    window.Telegram.WebApp.openTelegramLink(import.meta.env.VITE_CHANNEL_LINK);
+                }}
+                text="TeleOTP News"
+                value="Open"
+                icon={Newspaper}
+            />
 
-    return <Stack spacing={1}>
-        <Typography fontWeight="800" color="primary" fontSize="small" sx={{paddingY: theme.spacing(0.5)}}>
-            Security
-        </Typography>
-        <SettingsOption
-            onClick={() => { navigate("/changePassword"); }}
-            text="Password"
-            value="Change"
-            icon={LockOutlinedIcon}/>
+            <Typography
+                fontWeight="800"
+                color="primary"
+                fontSize="small"
+                sx={{ paddingY: theme.spacing(0.5) }}
+            >
+                Security
+            </Typography>
+            <SettingsOption
+                onClick={() => {
+                    navigate("/changePassword");
+                }}
+                text="Password"
+                value="Change"
+                icon={LockOutlinedIcon}
+            />
 
         <SettingsOption
             onClick={() => {
@@ -140,7 +165,7 @@ const Settings: FC = () => {
                 GitHub repository
             </Link>
         </Typography>
-    </Stack>
+    </Stack>);
 }
 
 export default Settings;
