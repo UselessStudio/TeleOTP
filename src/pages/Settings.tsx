@@ -9,9 +9,9 @@ import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
 import FingerprintIcon from '@mui/icons-material/Fingerprint';
-import { SvgIconComponent } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
-import { SettingsManagerContext } from "../managers/settings.tsx";
+import {Newspaper,SvgIconComponent} from "@mui/icons-material";
+import {useNavigate} from "react-router-dom";
+import {SettingsManagerContext} from "../managers/settings.tsx";
 import useTelegramHaptics from "../hooks/telegram/useTelegramHaptics.ts";
 import {BiometricsManagerContext} from "../managers/biometrics.tsx";
 import {PlausibleAnalyticsContext} from "../components/PlausibleAnalytics.tsx";
@@ -79,6 +79,23 @@ const Settings: FC = () => {
                 fontSize="small"
                 sx={{ paddingY: theme.spacing(0.5) }}
             >
+                General
+            </Typography>
+            <SettingsOption
+                onClick={() => {
+                    window.Telegram.WebApp.openTelegramLink(import.meta.env.VITE_CHANNEL_LINK);
+                }}
+                text="TeleOTP News"
+                value="Open"
+                icon={Newspaper}
+            />
+
+            <Typography
+                fontWeight="800"
+                color="primary"
+                fontSize="small"
+                sx={{ paddingY: theme.spacing(0.5) }}
+            >
                 Security
             </Typography>
             <SettingsOption
@@ -90,19 +107,13 @@ const Settings: FC = () => {
                 icon={LockOutlinedIcon}
             />
 
-            <SettingsOption
-                onClick={() => {
-                    impactOccurred("light");
-                    settingsManager?.setKeepUnlocked(
-                        !settingsManager.shouldKeepUnlocked
-                    );
-                }}
-                text="Keep unlocked"
-                value={
-                    settingsManager?.shouldKeepUnlocked ? "Enabled" : "Disabled"
-                }
-                icon={KeyOutlinedIcon}
-            />
+        <SettingsOption
+            onClick={() => {
+                impactOccurred("light");
+                settingsManager?.setKeepUnlocked(!settingsManager.shouldKeepUnlocked);
+            }}
+            text="Keep unlocked" value={settingsManager?.shouldKeepUnlocked ? "Enabled" : "Disabled"}
+            icon={KeyOutlinedIcon}/>
 
         <SettingsOption
             onClick={() => {
