@@ -30,8 +30,8 @@ export default function CreateAccount() {
     const [id] = useState(nanoid());
     const [issuer, setIssuer] = useState(state.otp.issuer);
     const [label, setLabel] = useState(state.otp.label);
-    const [selectedIcon, setSelectedIcon] = useState<Icon>("github");
-    const [selectedColor, setSelectedColor] = useState<string>("#1c98e6");
+    const [selectedIcon, setSelectedIcon] = useState<Icon>(state.icon ?? "key");
+    const [selectedColor, setSelectedColor] = useState<string>(state.color ?? "#1c98e6");
     const labelInput: Ref<HTMLInputElement> = createRef();
 
     useTelegramMainButton(() => {
@@ -49,7 +49,7 @@ export default function CreateAccount() {
             uri: state.otp.toString(),
             order: storageManager.lastOrder() + 1,
         });
-        import.meta.env.DEV && console.log("order", storageManager!.lastOrder())
+        import.meta.env.DEV && console.log("order", storageManager?.lastOrder())
         settingsManager?.setLastSelectedAccount(id);
         navigate("/");
         return true;

@@ -1,4 +1,4 @@
-import { FC, useEffect, useMemo, useState } from "react";
+import {FC, useCallback, useEffect, useMemo, useState} from "react";
 import {
     CircularProgress,
     Link,
@@ -11,53 +11,69 @@ import {
 } from "@mui/material";
 import LottieAnimation from "../components/LottieAnimation.tsx";
 import TelegramTextField from "../components/TelegramTextField.tsx";
-import MagnificationGlass from "../assets/magnification_glass.json";
+import MagnificationGlass from "../assets/magnification_glass_lottie.json";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ICONS_DATA_URL } from "../globals.tsx";
 import SVG from "react-inlinesvg";
 import Fuse from "fuse.js/min-basic";
 import { useDebounce } from "use-debounce";
 import { EditAccountState } from "./EditAccount.tsx";
-import { iconUrl, titleToIconSlug } from "../icons/iconUtils.ts";
+import {ICONS_DATA_URL, iconUrl, titleToIconSlug} from "../icons/icons.ts";
+import {NewAccountState} from "./CreateAccount.tsx";
+
+interface IconData {
+    title: string;
+    hex: string;
+    source: string;
+    aliases?: {
+        aka?: string[];
+        loc?: Record<string, string>;
+        old?: string[];
+        dup?: {
+            title: string;
+            hex?: string;
+            source?: string;
+            loc?: Record<string, string>;
+        }[];
+    };
+    guidelines?: string;
+    license?: {
+        type: string;
+        url?: string;
+    };
+    slug?: string;
+}
 
 interface IconsData {
-    icons: {
-        title: string;
-        hex: string;
-        source: string;
-        aliases?: {
-            aka?: string[];
-            loc?: Record<string, string>;
-            old?: string[];
-            dup?: {
-                title: string;
-                hex?: string;
-                source?: string;
-                loc?: Record<string, string>;
-            }[];
-        };
-        guidelines?: string;
-        license?: {
-            type: string;
-            url?: string;
-        };
-        slug?: string;
-    }[];
+    icons: IconData[];
 }
 
 const IconsList: FC<Pick<IconsData, "icons"> & { searchQuery: string }> = ({
     icons,
     searchQuery,
 }) => {
-    // function titleToIconSlug(title: string): string {
-    //     return title
-    //         .toLowerCase()
-    //         .replace(/[ \\/-]/gi, "")
-    //         .replace(/\./gi, "dot");
-    // }
     const navigate = useNavigate();
     const location = useLocation();
-    const state = location.state as EditAccountState;
+    const isFromEditing = location.state.account !== undefined;
+    const state = useCallback((icon: string, color: string): EditAccountState | NewAccountState => {
+        if(isFromEditing) {
+            const state = location.state as EditAccountState;
+            return {
+                account: {
+                    ...state.account,
+                    ...{
+                        icon,
+                        color,
+                    },
+                },
+            };
+        } else {
+            const state = location.state as NewAccountState;
+            return {
+                ...state,
+                icon, color
+            };
+        }
+    }, [isFromEditing]);
     const fuse = useMemo(
         () =>
             new Fuse(icons, {
@@ -74,27 +90,17 @@ const IconsList: FC<Pick<IconsData, "icons"> & { searchQuery: string }> = ({
                 <ListItemButton
                     key={item.title}
                     onClick={() => {
-                        navigate("/edit", {
-                            state: {
-                                account: {
-                                    ...state.account,
-                                    ...{
-                                        icon:
-                                            item.slug ??
-                                            titleToIconSlug(item.title),
-                                        color: `#${item.hex}`,
-                                    },
-                                },
-                            },
+                        navigate(isFromEditing ? "/edit" : "/create", {
+                            state: state(item.slug ?? titleToIconSlug(item.title), `#${item.hex}`),
                         });
                     }}
                 >
-                    <ListItemIcon sx={{ padding: "8px" }}>
+                    <ListItemIcon sx={{ padding: "8px", marginRight: 2 }}>
                         <SVG
                             cacheRequests={false}
                             loader={<CircularProgress color="primary" />}
                             src={iconUrl(item.slug ?? titleToIconSlug(item.title))}
-                            fill={"#" + item.hex}
+                            fill={`#${item.hex}`}
                         ></SVG>
                     </ListItemIcon>
                     <ListItemText primary={item.title}></ListItemText>
@@ -136,18 +142,6 @@ const IconBrowser: FC = () => {
         }
     }, [phrase]);
 
-    // const navigate = useNavigate();
-    // useTelegramMainButton(
-    //     () => {
-    //         if (!verified) return false;
-    //         storageManager?.clearStorage();
-    //         navigate("/");
-    //         return true;
-    //     },
-    //     "Remove PERMANENTLY",
-    //     !iconSelected
-    // );
-
     return (
         <>
             <Stack spacing={2} alignItems="center">
@@ -162,7 +156,7 @@ const IconBrowser: FC = () => {
                     label="Pattern to search"
                     value={phrase}
                     error={!verified}
-                    helperText={!verified ? "Enter al least two symbols" : null}
+                    helperText={!verified ? "Enter at least two symbols" : null}
                     onChange={(e) => {
                         const value = e.target.value;
                         setPhrase(value);
@@ -187,27 +181,6 @@ const IconBrowser: FC = () => {
                         />
                     </>
                 )}
-                {/* {searching && (
-                    <Typography
-                        // fontFamily={"monospace"}
-                        sx={{
-                            ":after": {
-                                content: '"..."',
-                            },
-                            width: "fit-content",
-                            fontWeight: "semi-bold",
-                            fontSize: 16,
-                            clipPath: "inset(0 12px 0 0)",
-                            animation: "dots-loading 1s steps(4) infinite",
-                            userSelect: "none",
-                        }}
-                        align="center"
-                        variant="h6"
-                        fontWeight={400}
-                    >
-                        Searching
-                    </Typography>
-                )} */}
                 {searching && iconsData && (
                     <IconsList icons={iconsData.icons} searchQuery={query} />
                 )}

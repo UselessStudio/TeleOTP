@@ -3,7 +3,7 @@ import { FC } from "react";
 import { icons } from "../globals";
 import SVG from 'react-inlinesvg';
 import useAccountTheme from "../hooks/useAccountTheme";
-import { iconUrl } from "../icons/iconUtils";
+import { iconUrl } from "../icons/icons.ts";
 interface AccountSelectButtonProps {
     selected?: boolean,
     label: string,

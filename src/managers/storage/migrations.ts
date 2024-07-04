@@ -1,6 +1,6 @@
 import { Migrations } from "./migrate";
-import { ICONS_CDN, icons } from "../../globals";
-import { titleToIconSlug } from "../../icons/iconUtils";
+import { icons } from "../../globals";
+import {ICONS_CDN, titleToIconSlug} from "../../icons/icons.ts";
 
 type V1Color = [
     "primary", "success", "warning", "secondary", "error", "info",

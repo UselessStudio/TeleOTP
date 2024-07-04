@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { titleToIconSlug } from "./iconUtils";
+import { titleToIconSlug } from "./icons.ts";
 
 describe("titleToIconSlug", () => {
     const url =
