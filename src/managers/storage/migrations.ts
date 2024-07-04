@@ -13,6 +13,7 @@ export const MIGRATIONS_SCHEMA: Migrations = [
         up: (account) => {
             function convertV1Icon(icon: string): string {
                 if (Object.keys(icons).includes(icon)) return icon;
+                if (icon == "twitter") icon = "x"; // thanks, Elon
 
                 // prevent not simpleicons urls
                 if (icon.startsWith("https://") && !icon.includes(ICONS_CDN)) {
