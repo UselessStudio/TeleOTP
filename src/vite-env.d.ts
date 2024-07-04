@@ -7,6 +7,7 @@ interface ImportMetaEnv {
     readonly VITE_CHANNEL_LINK: string;
     readonly VITE_PLAUSIBLE_API_HOST: string;
     readonly VITE_PLAUSIBLE_DOMAIN: string;
+    readonly BASE_URL: string
 }
 
 interface ImportMeta {

@@ -1,23 +1,25 @@
 import {Stack, Typography} from "@mui/material";
-import {useContext, useState} from "react";
+import {Ref, createRef, useContext, useState} from "react";
 import CreateAnimation from "../assets/create_lottie.json";
 import useTelegramMainButton from "../hooks/telegram/useTelegramMainButton.ts";
 import {TOTP} from "otpauth";
 import {useLocation, useNavigate} from "react-router-dom";
 import IconPicker from "../components/IconPicker.tsx";
 import TelegramTextField from "../components/TelegramTextField.tsx";
-import {StorageManagerContext} from "../managers/storage.tsx";
+import {StorageManagerContext} from "../managers/storage/storage.tsx";
 import {nanoid} from "nanoid";
-import {Color, Icon} from "../globals.tsx";
+import {Icon} from "../globals.tsx";
 import LottieAnimation from "../components/LottieAnimation.tsx";
 import {SettingsManagerContext} from "../managers/settings.tsx";
 import {PlausibleAnalyticsContext} from "../components/PlausibleAnalytics.tsx";
 
 export interface NewAccountState {
     otp: TOTP,
+    icon?: string,
+    color?: string,
 }
 
-export function CreateAccount() {
+export default function CreateAccount() {
     const navigate = useNavigate();
     const location = useLocation();
     const state = location.state as NewAccountState;
@@ -28,10 +30,15 @@ export function CreateAccount() {
     const [id] = useState(nanoid());
     const [issuer, setIssuer] = useState(state.otp.issuer);
     const [label, setLabel] = useState(state.otp.label);
-    const [selectedIcon, setSelectedIcon] = useState<Icon>("github");
-    const [selectedColor, setSelectedColor] = useState<Color>("primary");
+    const [selectedIcon, setSelectedIcon] = useState<Icon>(state.icon ?? "key");
+    const [selectedColor, setSelectedColor] = useState<string>(state.color ?? "#1c98e6");
+    const labelInput: Ref<HTMLInputElement> = createRef();
 
     useTelegramMainButton(() => {
+        if (!label && !labelInput.current?.checkValidity()) {
+            window.Telegram.WebApp.showAlert("Label field cannot be empty!");
+            return false;
+        }
         analytics?.trackEvent("New account");
         storageManager?.saveAccount({
             id,
@@ -39,8 +46,10 @@ export function CreateAccount() {
             icon: selectedIcon,
             issuer,
             label,
-            uri: state.otp.toString()
+            uri: state.otp.toString(),
+            order: storageManager.lastOrder() + 1,
         });
+        import.meta.env.DEV && console.log("order", storageManager?.lastOrder())
         settingsManager?.setLastSelectedAccount(id);
         navigate("/");
         return true;

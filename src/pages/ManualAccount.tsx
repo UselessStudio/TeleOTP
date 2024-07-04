@@ -12,7 +12,8 @@ export default function ManualAccount() {
     const [secret, setSecret] = useState("");
     const [invalid, setInvalid] = useState(false);
     const navigate = useNavigate();
-    useTelegramMainButton(() => {
+    
+    function createAccount() {
         if(secret.length < 1) {
             setInvalid(true);
             return false;
@@ -30,7 +31,9 @@ export default function ManualAccount() {
             return false;
         }
 
-    }, "Next");
+    }
+
+    useTelegramMainButton(createAccount, "Next");
 
     return <Stack spacing={2} alignItems="center">
         <LottieAnimation animationData={ManualAnimation}/>
@@ -41,6 +44,7 @@ export default function ManualAccount() {
             Enter provided account secret
         </Typography>
         <TelegramTextField
+            autoFocus
             fullWidth
             label="Secret"
             value={secret}
@@ -50,6 +54,7 @@ export default function ManualAccount() {
                 setSecret(e.target.value);
                 setInvalid(false);
             }}
+            onSubmit={createAccount}
         />
     </Stack>;
 }
