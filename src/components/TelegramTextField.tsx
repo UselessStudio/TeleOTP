@@ -6,6 +6,9 @@ const TelegramTextField = styled((props: TextFieldProps) => (
         variant="standard"
         //@ts-expect-error invoking onSubmit without args for customisation purposes  
         onKeyUp={({ key }) => {key === "Enter" ? props.onSubmit ? props.onSubmit() : void 0 : void 0}}
+        onFocus={(e) => {
+            e.target.scrollIntoView({behavior: "smooth"});
+        }}
     />
 ))(({ theme }) => ({
     'label': {
