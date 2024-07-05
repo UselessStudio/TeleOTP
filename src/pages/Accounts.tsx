@@ -36,19 +36,18 @@ const Accounts: FC = () => {
     const [
         selectedAccountId,
         setSelectedAccountId
-    ] = useState<string | null>(null);
+    ] = useState<string | null>(settingsManager?.lastSelectedAccount ?? null);
     const [
         selectedAccount,
         setSelectedAccount
     ] = useState<Account | null>(null);
-    // const [accountTheme, setAccountTheme] = useState<any>();
 
     useEffect(() => {
         if(!storageManager?.accounts || storageManager.accounts.length < 1) return;
         if(selectedAccountId !== null &&
             storageManager.accounts.find(acc => acc.id === selectedAccountId)) return;
         const accounts = storageManager.accounts;
-        setSelectedAccountId(settingsManager?.lastSelectedAccount ?? accounts[accounts.length - 1].id);
+        setSelectedAccountId(accounts[accounts.length - 1].id);
     }, [selectedAccountId, storageManager?.accounts, settingsManager?.lastSelectedAccount]);
 
     useEffect(() => {
