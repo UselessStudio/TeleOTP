@@ -1,32 +1,73 @@
 import { Box, ButtonBase, CircularProgress, Stack, SvgIcon, Typography } from "@mui/material";
-import { FC } from "react";
+import {FC, useContext, useEffect, useRef} from "react";
 import { icons } from "../globals";
 import SVG from 'react-inlinesvg';
 import useAccountTheme from "../hooks/useAccountTheme";
 import { iconUrl } from "../icons/icons.ts";
-interface AccountSelectButtonProps {
+import {DragSourceMonitor, useDrag, useDrop} from "react-dnd";
+import {DragTypes} from "../drag.ts";
+import {getEmptyImage} from "react-dnd-html5-backend";
+import {StorageManagerContext} from "../managers/storage/storage.tsx";
+
+export interface AccountSelectButtonProps {
+    id: string;
+    index: number;
     selected?: boolean,
     label: string,
     issuer?: string,
     icon: string,
     color: string,
+    animating: boolean,
     onClick: () => void,
 }
 
-const AccountSelectButton: FC<AccountSelectButtonProps> = (
-    {
+const AccountSelectButton: FC<AccountSelectButtonProps> = (props) => {
+    const {
+        id,
+        animating,
+        index,
         selected = false,
         icon,
         label,
         issuer,
         onClick,
         color,
-}) => {
+    } = props;
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const theme = useAccountTheme(color)!;
+    const storageManager = useContext(StorageManagerContext);
 
-    return <ButtonBase component="div" sx={{display: 'block', borderRadius: "6px"}} onClick={onClick}>
-        <Box sx={{bgcolor: selected ? theme.palette.primary.main : theme.palette.background.paper , padding: theme.spacing(1), borderRadius: "6px"}}>
+    const [{isDragging}, drag, preview] = useDrag({
+        type: DragTypes.AccountCard,
+        item: props,
+        collect: (monitor: DragSourceMonitor) => ({
+            isDragging: monitor.isDragging(),
+        }),
+        end: () => {
+            storageManager?.saveAccounts(storageManager.accounts);
+        },
+    });
+
+    useEffect(() => {
+        preview(getEmptyImage(), { captureDraggingState: true })
+    }, [preview]);
+
+    const [, drop] = useDrop({
+        accept: DragTypes.AccountCard,
+        drop: () => ({id}),
+        hover: (draggedItem: AccountSelectButtonProps | null) => {
+            if (draggedItem && !animating) {
+                storageManager?.reorder(draggedItem.id, index);
+            }
+        },
+    });
+    const ref = useRef();
+    drag(drop(ref));
+
+    return <ButtonBase component="div" sx={{display: 'block', borderRadius: "6px", opacity: isDragging ? 0: 1}} onClick={onClick}>
+        <Box sx={{bgcolor: selected ? theme.palette.primary.main : theme.palette.background.paper,
+            padding: theme.spacing(1), borderRadius: "6px"}}
+             ref={ref}>
             <Stack alignItems="center" spacing={1} justifyContent="space-between">
                 {
                     Object.keys(icons).includes(icon) 

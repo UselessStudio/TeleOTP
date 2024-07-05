@@ -42,13 +42,13 @@ export interface AccountVersions {
 
 export interface StorageManager {
     ready: boolean;
-    accounts: Record<string, Account>;
+    accounts: Account[];
     saveAccount(account: Account): void;
     saveAccounts(accounts: Account[]): void;
     removeAccount(id: string): void;
     clearStorage(): void;
     lastOrder(): number;
-    // reorder(): void;
+    reorder(accountId: string, order: number): void;
 }
 
 export const StorageManagerContext = createContext<StorageManager | null>(null);
@@ -57,7 +57,14 @@ export const StorageManagerProvider: FC<PropsWithChildren> = ({ children }) => {
     const encryptionManager = useContext(EncryptionManagerContext);
 
     const [ready, setReady] = useState(false);
-    const [accounts, setAccounts] = useState<Record<string, Account>>({});
+    const [accounts, setAccountsRaw] = useState<Account[]>([]);
+    function setAccounts(accounts: Account[]) {
+        setAccountsRaw(accounts.sort((a, b) => a.order - b.order)
+            .map((acc, index) => {
+                acc.order = index;
+                return acc;
+            }));
+    }
     useEffect(() => {
         if(encryptionManager?.isLocked && encryptionManager.storageChecked) {
             setReady(true);
@@ -81,20 +88,15 @@ export const StorageManagerProvider: FC<PropsWithChildren> = ({ children }) => {
                 const storageVersion: string = keys?.includes("version") ? result.version : "1";
                 delete result.version;
                 
-                const accounts = Object.values(result)
+                let accounts = Object.values(result)
                     .map(value => encryptionManager?.decrypt(value))
                     .filter((x): x is string => !!x)
-                    .map(value => JSON.parse(value) as AccountBase)
-                    .reduce((acc: Record<string, AccountBase>, curr) => {
-                        acc[curr.id] = curr;
-                        return acc;
-                    }, {});
+                    .map(value => JSON.parse(value) as AccountBase);
 
-                const accountsCount = Object.keys(accounts).length;
-                console.log(`Storage version: ${storageVersion}, Latest version: ${LATEST_ACCOUNT_VERSION}, Accounts: ${accountsCount}`)
-                if (accountsCount > 0 && (!storageVersion || storageVersion !== LATEST_ACCOUNT_VERSION)) {
+                console.log(`Storage version: ${storageVersion}, Latest version: ${LATEST_ACCOUNT_VERSION}, Accounts: ${accounts.length}`)
+                if (accounts.length > 0 && (!storageVersion || storageVersion !== LATEST_ACCOUNT_VERSION)) {
                     console.log("Version mismatch", accounts);
-                    Object.values(accounts).map((account, index) => {
+                    accounts = accounts.map((account, index) => {
                         const migrated = migrate(
                             MIGRATIONS_SCHEMA,
                             account as Account,
@@ -103,17 +105,17 @@ export const StorageManagerProvider: FC<PropsWithChildren> = ({ children }) => {
                         ) as Account;
                         console.log("migrated", migrated);
                         if (migrated.order < 0) migrated.order = index;
-                        accounts[account.id] = migrated;
+                        return migrated;
                     });
 
-                    storageManager.saveAccounts(Object.values(accounts) as Account[]);
+                    storageManager.saveAccounts(accounts as Account[]);
                     window.Telegram.WebApp.CloudStorage.setItem(
                         "version",
                         LATEST_ACCOUNT_VERSION
                     );
                 }
                 
-                setAccounts(accounts as Record<string, Account>);
+                setAccounts(accounts as Account[]);
                 setReady(true);
             });
         });
@@ -125,6 +127,9 @@ export const StorageManagerProvider: FC<PropsWithChildren> = ({ children }) => {
         accounts,
         saveAccounts(accounts: Account[]) {
             const newAccounts: Record<string, Account> = {};
+            for (const account of this.accounts) {
+                newAccounts[account.id] = account;
+            }
             for (const account of accounts) {
                 const encrypted = encryptionManager?.encrypt(
                     JSON.stringify(account)
@@ -137,10 +142,9 @@ export const StorageManagerProvider: FC<PropsWithChildren> = ({ children }) => {
                 newAccounts[account.id] = account;
             }
 
-            setAccounts({ ...this.accounts, ...newAccounts });
+            setAccounts(Object.values(newAccounts));
         },
         saveAccount(account) {
-            console.log(account);
             this.saveAccounts([account]);
         },
         removeAccount(id: string) {
@@ -148,9 +152,7 @@ export const StorageManagerProvider: FC<PropsWithChildren> = ({ children }) => {
                 "account" + id,
                 (error, result) => {
                     if (error ?? !result) return;
-                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                    const { [id]: _, ...newAccounts } = accounts;
-                    setAccounts(newAccounts);
+                    setAccounts(accounts.filter(acc => acc.id !== id));
                 }
             );
         },
@@ -162,7 +164,7 @@ export const StorageManagerProvider: FC<PropsWithChildren> = ({ children }) => {
                     result,
                     (error, result) => {
                         if (!error && result) {
-                            setAccounts({});
+                            setAccounts([]);
                             encryptionManager?.removePassword();
                             setReady(true);
                         }
@@ -171,8 +173,21 @@ export const StorageManagerProvider: FC<PropsWithChildren> = ({ children }) => {
             });
         },
         lastOrder(): number {
-            return Math.max(...Object.values(accounts).map((acc) => acc.order));
-        }
+            return Math.max(...accounts.map((acc) => acc.order));
+        },
+        reorder(accountId: string, destination: number) {
+            setAccountsRaw(accounts => {
+                const source = accounts.findIndex(acc => acc.id == accountId);
+                if(source == -1 || accounts[source].order === destination) return accounts;
+                const account = accounts.splice(source, 1)[0];
+                accounts.splice(destination, 0, account);
+                return accounts.map((acc, index) => {
+                    acc.order = index;
+                    return acc;
+                });
+            });
+        },
+
     };
 
     const [keyChanged, setKeyChanged] = useState(false);

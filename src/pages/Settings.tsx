@@ -159,7 +159,7 @@ const Settings: FC = () => {
                 text="Accounts"
                 value={
                     storageManager
-                        ? Object.keys(storageManager.accounts).length.toString()
+                        ? storageManager.accounts.length.toString()
                         : "0"
                 }
                 icon={PersonOutlineOutlinedIcon}
