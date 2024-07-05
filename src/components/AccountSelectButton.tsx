@@ -1,14 +1,15 @@
-import { Box, ButtonBase, CircularProgress, Stack, SvgIcon, Typography } from "@mui/material";
+import {Box, ButtonBase, CircularProgress, Stack, SvgIcon, Typography} from "@mui/material";
 import {FC, useContext, useEffect, useRef, useState} from "react";
 import { icons } from "../globals";
 import SVG from 'react-inlinesvg';
 import useAccountTheme from "../hooks/useAccountTheme";
 import { iconUrl } from "../icons/icons.ts";
 import {DragSourceMonitor, useDrag, useDrop} from "react-dnd";
-import {DragTypes} from "../drag.ts";
+import {DragTypes, wobbleAnimation} from "../drag.ts";
 import {getEmptyImage} from "react-dnd-html5-backend";
 import {StorageManagerContext} from "../managers/storage/storage.tsx";
 import useTelegramHaptics from "../hooks/telegram/useTelegramHaptics.ts";
+import TouchRipple, {TouchRippleActions} from "@mui/material/ButtonBase/TouchRipple.js";
 
 export interface AccountSelectButtonProps {
     id: string;
@@ -39,6 +40,8 @@ const AccountSelectButton: FC<AccountSelectButtonProps> = (props) => {
     const storageManager = useContext(StorageManagerContext);
     const { impactOccurred } = useTelegramHaptics();
 
+    const rippleRef = useRef<TouchRippleActions>();
+
     const [isHolding, setHolding] = useState<boolean>(false);
     const [isTouching, setTouching] = useState<boolean>(false);
 
@@ -46,6 +49,7 @@ const AccountSelectButton: FC<AccountSelectButtonProps> = (props) => {
         if(isTouching) {
             const timeout = setTimeout(() => {
                 setHolding(true);
+                rippleRef.current?.stop();
                 impactOccurred("light");
             }, 300);
 
@@ -60,13 +64,15 @@ const AccountSelectButton: FC<AccountSelectButtonProps> = (props) => {
     const [{isDragging}, drag, preview] = useDrag({
         type: DragTypes.AccountCard,
         item: props,
-        canDrag: isHolding,
+        canDrag: window.matchMedia("(pointer: fine)").matches || isHolding,
         collect: (monitor: DragSourceMonitor) => ({
             isDragging: monitor.isDragging(),
         }),
         end: () => {
             storageManager?.saveAccounts(storageManager.accounts);
             setHolding(false);
+            setTouching(false);
+            rippleRef.current?.stop();
         },
     });
 
@@ -86,13 +92,22 @@ const AccountSelectButton: FC<AccountSelectButtonProps> = (props) => {
     const ref = useRef();
     drag(drop(ref));
 
-    return <ButtonBase component="div" sx={{display: 'block', borderRadius: "6px", opacity: isDragging ? 0: 1}}
+    return <ButtonBase component="div"
+                       sx={{
+                           display: 'block',
+                           borderRadius: "6px",
+                           opacity: isDragging ? 0: 1,
+                           ...(isHolding ? wobbleAnimation : {})
+                        }}
+                       disableRipple={true}
                        onClick={onClick}
-                       onMouseDown={() => { setHolding(true) }}
-                       onMouseUp={() => { setHolding(false) }}
-                       onTouchStart={() => { setTouching(true) }}
-                       onTouchMove={() => { setTouching(false) }}
-                       onTouchEnd={() => { setTouching(false) }}>
+                       onTouchMove={() => { !isHolding && setTouching(false) }}
+                       onPointerDown={rippleRef.current?.start}
+                       onPointerUp={rippleRef.current?.stop}
+                       onTouchEnd={() => { setTouching(false); }}
+                       onTouchStart={() => { setTouching(true);  }}
+    >
+        <TouchRipple ref={rippleRef}/>
         <Box sx={{bgcolor: selected ? theme.palette.primary.main : theme.palette.background.paper,
             padding: theme.spacing(1), borderRadius: "6px"}} ref={ref}>
             <Stack alignItems="center" spacing={1} justifyContent="space-between">

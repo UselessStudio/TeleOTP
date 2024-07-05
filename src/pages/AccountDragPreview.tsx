@@ -2,6 +2,7 @@ import {FC, PropsWithChildren} from "react";
 import {usePreview} from "react-dnd-preview";
 import AccountSelectButton, {AccountSelectButtonProps} from "../components/AccountSelectButton.tsx";
 import {Grid} from "@mui/material";
+import {wobbleAnimation} from "../drag.ts";
 
 const AccountDragPreview: FC<PropsWithChildren> = () => {
     const preview = usePreview<AccountSelectButtonProps>();
@@ -10,9 +11,9 @@ const AccountDragPreview: FC<PropsWithChildren> = () => {
     }
     const {item, style} = preview;
 
-    return <div className="item-list__item" style={style}>
+    return <div className={"item-list__item"} style={style}>
         <Grid container spacing={1} width={"100vw"}>
-            <Grid item xs={3}>
+            <Grid item xs={3} sx={wobbleAnimation}>
                 <AccountSelectButton {...item}/>
             </Grid>
         </Grid>
