@@ -1,5 +1,5 @@
 import { Box, ButtonBase, CircularProgress, Stack, SvgIcon, Typography } from "@mui/material";
-import {FC, useContext, useEffect, useRef} from "react";
+import {FC, useContext, useEffect, useRef, useState} from "react";
 import { icons } from "../globals";
 import SVG from 'react-inlinesvg';
 import useAccountTheme from "../hooks/useAccountTheme";
@@ -8,6 +8,7 @@ import {DragSourceMonitor, useDrag, useDrop} from "react-dnd";
 import {DragTypes} from "../drag.ts";
 import {getEmptyImage} from "react-dnd-html5-backend";
 import {StorageManagerContext} from "../managers/storage/storage.tsx";
+import useTelegramHaptics from "../hooks/telegram/useTelegramHaptics.ts";
 
 export interface AccountSelectButtonProps {
     id: string;
@@ -36,15 +37,36 @@ const AccountSelectButton: FC<AccountSelectButtonProps> = (props) => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const theme = useAccountTheme(color)!;
     const storageManager = useContext(StorageManagerContext);
+    const { impactOccurred } = useTelegramHaptics();
+
+    const [isHolding, setHolding] = useState<boolean>(false);
+    const [isTouching, setTouching] = useState<boolean>(false);
+
+    useEffect(() => {
+        if(isTouching) {
+            const timeout = setTimeout(() => {
+                setHolding(true);
+                impactOccurred("light");
+            }, 300);
+
+            return () => {
+                clearTimeout(timeout);
+            }
+        } else {
+            setHolding(false);
+        }
+    }, [impactOccurred, isTouching]);
 
     const [{isDragging}, drag, preview] = useDrag({
         type: DragTypes.AccountCard,
         item: props,
+        canDrag: isHolding,
         collect: (monitor: DragSourceMonitor) => ({
             isDragging: monitor.isDragging(),
         }),
         end: () => {
             storageManager?.saveAccounts(storageManager.accounts);
+            setHolding(false);
         },
     });
 
@@ -64,10 +86,15 @@ const AccountSelectButton: FC<AccountSelectButtonProps> = (props) => {
     const ref = useRef();
     drag(drop(ref));
 
-    return <ButtonBase component="div" sx={{display: 'block', borderRadius: "6px", opacity: isDragging ? 0: 1}} onClick={onClick}>
+    return <ButtonBase component="div" sx={{display: 'block', borderRadius: "6px", opacity: isDragging ? 0: 1}}
+                       onClick={onClick}
+                       onMouseDown={() => { setHolding(true) }}
+                       onMouseUp={() => { setHolding(false) }}
+                       onTouchStart={() => { setTouching(true) }}
+                       onTouchMove={() => { setTouching(false) }}
+                       onTouchEnd={() => { setTouching(false) }}>
         <Box sx={{bgcolor: selected ? theme.palette.primary.main : theme.palette.background.paper,
-            padding: theme.spacing(1), borderRadius: "6px"}}
-             ref={ref}>
+            padding: theme.spacing(1), borderRadius: "6px"}} ref={ref}>
             <Stack alignItems="center" spacing={1} justifyContent="space-between">
                 {
                     Object.keys(icons).includes(icon) 

@@ -22,8 +22,8 @@ import {SettingsManagerContext} from "../managers/settings.tsx";
 import useAccountTheme from "../hooks/useAccountTheme.ts";
 import { DndProvider } from "react-dnd-multi-backend";
 import AccountDragPreview from "./AccountDragPreview.tsx";
-import {HTML5toTouch} from "rdndmb-html5-to-touch";
 import {Flipped, Flipper} from "react-flip-toolkit";
+import {HTML5toTouch} from "../drag.ts";
 
 const Accounts: FC = () => {
     const navigate = useNavigate();
