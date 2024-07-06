@@ -10,7 +10,7 @@ export default function ExportAccounts() {
     useEffect(() => {
         if (!storageManager?.accounts || !storageManager.ready || !analytics) return;
         analytics.trackEvent("Account export");
-        window.Telegram.WebApp.sendData(exportGoogleAuthenticator(Object.values(storageManager.accounts)));
+        window.Telegram.WebApp.sendData(exportGoogleAuthenticator(storageManager.accounts));
     }, [storageManager?.accounts, storageManager?.ready, analytics]);
 
     return <Stack sx={{width: '100vw', height: '100vh', position: 'fixed'}}
