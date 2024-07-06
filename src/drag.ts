@@ -6,11 +6,11 @@ import {SxProps, Theme} from "@mui/material";
 export const wobbleAnimation: SxProps<Theme> = {
     "@keyframes rotate": {
         "0%": {
-            transform: "rotate(-2.5deg)",
+            transform: "rotate(-5deg)",
             animationTimingFunction: "ease-in",
         },
         "50%": {
-            transform: "rotate(3deg)",
+            transform: "rotate(5deg)",
             animationTimingFunction: "ease-out",
         },
     },

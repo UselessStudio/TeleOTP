@@ -50,7 +50,7 @@ const AccountSelectButton: FC<AccountSelectButtonProps> = (props) => {
             const timeout = setTimeout(() => {
                 setHolding(true);
                 rippleRef.current?.stop();
-                impactOccurred("light");
+                impactOccurred("heavy");
             }, 300);
 
             return () => {
