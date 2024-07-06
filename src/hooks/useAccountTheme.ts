@@ -1,5 +1,5 @@
 import { useTheme } from "@mui/material/styles";
-import { Theme, alpha, createTheme } from "@mui/material";
+import {Theme, alpha, createTheme, getLuminance} from "@mui/material";
 
 export default function useAccountTheme(
     color: string | undefined
@@ -10,8 +10,16 @@ export default function useAccountTheme(
 
     const colorMain = alpha(color, .9);
 
+    let mode = theme.palette.mode;
+    if (getLuminance(color) < 0.1) {
+        mode = "light";
+    } else if(getLuminance(color) > 0.9) {
+        mode = "dark";
+    }
+
     return createTheme(theme, {
         palette: {
+            mode,
             primary: theme.palette.augmentColor({
                 color: {
                     main: colorMain,
