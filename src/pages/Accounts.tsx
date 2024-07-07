@@ -1,10 +1,15 @@
-import {FC, useContext, useEffect, useState} from "react";
+import {FC, lazy, useContext, useEffect, useState} from "react";
 import {
     Button,
     LinearProgress,
     Stack,
     Typography,
-    IconButton, Container, Grid, useTheme, Box, ThemeProvider
+    IconButton,
+    Container,
+    Grid,
+    useTheme,
+    Box,
+    ThemeProvider,
 } from "@mui/material";
 import copy from 'copy-text-to-clipboard';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
@@ -15,7 +20,6 @@ import EditIcon from '@mui/icons-material/Edit';
 import AccountSelectButton from "../components/AccountSelectButton.tsx";
 import NewAccountButton from "../components/NewAccountButton.tsx";
 import {Account, StorageManagerContext} from "../managers/storage/storage.tsx";
-import NewAccount from "./NewAccount.tsx";
 import {EditAccountState} from "./EditAccount.tsx";
 import useTelegramHaptics from "../hooks/telegram/useTelegramHaptics.ts";
 import {SettingsManagerContext} from "../managers/settings.tsx";
@@ -24,6 +28,9 @@ import { DndProvider } from "react-dnd-multi-backend";
 import AccountDragPreview from "./AccountDragPreview.tsx";
 import {Flipped, Flipper} from "react-flip-toolkit";
 import {HTML5toTouch} from "../drag.ts";
+
+const NewAccount = lazy(() => import("./NewAccount.tsx"));
+const NewUpdateDialog = lazy(() => import("../components/NewUpdateDialog.tsx"));
 
 const Accounts: FC = () => {
     const navigate = useNavigate();
@@ -146,7 +153,7 @@ const Accounts: FC = () => {
                 </Container>
             </Stack>
         </ThemeProvider>
-
+        <NewUpdateDialog/>
         <Box sx={{bgcolor: "background.paper", borderRadius: "6px"}}>
             <Button
                 fullWidth

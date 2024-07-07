@@ -7,7 +7,8 @@ import {EncryptionManagerContext} from "./managers/encryption.tsx";
 import {StorageManagerContext} from "./managers/storage/storage.tsx";
 
 import Decrypt from "./pages/Decrypt.tsx";
-import PasswordSetup from "./pages/PasswordSetup.tsx";
+
+const PasswordSetup = lazy(() => import("./pages/PasswordSetup.tsx"));
 const ExportAccounts = lazy(() => import("./pages/ExportAccounts.tsx"));
 
 export function LoadingIndicator() {
