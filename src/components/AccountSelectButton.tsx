@@ -58,6 +58,7 @@ const AccountSelectButton: FC<AccountSelectButtonProps> = (props) => {
             }
         } else {
             setHolding(false);
+            rippleRef.current?.stop();
         }
     }, [impactOccurred, isTouching]);
 
@@ -109,8 +110,9 @@ const AccountSelectButton: FC<AccountSelectButtonProps> = (props) => {
                        }}
                        onPointerDown={rippleRef.current?.start}
                        onPointerUp={rippleRef.current?.stop}
+                       onTouchCancel={() => { setTouching(false); }}
                        onTouchEnd={() => { setTouching(false); }}
-                       onTouchStart={() => { setTouching(true);  }}
+                       onTouchStart={() => { setTouching(true); }}
     >
         <TouchRipple ref={rippleRef}/>
         <Box sx={{bgcolor: selected ? theme.palette.primary.main : theme.palette.background.paper,

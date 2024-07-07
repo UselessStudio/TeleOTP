@@ -25,7 +25,7 @@ import useTelegramHaptics from "../hooks/telegram/useTelegramHaptics.ts";
 import {SettingsManagerContext} from "../managers/settings.tsx";
 import useAccountTheme from "../hooks/useAccountTheme.ts";
 import { DndProvider } from "react-dnd-multi-backend";
-import AccountDragPreview from "./AccountDragPreview.tsx";
+import AccountDragPreview from "../components/AccountDragPreview.tsx";
 import {Flipped, Flipper} from "react-flip-toolkit";
 import {HTML5toTouch} from "../drag.ts";
 

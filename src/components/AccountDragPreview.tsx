@@ -1,6 +1,6 @@
 import {FC, PropsWithChildren} from "react";
 import {usePreview} from "react-dnd-preview";
-import AccountSelectButton, {AccountSelectButtonProps} from "../components/AccountSelectButton.tsx";
+import AccountSelectButton, {AccountSelectButtonProps} from "./AccountSelectButton.tsx";
 import {Grid} from "@mui/material";
 import {wobbleAnimation} from "../drag.ts";
 
