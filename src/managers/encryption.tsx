@@ -26,7 +26,7 @@ export interface EncryptionManager {
     decrypt(data: string): string | null;
 }
 
-interface EncryptedData {
+export interface EncryptedData {
     iv: string,
     cipher: string,
 }
@@ -167,7 +167,7 @@ export const EncryptionManagerProvider: FC<PropsWithChildren> = ({ children }) =
                     iv: crypto.enc.Base64.parse(iv)
                 }));
             } catch (e) {
-                console.log(e);
+                console.error(e);
                 return null;
             }
         },

@@ -9,7 +9,7 @@ import {HOTP, URI} from "otpauth";
 import LottieAnimation from "../components/LottieAnimation.tsx";
 import decodeGoogleAuthenticator from "../migration/import.ts";
 import useTelegramHaptics from "../hooks/telegram/useTelegramHaptics.ts";
-import {StorageManagerContext} from "../managers/storage.tsx";
+import {StorageManagerContext} from "../managers/storage/storage.tsx";
 
 const NewAccount: FC = () => {
     const navigate = useNavigate();
@@ -32,6 +32,7 @@ const NewAccount: FC = () => {
             }
 
             if (otp instanceof HOTP) {
+                // TODO implement HOTP
                 window.Telegram.WebApp.showAlert("HOTP support is not implemented yet :(");
                 notificationOccurred("error");
                 return;

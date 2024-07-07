@@ -5,4 +5,6 @@ html, body, #root, #root>div {
     flex-direction: column;
     flex-grow: 1;
     box-sizing: border-box;
+    /* fix telegram sliding down on mobiles */
+    /* touch-action: none !important; */
 }

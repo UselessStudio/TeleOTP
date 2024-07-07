@@ -4,7 +4,7 @@ import ManualAnimation from "../assets/manual_lottie.json";
 import useTelegramMainButton from "../hooks/telegram/useTelegramMainButton.ts";
 import {useNavigate} from "react-router-dom";
 import {NewAccountState} from "./CreateAccount.tsx";
-import {TOTP} from "otpauth";
+import {Secret, TOTP} from "otpauth";
 import TelegramTextField from "../components/TelegramTextField.tsx";
 import LottieAnimation from "../components/LottieAnimation.tsx";
 
@@ -12,8 +12,9 @@ export default function ManualAccount() {
     const [secret, setSecret] = useState("");
     const [invalid, setInvalid] = useState(false);
     const navigate = useNavigate();
-    useTelegramMainButton(() => {
-        if(secret.length < 1) {
+    
+    function createAccount() {
+        if(Secret.fromBase32(secret).buffer.byteLength < 1) {
             setInvalid(true);
             return false;
         }
@@ -30,7 +31,9 @@ export default function ManualAccount() {
             return false;
         }
 
-    }, "Next");
+    }
+
+    useTelegramMainButton(createAccount, "Next");
 
     return <Stack spacing={2} alignItems="center">
         <LottieAnimation animationData={ManualAnimation}/>
@@ -41,6 +44,7 @@ export default function ManualAccount() {
             Enter provided account secret
         </Typography>
         <TelegramTextField
+            autoFocus
             fullWidth
             label="Secret"
             value={secret}
@@ -50,6 +54,7 @@ export default function ManualAccount() {
                 setSecret(e.target.value);
                 setInvalid(false);
             }}
+            onSubmit={createAccount}
         />
     </Stack>;
 }
