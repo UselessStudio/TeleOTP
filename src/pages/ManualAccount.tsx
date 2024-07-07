@@ -14,7 +14,7 @@ export default function ManualAccount() {
     const navigate = useNavigate();
     
     function createAccount() {
-        if(Secret.fromBase32(secret).buffer.byteLength < 1) {
+        if(!/^[2-7A-Z]+=*$/i.test(secret) || Secret.fromBase32(secret).buffer.byteLength < 1) {
             setInvalid(true);
             return false;
         }
