@@ -101,7 +101,12 @@ const AccountSelectButton: FC<AccountSelectButtonProps> = (props) => {
                         }}
                        disableRipple={true}
                        onClick={onClick}
-                       onTouchMove={() => { !isHolding && setTouching(false) }}
+                       onTouchMove={() => {
+                           if(!isHolding) {
+                               setTouching(false);
+                               rippleRef.current?.stop();
+                           }
+                       }}
                        onPointerDown={rippleRef.current?.start}
                        onPointerUp={rippleRef.current?.stop}
                        onTouchEnd={() => { setTouching(false); }}
