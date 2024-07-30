@@ -1,6 +1,10 @@
 import { useTheme } from "@mui/material/styles";
 import {Theme, alpha, createTheme, getLuminance} from "@mui/material";
 
+/**
+ * Creates a Material UI theme for the provided account color.
+ * @param {?string} color - account primary color
+ */
 export default function useAccountTheme(
     color: string | undefined
 ): Theme | null {

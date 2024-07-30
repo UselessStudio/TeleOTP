@@ -51,6 +51,10 @@ function materialThemeFromTelegramTheme(
     });
 }
 
+/**
+ * Creates a Material UI theme from Telegram-provided color palette. This hook automatically listens for theme change events.
+ * @returns A Material UI theme, to be used with ThemeProvider
+ */
 export default function useTelegramTheme() {
     const [theme, setTheme] = useState(
         materialThemeFromTelegramTheme(

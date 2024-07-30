@@ -40,19 +40,79 @@ export interface AccountVersions {
     "2": AccountV2;
 }
 
+/**
+ * StorageManager is responsible for saving and restoring accounts from Telegram's CloudStorage.
+ * StorageManager encrypts the accounts by calling encrypt/decrypt methods on the EncryptionManager.
+ *
+ * Telegram CloudStorage is limited to 1024 keys. A few of these keys are used to store the data for the decryption
+ * and more could be used later for other features. Each account is stored as the different CloudStorage item,
+ * so the limit of the accounts is around 1000. We do not limit the amount of the accounts that user has because
+ * this number is somewhat impractical in real-world use.
+ *
+ * To get an instance of StorageManager, you should use the useContext hook:
+ * @example
+ * const storageManager = useContext(StorageManagerContext);
+ */
 export interface StorageManager {
+    /**
+     * This is a boolean flag indicating if the StorageManager had loaded and decrypted the accounts. If this flag is false, UI should display a loading indicator.
+     */
     ready: boolean;
+    /**
+     * This is an array containing every account currently in the storage.
+     * This array is updated every time a new account is saved/removed.
+     */
     accounts: Account[];
+
+    /**
+     * This method saves the provided account in the CloudStorage. If the account with the same id exists, it is overridden.
+     * @param account - account to be saved
+     *
+     * @note If you need to save multiple accounts, use saveAccounts
+     */
     saveAccount(account: Account): void;
+
+    /**
+     * This method should be used if needed to save multiple accounts.
+     * @param accounts - an array of accounts to be saved
+     */
     saveAccounts(accounts: Account[]): void;
+
+    /**
+     * This method removes the account with provided id from the CloudStorage.
+     * @param id - id of account to remove
+     */
     removeAccount(id: string): void;
+
+    /**
+     * This method clears the entirety of the CloudStorage.
+     * It removes accounts and password salt with KCV.
+     * After this method is executed, the removePassword method on EncryptionManager
+     * is executed to ensure that the account was deleted.
+     */
     clearStorage(): void;
+
+    /**
+     * This method returns the max value of the accounts' order.
+     */
     lastOrder(): number;
+
+    /**
+     * This method moves the provided account to the new position.
+     * Other accounts that have to be shifted are also updated here automatically.
+     * @param accountId - the id of account to move
+     * @param order - new index of the account
+     */
     reorder(accountId: string, order: number): void;
 }
 
 export const StorageManagerContext = createContext<StorageManager | null>(null);
 
+/**
+ * StorageManager is created using StorageManagerProvider component
+ *
+ * @note StorageManagerProvider must be used inside the EncryptionManagerProvider
+ */
 export const StorageManagerProvider: FC<PropsWithChildren> = ({ children }) => {
     const encryptionManager = useContext(EncryptionManagerContext);
 
