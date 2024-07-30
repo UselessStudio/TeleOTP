@@ -19,6 +19,8 @@ import { useDebounce } from "use-debounce";
 import { EditAccountState } from "./EditAccount.tsx";
 import {ICONS_DATA_URL, iconUrl, titleToIconSlug} from "../icons/icons.ts";
 import {NewAccountState} from "./CreateAccount.tsx";
+import normalizeCustomColor from "../icons/normalizeCustomColor.ts";
+import {useTheme} from "@mui/material/styles";
 
 interface IconData {
     title: string;
@@ -84,6 +86,8 @@ const IconsList: FC<Pick<IconsData, "icons"> & { searchQuery: string }> = ({
     );
     const filtered = fuse.search(searchQuery, { limit: 10 });
 
+    const theme = useTheme();
+
     return (
         <List sx={{ width: "100%" }}>
             {filtered.map(({ item }) => (
@@ -100,7 +104,7 @@ const IconsList: FC<Pick<IconsData, "icons"> & { searchQuery: string }> = ({
                             cacheRequests={false}
                             loader={<CircularProgress color="primary" />}
                             src={iconUrl(item.slug ?? titleToIconSlug(item.title))}
-                            fill={`#${item.hex}`}
+                            fill={normalizeCustomColor(`#${item.hex}`, theme.palette.mode)}
                         ></SVG>
                     </ListItemIcon>
                     <ListItemText primary={item.title}></ListItemText>

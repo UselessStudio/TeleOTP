@@ -20,6 +20,7 @@ import { EditAccountState } from "../pages/EditAccount.tsx";
 import SVG from 'react-inlinesvg';
 import { iconUrl } from "../icons/icons.ts";
 import SearchIcon from "@mui/icons-material/Search";
+import normalizeCustomColor from "../icons/normalizeCustomColor.ts";
 
 interface IconPickerProps {
     selectedIcon: Icon;
@@ -58,6 +59,7 @@ const IconPicker: FC<IconPickerProps> = ({ selectedIcon, setSelectedIcon, select
     }, [selectedColor])
 
     const isCustom = !Object.keys(icons).includes(selectedIcon);
+    selectedColor = normalizeCustomColor(selectedColor, theme.palette.mode);
 
     return <Stack sx={{width: '100%'}} spacing={1}>
         <Stack direction="row" justifyContent="center" sx={{width: '100%'}} spacing={1}>
