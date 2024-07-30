@@ -8,3 +8,10 @@ html, body, #root, #root>div {
     /* fix telegram sliding down on mobiles */
     /* touch-action: none !important; */
 }
+
+.outdated-container {
+    align-self: center;
+    justify-content: center;
+    font-family: Inter, serif;
+    text-align: center;
+}

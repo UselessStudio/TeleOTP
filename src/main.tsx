@@ -42,6 +42,8 @@ declare global {
     }
 }
 
+export const IS_TELEGRAM_APP_SUPPORTED = window.Telegram.WebApp.isVersionAtLeast("6.9");
+
 const router = createBrowserRouter(
     // TODO: Make user error page
     createRoutesFromElements(
@@ -71,6 +73,9 @@ const router = createBrowserRouter(
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 ReactDOM.createRoot(document.getElementById("root")!).render(
+    !IS_TELEGRAM_APP_SUPPORTED ? <div className={"outdated-container"}>
+        <h1>Your Telegram app is outdated!</h1>
+        </div> :
     <PlausibleAnalyticsProvider
         domain={import.meta.env.VITE_PLAUSIBLE_DOMAIN}
         apiHost={import.meta.env.VITE_PLAUSIBLE_API_HOST}
