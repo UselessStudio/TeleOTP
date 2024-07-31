@@ -25,8 +25,6 @@ import CacheProvider from "react-inlinesvg/provider";
 import Accounts from "./pages/Accounts.tsx";
 import EditAccount from "./pages/EditAccount.tsx";
 import Settings from "./pages/Settings.tsx";
-import QrExport from "./pages/export/QrExport.tsx";
-import LinkExport from "./pages/export/LinkExport.tsx";
 
 // lazy loaded pages
 const CreateAccount = lazy(() => import("./pages/CreateAccount.tsx"));
@@ -37,6 +35,8 @@ const ResetAccounts = lazy(() => import("./pages/ResetAccounts.tsx"));
 const DevToolsPage = lazy(() => import("./pages/DevToolsPage.tsx"));
 const IconBrowser = lazy(() => import("./pages/IconBrowser.tsx"));
 const ExportAccounts = lazy(() => import("./pages/export/ExportAccounts.tsx"));
+const QrExport = lazy(() => import("./pages/export/QrExport.tsx"));
+const LinkExport = lazy(() => import("./pages/export/LinkExport.tsx"));
 
 
 declare global {
