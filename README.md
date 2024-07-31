@@ -40,7 +40,6 @@ You can switch the platforms at any time without any hassle!
   * [🛣️ Routing](#-routing)
   * [🤖 Data and business logic](#-data-and-business-logic)
     * [✈️ Migration](#-migration)
-      * [Caveats](#caveats)
     * [🤗 Icons and colors](#-icons-and-colors)
 * [👋 Acknowledgements](#-acknowledgements)
   * [🖌️ Content](#-content)
