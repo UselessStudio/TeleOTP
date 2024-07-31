@@ -78,6 +78,8 @@ _Example: `VITE_BOT_USERNAME=TeleOTPAppBot`_
 * `VITE_PLAUSIBLE_DOMAIN` - The domain for Plausible analytics.
 * `VITE_PLAUSIBLE_API_HOST` - API host to report Plausible analytics to.
 * `VITE_CHANNEL_LINK` - Link to the news channel.
+* `VITE_APP_NAME` - Name of the app for the URL.
+  * For the app https://t.me/TeleOTPAppBot/app, app name is `app`
 
 ### Starting the development server
 To start the development server with hot reload, run:
@@ -183,26 +185,20 @@ user to edit or delete an account.
 * `Settings.tsx` is a menu screen with a few options. User can delete all accounts, 
 encrypt them, change the password, or set preferences.
 * `ExportAccounts.tsx` is a page that handles the export logic. 
-This page could be opened only by pressing the keyboard button in the chat. 
-It sends the exported accounts back to the bot.
+  * `QrExport.tsx` is a screen that provides a QR-code with account data.
+  * `LinkExport.tsx` is a screen which allows to copy a link to import accounts.
 * `ResetAccounts.tsx` is a page that verifies that the user wants to delete all accounts and reset the password. 
 This page can be accessed through the settings, or by typing in the password incorrectly when decrypting.
+* `DevToolsPage.tsx` is a debugging page, which allows checking the storage. (Only available in dev env)
+* `IconBrowser.tsx` is a page for browsing icons from [simpleicons.org](https://simpleicons.org/). 
+User is able to search for icons.
 
 ## 🤖 Data and business logic
 
 ### ✈️ Migration
 
 TeleOTP implements the `otpauth-migration` URI standard. 
-During the migration, accounts are serialized using Protocol Buffers 
-and sent to the bot via `sendData` method. Bot then generates the QR-code and a link, 
-that can be used for migrating to another instance of TeleOTP.
-
-#### Caveats
-
-The length of the data that can be sent using `sendData` is limited to 4096 bytes. 
-So the quantity of the accounts that could be migrated from TeleOTP is limited. 
-Although, this number theoretically is pretty big, it is still smaller than 
-the amount of the accounts that can be stored in CloudStorage (around 1000).   
+During the migration, accounts are (de)serialized using Protocol Buffers.
 
 ### 🤗 Icons and colors
 
