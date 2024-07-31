@@ -1,13 +1,9 @@
 import logging
 import os
-import urllib.parse
-from io import BytesIO
 
-import qrcode
-
-from telegram import Update, ReplyKeyboardMarkup, KeyboardButton, WebAppInfo, InlineKeyboardMarkup, \
-    InlineKeyboardButton, ReplyKeyboardRemove
-from telegram.ext import ApplicationBuilder, ContextTypes, MessageHandler, filters, CommandHandler
+from telegram import Update, WebAppInfo, InlineKeyboardMarkup, \
+    InlineKeyboardButton
+from telegram.ext import ApplicationBuilder, ContextTypes, MessageHandler, filters
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
