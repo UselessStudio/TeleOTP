@@ -104,7 +104,7 @@ const IconsList: FC<Pick<IconsData, "icons"> & { searchQuery: string }> = ({
                             cacheRequests={false}
                             loader={<CircularProgress color="primary" />}
                             src={iconUrl(item.slug ?? titleToIconSlug(item.title))}
-                            fill={normalizeCustomColor(`#${item.hex}`, theme.palette.mode)}
+                            fill={normalizeCustomColor(`#${item.hex}`, theme)}
                         ></SVG>
                     </ListItemIcon>
                     <ListItemText primary={item.title}></ListItemText>

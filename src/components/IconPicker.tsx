@@ -59,7 +59,7 @@ const IconPicker: FC<IconPickerProps> = ({ selectedIcon, setSelectedIcon, select
     }, [selectedColor])
 
     const isCustom = !Object.keys(icons).includes(selectedIcon);
-    selectedColor = normalizeCustomColor(selectedColor, theme.palette.mode);
+    selectedColor = normalizeCustomColor(selectedColor, theme);
 
     return <Stack sx={{width: '100%'}} spacing={1}>
         <Stack direction="row" justifyContent="center" sx={{width: '100%'}} spacing={1}>

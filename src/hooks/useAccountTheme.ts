@@ -13,7 +13,7 @@ export default function useAccountTheme(
 
     if (!color) return null;
 
-    color = normalizeCustomColor(color, theme.palette.mode);
+    color = normalizeCustomColor(color, theme);
 
     return createTheme(theme, {
         palette: {
