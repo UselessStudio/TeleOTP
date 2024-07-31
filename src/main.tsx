@@ -25,6 +25,8 @@ import CacheProvider from "react-inlinesvg/provider";
 import Accounts from "./pages/Accounts.tsx";
 import EditAccount from "./pages/EditAccount.tsx";
 import Settings from "./pages/Settings.tsx";
+import QrExport from "./pages/export/QrExport.tsx";
+import LinkExport from "./pages/export/LinkExport.tsx";
 
 // lazy loaded pages
 const CreateAccount = lazy(() => import("./pages/CreateAccount.tsx"));
@@ -34,6 +36,7 @@ const PasswordSetup = lazy(() => import("./pages/PasswordSetup.tsx"));
 const ResetAccounts = lazy(() => import("./pages/ResetAccounts.tsx"));
 const DevToolsPage = lazy(() => import("./pages/DevToolsPage.tsx"));
 const IconBrowser = lazy(() => import("./pages/IconBrowser.tsx"));
+const ExportAccounts = lazy(() => import("./pages/export/ExportAccounts.tsx"));
 
 
 declare global {
@@ -61,6 +64,9 @@ const router = createBrowserRouter(
             <Route path="settings" element={<Settings />} />
             <Route path="reset" element={<ResetAccounts />} />
             <Route path="changePassword" element={<PasswordSetup change />} />
+            <Route path="export" element={<ExportAccounts />} />
+            <Route path="export/qr" element={<QrExport />} />
+            <Route path="export/link" element={<LinkExport />} />
             {import.meta.env.DEV && (
                 <Route path="devtools" element={<DevToolsPage />} />
             )}

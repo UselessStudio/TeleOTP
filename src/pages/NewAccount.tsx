@@ -1,5 +1,5 @@
 import {FC, useCallback, useContext} from "react";
-import {Button, Divider, Stack, Typography} from "@mui/material";
+import {Button, Stack, Typography} from "@mui/material";
 import NewAccountAnimation from "../assets/new_account_lottie.json";
 import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
 import useTelegramQrScanner from "../hooks/telegram/useTelegramQrScanner.ts";
@@ -10,11 +10,14 @@ import LottieAnimation from "../components/LottieAnimation.tsx";
 import decodeGoogleAuthenticator from "../migration/import.ts";
 import useTelegramHaptics from "../hooks/telegram/useTelegramHaptics.ts";
 import {StorageManagerContext} from "../managers/storage/storage.tsx";
+import {PlausibleAnalyticsContext} from "../components/PlausibleAnalytics.tsx";
+import {FlatButton} from "../components/FlatButton.tsx";
 
 const NewAccount: FC = () => {
     const navigate = useNavigate();
     const { notificationOccurred } = useTelegramHaptics();
     const storageManager = useContext(StorageManagerContext);
+    const analytics = useContext(PlausibleAnalyticsContext);
 
     const scan = useTelegramQrScanner(useCallback((scanned) => {
         function invalidPopup() {
@@ -48,6 +51,7 @@ const NewAccount: FC = () => {
             }
 
             storageManager?.saveAccounts(accounts);
+            analytics?.trackEvent("Accounts imported from QR");
             navigate("/");
         } else {
             invalidPopup();
@@ -64,14 +68,9 @@ const NewAccount: FC = () => {
             <Typography variant="subtitle2" align="center">
                 Protect your account with two-factor authentication (Google Authenticator import is also supported)
             </Typography>
-            <Button fullWidth variant="contained" startIcon={<QrCodeScannerIcon/>} onClick={() => {
+            <FlatButton center={true} text={"Scan QR code"} icon={QrCodeScannerIcon} onClick={() => {
                 scan()
-            }}>
-                Scan QR code
-            </Button>
-            <Divider sx={{width: '100%'}}>
-                <Typography>OR</Typography>
-            </Divider>
+            }}/>
             <Button fullWidth onClick={() => {
                 navigate("/manual");
             }}>

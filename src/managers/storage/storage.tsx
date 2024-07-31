@@ -11,6 +11,7 @@ import { Color, Icon } from "../../globals.tsx";
 import decodeGoogleAuthenticator from "../../migration/import.ts";
 import { migrate, Version } from "./migrate.ts";
 import { MIGRATIONS_SCHEMA } from "./migrations.ts";
+import {PlausibleAnalyticsContext} from "../../components/PlausibleAnalytics.tsx";
 
 export interface AccountBase {
     id: string;
@@ -115,6 +116,7 @@ export const StorageManagerContext = createContext<StorageManager | null>(null);
  */
 export const StorageManagerProvider: FC<PropsWithChildren> = ({ children }) => {
     const encryptionManager = useContext(EncryptionManagerContext);
+    const analytics = useContext(PlausibleAnalyticsContext);
 
     const [ready, setReady] = useState(false);
     const [accounts, setAccountsRaw] = useState<Account[]>([]);
@@ -125,13 +127,19 @@ export const StorageManagerProvider: FC<PropsWithChildren> = ({ children }) => {
                 return acc;
             }));
     }
+
+    const [checking, setChecking] = useState<boolean>(false);
     useEffect(() => {
+        if(checking) return;
+        setChecking(true);
         if(encryptionManager?.isLocked && encryptionManager.storageChecked) {
             setReady(true);
             return;
         } else {
             setReady(false);
         }
+
+        console.log(checking, encryptionManager?.isLocked, encryptionManager?.storageChecked);
 
         window.Telegram.WebApp.CloudStorage.getKeys((error, keys) => {
             if (error) {
@@ -177,6 +185,7 @@ export const StorageManagerProvider: FC<PropsWithChildren> = ({ children }) => {
                 
                 setAccounts(accounts as Account[]);
                 setReady(true);
+                setChecking(false);
             });
         });
     }, [encryptionManager?.isLocked]);
@@ -286,11 +295,13 @@ export const StorageManagerProvider: FC<PropsWithChildren> = ({ children }) => {
         if (!accounts) return;
 
         const uris = Object.values(storageManager.accounts).map((a) => a.uri);
-
-        storageManager.saveAccounts(
-            accounts.filter((account) => !uris.includes(account.uri))
-        );
+        const newAccounts = accounts.filter((account) => !uris.includes(account.uri));
+        storageManager.saveAccounts(newAccounts);
         setImported(true);
+
+        if(newAccounts.length > 0) {
+            analytics?.trackEvent("Accounts imported from TeleOTP");
+        }
     }, [ready, imported, storageManager]);
 
     import.meta.env.DEV &&

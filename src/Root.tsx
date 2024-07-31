@@ -9,7 +9,7 @@ import {StorageManagerContext} from "./managers/storage/storage.tsx";
 import Decrypt from "./pages/Decrypt.tsx";
 
 const PasswordSetup = lazy(() => import("./pages/PasswordSetup.tsx"));
-const ExportAccounts = lazy(() => import("./pages/ExportAccounts.tsx"));
+const ExportAccounts = lazy(() => import("./pages/export/ExportAccounts.tsx"));
 
 export function LoadingIndicator() {
     return <Stack sx={{width: '100vw', height: '100vh', position: 'fixed'}}

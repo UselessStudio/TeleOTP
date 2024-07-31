@@ -5,7 +5,13 @@ import {URI} from "otpauth";
 export default function exportGoogleAuthenticator(accounts: AccountBase[]): string {
     const otpParameters: Payload.OtpParameters[] = [];
     for (const account of accounts) {
-        const otp = URI.parse(account.uri);
+        let otp;
+        try {
+            otp = URI.parse(account.uri);
+        } catch (e) {
+            console.log("weird uri!", otp);
+            continue;
+        }
         otpParameters.push(new Payload.OtpParameters({
             secret: new Uint8Array(otp.secret.buffer),
             name: account.issuer ? `${account.issuer}:${account.label}` : account.label,
