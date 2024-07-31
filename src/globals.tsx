@@ -9,6 +9,7 @@ import EmailIcon from "@mui/icons-material/Email";
 import KeyIcon from '@mui/icons-material/Key';
 import CloudIcon from '@mui/icons-material/Cloud';
 import StorageIcon from '@mui/icons-material/Storage';
+import {Language, LanguageDescription} from "./managers/localization.tsx";
 
 export const icons: Record<string, SvgIconComponent> = {
     "money": PaidIcon,
@@ -29,3 +30,16 @@ export const colors: string[] = [
 ] as const;
 
 export type Color = string;
+
+export const languages = ["en", "ru"] as const;
+export const languageDescriptions: Record<Language, LanguageDescription> = {
+    "en": {
+        native: "English",
+        default: "English"
+    },
+    "ru": {
+        native: "Русский",
+        default: "Russian"
+    }
+} as const;
+export const defaultLanguage: Language = "en";

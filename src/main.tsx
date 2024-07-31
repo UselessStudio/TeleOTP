@@ -25,6 +25,7 @@ import CacheProvider from "react-inlinesvg/provider";
 import Accounts from "./pages/Accounts.tsx";
 import EditAccount from "./pages/EditAccount.tsx";
 import Settings from "./pages/Settings.tsx";
+import {LocalizationManagerProvider} from "./managers/localization.tsx";
 
 // lazy loaded pages
 const CreateAccount = lazy(() => import("./pages/CreateAccount.tsx"));
@@ -37,6 +38,7 @@ const IconBrowser = lazy(() => import("./pages/IconBrowser.tsx"));
 const ExportAccounts = lazy(() => import("./pages/export/ExportAccounts.tsx"));
 const QrExport = lazy(() => import("./pages/export/QrExport.tsx"));
 const LinkExport = lazy(() => import("./pages/export/LinkExport.tsx"));
+const SelectLanguage = lazy(() => import("./pages/SelectLanguage.tsx"));
 
 
 declare global {
@@ -62,6 +64,7 @@ const router = createBrowserRouter(
             <Route path="icons" element={<IconBrowser />} />
             <Route path="edit" element={<EditAccount />} />
             <Route path="settings" element={<Settings />} />
+            <Route path="settings/lang" element={<SelectLanguage />} />
             <Route path="reset" element={<ResetAccounts />} />
             <Route path="changePassword" element={<PasswordSetup change />} />
             <Route path="export" element={<ExportAccounts />} />
@@ -87,20 +90,22 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         apiHost={import.meta.env.VITE_PLAUSIBLE_API_HOST}
     >
         <SettingsManagerProvider>
-            <BiometricsManagerProvider
-                requestReason="Allow access to biometrics to be able to decrypt your accounts"
-                authenticateReason="Authenticate to decrypt your accounts"
-            >
-                <EncryptionManagerProvider>
-                    <StorageManagerProvider>
-                        <CacheProvider>
-                            <Suspense fallback={<LoadingIndicator/>}>
-                                <RouterProvider router={router} />
-                            </Suspense>
-                        </CacheProvider>
-                    </StorageManagerProvider>
-                </EncryptionManagerProvider>
-            </BiometricsManagerProvider>
+            <LocalizationManagerProvider>
+                <BiometricsManagerProvider
+                    requestReason="Allow access to biometrics to be able to decrypt your accounts"
+                    authenticateReason="Authenticate to decrypt your accounts"
+                >
+                    <EncryptionManagerProvider>
+                        <StorageManagerProvider>
+                            <CacheProvider>
+                                <Suspense fallback={<LoadingIndicator/>}>
+                                    <RouterProvider router={router} />
+                                </Suspense>
+                            </CacheProvider>
+                        </StorageManagerProvider>
+                    </EncryptionManagerProvider>
+                </BiometricsManagerProvider>
+            </LocalizationManagerProvider>
         </SettingsManagerProvider>
     </PlausibleAnalyticsProvider>
 );

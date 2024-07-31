@@ -9,13 +9,15 @@ import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
 import FingerprintIcon from '@mui/icons-material/Fingerprint';
-import {Newspaper} from "@mui/icons-material";
+import {Newspaper, Language} from "@mui/icons-material";
 import {Link as RouterLink, useNavigate} from "react-router-dom";
 import {SettingsManagerContext} from "../managers/settings.tsx";
 import useTelegramHaptics from "../hooks/telegram/useTelegramHaptics.ts";
 import {BiometricsManagerContext} from "../managers/biometrics.tsx";
 import {PlausibleAnalyticsContext} from "../components/PlausibleAnalytics.tsx";
 import {FlatButton} from "../components/FlatButton.tsx";
+import {useL10n} from "../hooks/useL10n.ts";
+import {defaultLanguage, languageDescriptions} from "../globals.tsx";
 
 const Settings: FC = () => {
     const theme = useTheme();
@@ -26,6 +28,8 @@ const Settings: FC = () => {
     const encryptionManager = useContext(EncryptionManagerContext);
     const settingsManager = useContext(SettingsManagerContext);
     const analytics = useContext(PlausibleAnalyticsContext);
+    const l10n = useL10n();
+
     return (
         <Stack spacing={1}>
             <Typography
@@ -43,6 +47,14 @@ const Settings: FC = () => {
                 text="TeleOTP News"
                 value="Open"
                 icon={Newspaper}
+            />
+            <FlatButton
+                onClick={() => {
+                    navigate("lang");
+                }}
+                text={l10n("Language")}
+                icon={Language}
+                value={languageDescriptions[settingsManager?.selectedLanguage ?? defaultLanguage].native}
             />
 
             <Typography
@@ -164,13 +176,7 @@ const Settings: FC = () => {
                     <>
                         <br />
                         <RouterLink color="text.secondary" style={{textDecorationColor: "unset"}} to="/devtools">
-                            <Link
-                                color="text.secondary"
-                                target="_blank"
-                                rel="noopener"
-                            >
-                                Dev tools
-                            </Link>
+                            Dev tools
                         </RouterLink>
                     </>
                 )}

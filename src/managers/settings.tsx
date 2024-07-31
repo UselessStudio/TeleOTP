@@ -1,4 +1,6 @@
 import {createContext, FC, PropsWithChildren, useState} from "react";
+import {Language} from "./localization.tsx";
+import {defaultLanguage, languages} from "../globals.tsx";
 
 /**
  * SettingsManager is used to provide the app with user's preferences.
@@ -45,6 +47,16 @@ export interface SettingsManager {
      */
     setBiometricsEnabled(enabled: boolean): void;
 
+    /**
+     * This value contains the current user's language.
+     */
+    selectedLanguage: Language;
+
+    /**
+     * This value updates the user's preferred language.
+     * @param {Language} language - new preferred language.
+     */
+    setLanguage(language: Language): void;
 }
 
 export const SettingsManagerContext = createContext<SettingsManager | null>(null);
@@ -64,6 +76,11 @@ export const SettingsManagerProvider: FC<PropsWithChildren> = ({ children }) => 
     const [lastSelectedAccount, setLastSelectedAccount] = useState<string | null>(() => {
         return localStorage.getItem("lastSelectedAccount");
     });
+    const [selectedLanguage, setLanguage] = useState<Language>(() => {
+        const userLang = window.Telegram.WebApp.initDataUnsafe.user?.language_code as Language | undefined;
+        const fallbackLang = (userLang && languages.includes(userLang)) ? userLang : defaultLanguage;
+        return localStorage.getItem("selectedLanguage") as Language | null ?? fallbackLang;
+    });
 
     const settingsManager: SettingsManager = {
         lastSelectedAccount,
@@ -81,7 +98,11 @@ export const SettingsManagerProvider: FC<PropsWithChildren> = ({ children }) => 
             setBiometricsEnabled(enable);
             localStorage.setItem("biometricsEnabled", JSON.stringify(enable));
         },
-
+        selectedLanguage,
+        setLanguage(language: Language) {
+            setLanguage(language);
+            localStorage.setItem("selectedLanguage", language);
+        }
     };
 
     return <SettingsManagerContext.Provider value={settingsManager}>
