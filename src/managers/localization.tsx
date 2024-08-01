@@ -21,6 +21,12 @@ import { lang as defaultTranslations } from "../lang/en.ts";
  * const localizationManager = useContext(LocalizationManagerContext);
  */
 export interface LocalizationManager {
+    /**
+     * Get the translation for the string in the current language.
+     * @param key - the lang key, defined in the default language (`en.ts`)
+     * @param args - optional variables to be replaced in the string
+     */
+    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
     l10n(key: LangKey, args?: Record<string, any>): string;
 }
 
@@ -42,6 +48,7 @@ export const LocalizationManagerProvider: FC<PropsWithChildren> = ({ children })
         });
     }, [lang]);
     const localizationManager: LocalizationManager = {
+        // eslint-disable-next-line  @typescript-eslint/no-explicit-any
         l10n(key: LangKey, args?: Record<string, any>): string {
             let template: string;
             if(key in translations) {

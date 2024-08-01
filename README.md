@@ -2,6 +2,7 @@
 [![Build Telegram bot image](https://github.com/UselessStudio/TeleOTP/actions/workflows/bot.yml/badge.svg)](https://github.com/UselessStudio/TeleOTP/actions/workflows/bot.yml)
 [![Telegram channel](https://img.shields.io/badge/Telegram-channel-blue)](https://t.me/teleotpapp)
 [![Plausible analytics](https://img.shields.io/badge/Plausible-analytics-blue)](https://analytics.gesti.tech/teleotp.gesti.tech)
+[![Crowdin](https://badges.crowdin.net/teleotp/localized.svg)](https://crowdin.com/project/teleotp)
 
 Telegram Mini App that allows you to generate one-time 2FA passwords inside Telegram.
 
@@ -192,18 +193,34 @@ This page can be accessed through the settings, or by typing in the password inc
 * `IconBrowser.tsx` is a page for browsing icons from [simpleicons.org](https://simpleicons.org/). 
 User is able to search for icons.
 
-## 🤖 Data and business logic
-
-### ✈️ Migration
+## ✈️ Migration
 
 TeleOTP implements the `otpauth-migration` URI standard. 
 During the migration, accounts are (de)serialized using Protocol Buffers.
 
-### 🤗 Icons and colors
+## 🤗 Icons and colors
 
 All generic icons and colors for accounts are defined in the `globals.tsx` file.
 Available icons are exported in the `icons` const, colors are available in the `colors` const.
 `Icon` and `Color` types are provided for checking the validity of the corresponding item.
+
+## 🌍 Translating
+
+TeleOTP is officially translated only to Russian. If you have spare time and would like to help out the project,
+please add translations at [Crowdin](https://crowdin.com/project/teleotp).
+
+Currently supported languages:
+* English (official)
+* Russian (official)
+* Ukrainian
+* German
+* French
+* Spanish
+
+If you need to add new strings:
+1. Modify the file `src/lang/en.ts` to have a new string with a descriptive key.
+    1. If a string needs to have variables, put them in braces `like {this}`
+2. Use the `useL10n()` hook to get the translation.
 
 # 👋 Acknowledgements
 
