@@ -139,8 +139,6 @@ export const StorageManagerProvider: FC<PropsWithChildren> = ({ children }) => {
             setReady(false);
         }
 
-        console.log(checking, encryptionManager?.isLocked, encryptionManager?.storageChecked);
-
         window.Telegram.WebApp.CloudStorage.getKeys((error, keys) => {
             if (error) {
                 window.Telegram.WebApp.showAlert(`Failed to get accounts: ${error}`);

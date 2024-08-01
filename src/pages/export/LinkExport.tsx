@@ -24,13 +24,12 @@ export default function LinkExport() {
             .replaceAll("=", ""))
     }, [storageManager?.accounts, storageManager?.ready]);
 
+    const l10n = useL10n();
     const navigate = useNavigate();
     useTelegramMainButton(() => {
         navigate(-1);
         return true;
-    }, "Go back");
-
-    const l10n = useL10n();
+    }, l10n("GoBackAction"));
 
     return <Stack spacing={2} alignItems="center" justifyContent={"center"} sx={{flex: 1}}>
         <LottieAnimation animationData={ExportAnimation}/>
@@ -42,7 +41,7 @@ export default function LinkExport() {
                 {l10n("LinkExportDescription")}
             </Typography>
         </Stack>
-        <FlatButton center={true} text={"Copy link"} icon={ContentCopyIcon} onClick={() => {
+        <FlatButton center={true} text={l10n("CopyLinkAction")} icon={ContentCopyIcon} onClick={() => {
             copyTextToClipboard(`https://t.me/${import.meta.env.VITE_BOT_USERNAME}/${import.meta.env.VITE_APP_NAME}?startapp=${linkData}`);
         }}/>
         <Typography variant="subtitle2" align="center" color={"error"}>

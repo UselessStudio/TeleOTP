@@ -20,13 +20,12 @@ export default function QrExport() {
         setQrContent("otpauth-migration://offline?data=" + encodeURIComponent(data));
     }, [storageManager?.accounts, storageManager?.ready]);
 
+    const l10n = useL10n();
     const navigate = useNavigate();
     useTelegramMainButton(() => {
         navigate(-1);
         return true;
-    }, "Go back");
-
-    const l10n = useL10n();
+    }, l10n("GoBackAction"));
 
     return <Stack spacing={2} alignItems="center" justifyContent={"center"} sx={{flex: 1}}>
         <Typography variant="h5" fontWeight="bold" align="center">
