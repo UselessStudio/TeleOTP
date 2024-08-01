@@ -33,6 +33,8 @@ export const lang = {
 
     "ExportAccountsTitle": "Export accounts",
     "ExportAccountsText": "You can export accounts to TeleOTP using a link, or to Google Authenticator (or similar) using a QR code.",
+    "GoBackAction": "Go back",
+    "CopyLinkAction": "Copy link",
     "Export.ViaLink": "Via link",
     "Export.ViaQR": "Via QR",
 

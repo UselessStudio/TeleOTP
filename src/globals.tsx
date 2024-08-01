@@ -31,7 +31,7 @@ export const colors: string[] = [
 
 export type Color = string;
 
-export const languages = ["en", "ru"] as const;
+export const languages = ["en", "ru", "uk", "de", "fr", "es"] as const;
 export const languageDescriptions: Record<Language, LanguageDescription> = {
     "en": {
         native: "English",
@@ -40,6 +40,22 @@ export const languageDescriptions: Record<Language, LanguageDescription> = {
     "ru": {
         native: "Русский",
         default: "Russian"
+    },
+    "uk": {
+        native: "Українська",
+        default: "Ukrainian"
+    },
+    "de": {
+        native: "Deutsch",
+        default: "German"
+    },
+    "fr": {
+        native: "Français",
+        default: "French"
+    },
+    "es": {
+        native: "Español",
+        default: "Spanish"
     }
 } as const;
 export const defaultLanguage: Language = "en";
