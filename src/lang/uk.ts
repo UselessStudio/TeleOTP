@@ -18,6 +18,7 @@ export const lang = {
   "ActionRemoveAccounts": "Видалити всі облікові записи",
   "Version": "Версія",
   "StarUs": "Star us on GitHub",
+  "HelpTranslating": "Допомога з перекладом",
   "DevTools": "Інструменти розробника",
   "ActionOpenSettings": "Відкрити налаштування",
   "ActionChangeMenu": "Змінити...",
