@@ -9,6 +9,7 @@ import exportGoogleAuthenticator from "../../migration/export.ts";
 import useTelegramMainButton from "../../hooks/telegram/useTelegramMainButton.ts";
 import {useNavigate} from "react-router-dom";
 import {FlatButton} from "../../components/FlatButton.tsx";
+import {useL10n} from "../../hooks/useL10n.ts";
 
 
 export default function LinkExport() {
@@ -29,21 +30,23 @@ export default function LinkExport() {
         return true;
     }, "Go back");
 
+    const l10n = useL10n();
+
     return <Stack spacing={2} alignItems="center" justifyContent={"center"} sx={{flex: 1}}>
         <LottieAnimation animationData={ExportAnimation}/>
         <Typography variant="h5" fontWeight="bold" align="center">
-            Export link
+            {l10n("LinkExportTitle")}
         </Typography>
         <Stack>
             <Typography variant="subtitle2" align="center">
-                Copy the link to move accounts to another Telegram user. Or just keep it, to have a backup.
+                {l10n("LinkExportDescription")}
             </Typography>
         </Stack>
         <FlatButton center={true} text={"Copy link"} icon={ContentCopyIcon} onClick={() => {
             copyTextToClipboard(`https://t.me/${import.meta.env.VITE_BOT_USERNAME}/${import.meta.env.VITE_APP_NAME}?startapp=${linkData}`);
         }}/>
         <Typography variant="subtitle2" align="center" color={"error"}>
-            Make sure to keep it secret! Anyone can get access to your codes using this link.
+            {l10n("LinkExportSecretWarning")}
         </Typography>
     </Stack>;
 }

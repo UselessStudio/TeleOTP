@@ -21,6 +21,7 @@ import {ICONS_DATA_URL, iconUrl, titleToIconSlug} from "../icons/icons.ts";
 import {NewAccountState} from "./CreateAccount.tsx";
 import normalizeCustomColor from "../icons/normalizeCustomColor.ts";
 import {useTheme} from "@mui/material/styles";
+import {useL10n} from "../hooks/useL10n.ts";
 
 interface IconData {
     title: string;
@@ -120,6 +121,8 @@ const IconBrowser: FC = () => {
     const [verified, setVerified] = useState(true);
     const [searching, setSearching] = useState(false);
     const [iconsData, setIconsData] = useState<IconsData | undefined>();
+    const l10n = useL10n();
+
     useEffect(() => {
         void caches.open("teleotp").then(async (cache) => {
             const cachedData = await cache.match(ICONS_DATA_URL);
@@ -131,7 +134,7 @@ const IconBrowser: FC = () => {
                 if (_cachedData?.ok) setIconsData(await _cachedData.json());
                 else {
                     window.Telegram.WebApp.showAlert(
-                        "Error when fetching icons data, please retry later"
+                        l10n("IconsFetchError")
                     );
                 }
             }
@@ -150,17 +153,17 @@ const IconBrowser: FC = () => {
         <>
             <Stack spacing={2} alignItems="center">
                 <Typography variant="h5" fontWeight="bold" align="center">
-                    Browse icons
+                    {l10n("BrowseIconsTitle")}
                 </Typography>
                 <TelegramTextField
                     fullWidth
                     autoComplete="false"
                     autoFocus={true}
                     type="search"
-                    label="Pattern to search"
+                    label={l10n("SearchPatternLabel")}
                     value={phrase}
                     error={!verified}
-                    helperText={!verified ? "Enter at least two symbols" : null}
+                    helperText={!verified ? l10n("SearchHelper") : null}
                     onChange={(e) => {
                         const value = e.target.value;
                         setPhrase(value);
@@ -176,7 +179,7 @@ const IconBrowser: FC = () => {
                             variant="subtitle1"
                             fontWeight={400}
                         >
-                            Start typing to search
+                            {l10n("StartTyping")}
                         </Typography>
                         <LottieAnimation
                             speed={1}
@@ -189,7 +192,7 @@ const IconBrowser: FC = () => {
                     <IconsList icons={iconsData.icons} searchQuery={query} />
                 )}
                 <Typography justifySelf={"flex-end"} variant="subtitle2">
-                    Icons provided by{" "}
+                    {l10n("IconsProvidedBy")}
                     <Link rel="noopener" target="_blank" variant="subtitle2" color="text.secondary" href="https://github.com/simple-icons/simple-icons">
                         @simpleicons
                     </Link>

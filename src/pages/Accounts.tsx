@@ -27,12 +27,14 @@ import AccountDragPreview from "../components/AccountDragPreview.tsx";
 import {Flipped, Flipper} from "react-flip-toolkit";
 import {HTML5toTouch} from "../drag.ts";
 import {FlatButton} from "../components/FlatButton.tsx";
+import {useL10n} from "../hooks/useL10n.ts";
 
 const NewAccount = lazy(() => import("./NewAccount.tsx"));
 const NewUpdateDialog = lazy(() => import("../components/NewUpdateDialog.tsx"));
 
 const Accounts: FC = () => {
     const navigate = useNavigate();
+    const l10n = useL10n();
     const theme = useTheme();
     const { selectionChanged, } = useTelegramHaptics();
 
@@ -153,7 +155,7 @@ const Accounts: FC = () => {
             </Stack>
         </ThemeProvider>
         <NewUpdateDialog/>
-        <FlatButton onClick={() => { navigate("/settings"); }} text={"Open settings"}
+        <FlatButton onClick={() => { navigate("/settings"); }} text={l10n("ActionOpenSettings")}
                     icon={SettingsIcon} center={true}/>
     </Stack>;
 }

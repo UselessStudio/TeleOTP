@@ -6,6 +6,7 @@ import {useTheme} from "@mui/material/styles";
 import {QRCode} from "react-qrcode-logo";
 import {useNavigate} from "react-router-dom";
 import useTelegramMainButton from "../../hooks/telegram/useTelegramMainButton.ts";
+import {useL10n} from "../../hooks/useL10n.ts";
 
 export default function QrExport() {
     const [qrContent, setQrContent] = useState<string | null>(null);
@@ -25,9 +26,11 @@ export default function QrExport() {
         return true;
     }, "Go back");
 
+    const l10n = useL10n();
+
     return <Stack spacing={2} alignItems="center" justifyContent={"center"} sx={{flex: 1}}>
         <Typography variant="h5" fontWeight="bold" align="center">
-            Export accounts
+            {l10n("ExportAccountsTitle")}
         </Typography>
         <Stack sx={{padding: 2, borderRadius: "30px", width: "75%", aspectRatio: 1}}
                alignItems="center" justifyContent="center" bgcolor="background.paper">
@@ -38,7 +41,7 @@ export default function QrExport() {
                         qrStyle={"squares"} eyeRadius={5} value={qrContent}/> }
         </Stack>
         <Typography variant="subtitle2" align="center">
-            You can import your accounts into Google Authenticator or TeleOTP by scanning the QR code.
+            {l10n("QRExportDescription")}
         </Typography>
     </Stack>;
 }

@@ -7,6 +7,7 @@ import {EncryptionManagerContext} from "../managers/encryption.tsx";
 import TelegramTextField from "../components/TelegramTextField.tsx";
 import LottieAnimation from "../components/LottieAnimation.tsx";
 import {useNavigate} from "react-router-dom";
+import {useL10n} from "../hooks/useL10n.ts";
 
 
 const PasswordSetup: FC<{change?: boolean}> = ({change = false}) => {
@@ -16,6 +17,7 @@ const PasswordSetup: FC<{change?: boolean}> = ({change = false}) => {
     const [badLength, setBadLength] = useState(false);
 
     const navigate = useNavigate();
+    const l10n = useL10n();
 
     const encryptionManager = useContext(EncryptionManagerContext);
     useTelegramMainButton(() => {
@@ -35,7 +37,7 @@ const PasswordSetup: FC<{change?: boolean}> = ({change = false}) => {
         }
 
         return true;
-    }, change ? "Change password" : "Create password");
+    }, change ? l10n("ChangePasswordAction") : l10n("CreatePasswordAction"));
 
     return <>
         <Stack spacing={2} alignItems="center">
@@ -44,18 +46,18 @@ const PasswordSetup: FC<{change?: boolean}> = ({change = false}) => {
                 animationData={change ? ChangePasswordAnimation : NewPasswordAnimation}
             />
             <Typography variant="h5" fontWeight="bold" align="center">
-                {change ? "Set new password" : "Password setup"}
+                {change ? l10n("ChangePasswordTitle") : l10n("CreatePasswordTitle")}
             </Typography>
             <Typography variant="subtitle2" align="center">
-                Enter a new encryption password to safely store your accounts
+                {l10n("PasswordSetupDescription")}
             </Typography>
             <TelegramTextField
                 fullWidth
                 type="password"
-                label="Password"
+                label={l10n("PasswordLabel")}
                 value={password}
                 error={badLength}
-                helperText={badLength ? "The password length must be 3 or more" : null}
+                helperText={badLength ? l10n("PasswordRequirementError") : null}
                 onChange={e => {
                     setPassword(e.target.value);
                     setNotMatches(false);
@@ -65,10 +67,10 @@ const PasswordSetup: FC<{change?: boolean}> = ({change = false}) => {
             <TelegramTextField
                 fullWidth
                 type="password"
-                label="Repeat password"
+                label={l10n("RepeatPasswordLabel")}
                 value={passwordRepeat}
                 error={notMatches}
-                helperText={notMatches ? "Passwords do not match" : null}
+                helperText={notMatches ? l10n("PasswordRepeatIncorrectError") : null}
                 onChange={e => {
                     setPasswordRepeat(e.target.value);
                     setNotMatches(false);

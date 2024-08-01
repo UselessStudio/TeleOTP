@@ -91,10 +91,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     >
         <SettingsManagerProvider>
             <LocalizationManagerProvider>
-                <BiometricsManagerProvider
-                    requestReason="Allow access to biometrics to be able to decrypt your accounts"
-                    authenticateReason="Authenticate to decrypt your accounts"
-                >
+                <BiometricsManagerProvider>
                     <EncryptionManagerProvider>
                         <StorageManagerProvider>
                             <CacheProvider>

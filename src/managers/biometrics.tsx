@@ -1,5 +1,6 @@
 import {createContext, FC, PropsWithChildren, useContext, useEffect, useState} from "react";
 import {SettingsManagerContext} from "./settings.tsx";
+import {useL10n} from "../hooks/useL10n.ts";
 
 export const BiometricsManagerContext = createContext<BiometricsManager | null>(null);
 
@@ -36,27 +37,16 @@ export interface BiometricsManager {
     getToken(callback: (token?: string) => void): void;
 }
 
-export interface BiometricsManagerProps {
-    /**
-     * A message when user is prompted to provide necessary permissions
-     */
-    requestReason: string,
-    /**
-     * A message shown to the user, when the key is requested
-     */
-    authenticateReason: string
-}
-
 /**
  * BiometricsManager is created using BiometricsManagerProvider component
  *
  * @note BiometricsManagerProvider must be used inside the SettingsManagerProvider
  */
-export const BiometricsManagerProvider: FC<PropsWithChildren<BiometricsManagerProps>> = (
-    {children, requestReason, authenticateReason }) => {
+export const BiometricsManagerProvider: FC<PropsWithChildren> = ({ children }) => {
     const [isAvailable, setIsAvailable] = useState(false);
     const [isRequested, setIsRequested] = useState(false);
     const settingsManager = useContext(SettingsManagerContext);
+    const l10n = useL10n();
 
     useEffect(() => {
         window.Telegram.WebApp.BiometricManager.init(() => {
@@ -76,7 +66,7 @@ export const BiometricsManagerProvider: FC<PropsWithChildren<BiometricsManagerPr
             if(!isAvailable) return;
             if(!window.Telegram.WebApp.BiometricManager.isAccessGranted) {
                 window.Telegram.WebApp.BiometricManager.requestAccess({
-                    reason: requestReason
+                    reason: l10n("BiometricsRequestReason")
                 }, (success) => {
                     if (!success) {
                         window.Telegram.WebApp.BiometricManager.openSettings();
@@ -99,7 +89,7 @@ export const BiometricsManagerProvider: FC<PropsWithChildren<BiometricsManagerPr
             setIsRequested(true);
             try {
                 window.Telegram.WebApp.BiometricManager.authenticate({
-                    reason: authenticateReason,
+                    reason: l10n("BiometricsAuthenticateReason"),
                 }, (_success, token?: string) => {
                     setIsRequested(false);
                     callback(token);

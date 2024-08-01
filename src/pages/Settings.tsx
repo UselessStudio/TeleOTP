@@ -38,16 +38,8 @@ const Settings: FC = () => {
                 fontSize="small"
                 sx={{ paddingY: theme.spacing(0.5) }}
             >
-                General
+                {l10n("Settings.General")}
             </Typography>
-            <FlatButton
-                onClick={() => {
-                    window.Telegram.WebApp.openTelegramLink(import.meta.env.VITE_CHANNEL_LINK);
-                }}
-                text="TeleOTP News"
-                value="Open"
-                icon={Newspaper}
-            />
             <FlatButton
                 onClick={() => {
                     navigate("lang");
@@ -56,6 +48,14 @@ const Settings: FC = () => {
                 icon={Language}
                 value={languageDescriptions[settingsManager?.selectedLanguage ?? defaultLanguage].native}
             />
+            <FlatButton
+                onClick={() => {
+                    window.Telegram.WebApp.openTelegramLink(import.meta.env.VITE_CHANNEL_LINK);
+                }}
+                text={l10n("NewsChannel")}
+                value={l10n("ActionOpen")}
+                icon={Newspaper}
+            />
 
             <Typography
                 fontWeight="800"
@@ -63,14 +63,14 @@ const Settings: FC = () => {
                 fontSize="small"
                 sx={{ paddingY: theme.spacing(0.5) }}
             >
-                Security
+                {l10n("Settings.Security")}
             </Typography>
             <FlatButton
                 onClick={() => {
                     navigate("/changePassword");
                 }}
-                text="Password"
-                value="Change"
+                text={l10n("Password")}
+                value={l10n("ActionChange")}
                 icon={LockOutlinedIcon}
             />
 
@@ -79,7 +79,8 @@ const Settings: FC = () => {
                 impactOccurred("light");
                 settingsManager?.setKeepUnlocked(!settingsManager.shouldKeepUnlocked);
             }}
-            text="Keep unlocked" value={settingsManager?.shouldKeepUnlocked ? "Enabled" : "Disabled"}
+            text={l10n("KeepUnlocked")}
+            value={settingsManager?.shouldKeepUnlocked ? l10n("Enabled") : l10n("Disabled")}
             icon={KeyOutlinedIcon}/>
 
         <FlatButton
@@ -96,9 +97,9 @@ const Settings: FC = () => {
                     analytics?.trackEvent("Biometrics enabled");
                 }
             }}
-            text="Use biometrics"
+            text={l10n("UseBiometrics")}
             value={
-                biometricsManager?.isAvailable ? (biometricsManager.isSaved ? "Enabled" : "Disabled") : "Not available"
+                biometricsManager?.isAvailable ? (biometricsManager.isSaved ? l10n("Enabled") : l10n("Disabled")) : l10n("NotAvailable")
             }
             disabled={!biometricsManager?.isAvailable}
             icon={FingerprintIcon}/>
@@ -107,7 +108,7 @@ const Settings: FC = () => {
                 onClick={() => {
                     encryptionManager?.lock();
                 }}
-                text="Lock accounts"
+                text={l10n("LockAccounts")}
                 icon={LogoutOutlinedIcon}
             />
 
@@ -117,13 +118,13 @@ const Settings: FC = () => {
                 fontSize="small"
                 sx={{ paddingY: theme.spacing(0.5) }}
             >
-                Accounts
+                {l10n("Settings.Accounts")}
             </Typography>
             <FlatButton
                 onClick={() => {
                     navigate("/");
                 }}
-                text="Accounts"
+                text={l10n("Accounts")}
                 value={
                     storageManager
                         ? storageManager.accounts.length.toString()
@@ -141,7 +142,7 @@ const Settings: FC = () => {
                     //     }?start=export`
                     // );
                 }}
-                text="Export accounts"
+                text={l10n("ActionExportAccounts")}
                 icon={FileDownloadOutlinedIcon}
             />
 
@@ -150,7 +151,7 @@ const Settings: FC = () => {
                     notificationOccurred("warning");
                     navigate("/reset");
                 }}
-                text="Remove all accounts"
+                text={l10n("ActionRemoveAccounts")}
                 icon={CloseOutlinedIcon}
             />
 
@@ -162,7 +163,7 @@ const Settings: FC = () => {
             >
                 TeleOTP
                 <br />
-                Version: {APP_VERSION}
+                {l10n("Version")}: {APP_VERSION}
                 <br />
                 <Link
                     color="inherit"
@@ -170,13 +171,13 @@ const Settings: FC = () => {
                     rel="noopener"
                     href={APP_HOMEPAGE}
                 >
-                    Star us on GitHub
+                    {l10n("StarUs")}
                 </Link>
                 {import.meta.env.DEV && (
                     <>
                         <br />
                         <RouterLink color="text.secondary" style={{textDecorationColor: "unset"}} to="/devtools">
-                            Dev tools
+                            {l10n("DevTools")}
                         </RouterLink>
                     </>
                 )}

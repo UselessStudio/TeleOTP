@@ -10,6 +10,7 @@ import TelegramTextField from "../components/TelegramTextField.tsx";
 import IconPicker from "../components/IconPicker.tsx";
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import useTelegramHaptics from "../hooks/telegram/useTelegramHaptics.ts";
+import {useL10n} from "../hooks/useL10n.ts";
 
 export interface EditAccountState {
     account: Account;
@@ -18,6 +19,7 @@ export interface EditAccountState {
 export default function EditAccount() {
     const navigate = useNavigate();
     const location = useLocation();
+    const l10n = useL10n();
     const { notificationOccurred } = useTelegramHaptics();
     const state = location.state as EditAccountState;
     const storageManager = useContext(StorageManagerContext);
@@ -30,7 +32,7 @@ export default function EditAccount() {
 
     useTelegramMainButton(() => {
         if (!label || !labelInput.current?.checkValidity()) {
-            window.Telegram.WebApp.showAlert("Label field cannot be empty!");
+            window.Telegram.WebApp.showAlert(l10n("EmptyLabelAlert"));
             return false;
         }
         storageManager?.saveAccount({
@@ -42,21 +44,21 @@ export default function EditAccount() {
         });
         navigate("/");
         return true;
-    }, "Save");
+    }, l10n("SaveAction"));
 
     return <Stack spacing={2} alignItems="center">
         <LottieAnimation animationData={CreateAnimation}/>
         <Typography variant="h5" fontWeight="bold" align="center">
-            Edit account info
+            {l10n("EditTitle")}
         </Typography>
         <Typography variant="subtitle2" align="center">
-            Modify account information
+            {l10n("EditDescription")}
         </Typography>
         <TelegramTextField
             required
             inputRef={labelInput}
             fullWidth
-            label="Label"
+            label={l10n("LabelLabel")}
             value={label}
             onChange={e => {
                 setLabel(e.target.value);
@@ -64,7 +66,7 @@ export default function EditAccount() {
         />
         <TelegramTextField
             fullWidth
-            label="Service"
+            label={l10n("IssuerLabel")}
             value={issuer}
             onChange={e => {
                 setIssuer(e.target.value);
@@ -79,11 +81,13 @@ export default function EditAccount() {
         <Button startIcon={<DeleteOutlinedIcon/>} color="error" onClick={() => {
             notificationOccurred("warning");
             window.Telegram.WebApp.showPopup({
-                message: `Are you sure you want to delete ${state.account.issuer ? 
-                    `${state.account.issuer} (${state.account.label})` : 
-                    state.account.label}?`,
+                message: l10n("DeleteConfirmation", {
+                    account: state.account.issuer ?
+                        `${state.account.issuer} (${state.account.label})` :
+                        state.account.label
+                }),
                 buttons: [
-                    {type: "destructive", text: "Yes", id: "remove"},
+                    {type: "destructive", text: l10n("Confirm"), id: "remove"},
                     {type: "cancel", id: "cancel"},
                 ]
             }, (id) => {
@@ -92,7 +96,7 @@ export default function EditAccount() {
                 navigate("/");
             });
         }}>
-            Delete account
+            {l10n("DeleteAccountAction")}
         </Button>
     </Stack>;
 }

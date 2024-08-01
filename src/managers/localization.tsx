@@ -21,7 +21,7 @@ import { lang as defaultTranslations } from "../lang/en.ts";
  * const localizationManager = useContext(LocalizationManagerContext);
  */
 export interface LocalizationManager {
-    l10n(key: LangKey): string;
+    l10n(key: LangKey, args?: Record<string, any>): string;
 }
 
 export const LocalizationManagerContext = createContext<LocalizationManager | null>(null);
@@ -42,13 +42,21 @@ export const LocalizationManagerProvider: FC<PropsWithChildren> = ({ children })
         });
     }, [lang]);
     const localizationManager: LocalizationManager = {
-        l10n(key: LangKey): string {
+        l10n(key: LangKey, args?: Record<string, any>): string {
+            let template: string;
             if(key in translations) {
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                return translations[key]!;
+                template = translations[key]!;
             } else {
-                return defaultTranslations[key];
+                template = defaultTranslations[key];
             }
+
+            if(!args) return template;
+            for (const placeholder in args) {
+                template = template.replace(new RegExp("\\{" + placeholder + "\\}", "gi"), args[placeholder]);
+            }
+
+            return template;
         }
     };
 
