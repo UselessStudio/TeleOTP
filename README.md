@@ -80,6 +80,7 @@ _Example: `VITE_BOT_USERNAME=TeleOTPAppBot`_
 * `VITE_CHANNEL_LINK` - Link to the news channel.
 * `VITE_APP_NAME` - Name of the app for the URL.
   * For the app https://t.me/TeleOTPAppBot/app, app name is `app`
+* `VITE_TRANSLATE_LINK` - Link to the translation website
 
 ### Starting the development server
 To start the development server with hot reload, run:
