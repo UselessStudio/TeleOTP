@@ -159,12 +159,12 @@ const Settings: FC = () => {
                 color="text.secondary"
                 fontSize="small"
                 align="center"
-                sx={{ paddingY: theme.spacing(1) }}
+                sx={{paddingY: theme.spacing(1)}}
             >
                 TeleOTP
-                <br />
+                <br/>
                 {l10n("Version")}: {APP_VERSION}
-                <br />
+                <br/>
                 <Link
                     color="inherit"
                     target="_blank"
@@ -173,10 +173,19 @@ const Settings: FC = () => {
                 >
                     {l10n("StarUs")}
                 </Link>
+                <br/>
+                <Link
+                    color="inherit"
+                    target="_blank"
+                    rel="noopener"
+                    href={import.meta.env.VITE_TRANSLATE_LINK}
+                >
+                    {l10n("HelpTranslating")}
+                </Link>
                 {import.meta.env.DEV && (
                     <>
-                        <br />
-                        <RouterLink color="text.secondary" style={{textDecorationColor: "unset"}} to="/devtools">
+                        <br/>
+                        <RouterLink style={{color: "inherit"}} to="/devtools">
                             {l10n("DevTools")}
                         </RouterLink>
                     </>

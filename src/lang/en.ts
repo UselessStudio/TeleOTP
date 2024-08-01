@@ -18,6 +18,7 @@ export const lang = {
     "ActionRemoveAccounts": "Remove all accounts",
     "Version": "Version",
     "StarUs": "Star us on GitHub",
+    "HelpTranslating": "Help with translation",
     "DevTools": "Dev tools",
 
     "ActionOpenSettings": "Open settings",
