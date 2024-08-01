@@ -39,6 +39,7 @@ const ExportAccounts = lazy(() => import("./pages/export/ExportAccounts.tsx"));
 const QrExport = lazy(() => import("./pages/export/QrExport.tsx"));
 const LinkExport = lazy(() => import("./pages/export/LinkExport.tsx"));
 const SelectLanguage = lazy(() => import("./pages/SelectLanguage.tsx"));
+const UserErrorPage = lazy(() => import("./pages/UserErrorPage.tsx"));
 
 
 declare global {
@@ -50,11 +51,10 @@ declare global {
 export const IS_TELEGRAM_APP_SUPPORTED = window.Telegram.WebApp.isVersionAtLeast("6.9");
 
 const router = createBrowserRouter(
-    // TODO: Make user error page
     createRoutesFromElements(
         <Route
             path="/"
-            errorElement={import.meta.env.DEV ? <DevToolsPage /> : undefined}
+            errorElement={import.meta.env.DEV ? <DevToolsPage /> : <UserErrorPage />}
             element={<Root />}
         >
             <Route index={true} element={<Accounts />} />
