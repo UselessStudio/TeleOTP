@@ -13,7 +13,7 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@emotion/react": "^11.11.1",
+    "@emotion/react": "^11.13.0",
     "@emotion/styled": "^11.11.0",
     "@fontsource/inter": "^5.0.8",
     "@mui/icons-material": "^5.14.9",
