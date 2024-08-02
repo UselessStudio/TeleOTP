@@ -27,7 +27,7 @@
     "nanoid": "^5.0.1",
     "otpauth": "^9.1.4",
     "plausible-tracker": "^0.3.8",
-    "protobufjs": "^7.2.5",
+    "protobufjs": "^7.3.2",
     "rdndmb-html5-to-touch": "^8.0.3",
     "react": "^18.2.0",
     "react-dnd": "^16.0.1",
