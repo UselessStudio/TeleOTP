@@ -17,9 +17,12 @@ function materialThemeFromTelegramTheme(
                 main: themeParams.button_color,
                 contrastText: themeParams.button_text_color,
             },
+            error: {
+                main: themeParams.destructive_text_color,
+            },
             background: {
-                default: themeParams.bg_color,
-                paper: themeParams.secondary_bg_color,
+                default: themeParams.secondary_bg_color,
+                paper: themeParams.section_bg_color,
             },
             action: {
                 disabled: "#9E9E9E",
@@ -51,6 +54,10 @@ function materialThemeFromTelegramTheme(
     });
 }
 
+/**
+ * Creates a Material UI theme from Telegram-provided color palette. This hook automatically listens for theme change events.
+ * @returns A Material UI theme, to be used with ThemeProvider
+ */
 export default function useTelegramTheme() {
     const [theme, setTheme] = useState(
         materialThemeFromTelegramTheme(

@@ -9,7 +9,6 @@ import {StorageManagerContext} from "./managers/storage/storage.tsx";
 import Decrypt from "./pages/Decrypt.tsx";
 
 const PasswordSetup = lazy(() => import("./pages/PasswordSetup.tsx"));
-const ExportAccounts = lazy(() => import("./pages/ExportAccounts.tsx"));
 
 export function LoadingIndicator() {
     return <Stack sx={{width: '100vw', height: '100vh', position: 'fixed'}}
@@ -25,7 +24,7 @@ const Root: FC = () => {
     const encryptionManager = useContext(EncryptionManagerContext);
     const storageManager = useContext(StorageManagerContext);
 
-    const { search, pathname } = useLocation();
+    const { pathname } = useLocation();
 
     return (
     <>
@@ -35,7 +34,7 @@ const Root: FC = () => {
                 {!encryptionManager?.storageChecked ? <LoadingIndicator/> :
                     (!encryptionManager.passwordCreated ? <PasswordSetup/> :
                         (encryptionManager.isLocked ? (pathname === "/reset" ? <Outlet/> : <Decrypt/>) :
-                            (storageManager?.ready ? (search === "?export" ? <ExportAccounts/> :  <Outlet/>) :
+                            (storageManager?.ready ? <Outlet/> :
                                 <LoadingIndicator/>)))}
             </Box>
         </ThemeProvider>

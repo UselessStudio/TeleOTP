@@ -1,6 +1,5 @@
 import {FC, lazy, useContext, useEffect, useState} from "react";
 import {
-    Button,
     LinearProgress,
     Stack,
     Typography,
@@ -8,7 +7,6 @@ import {
     Container,
     Grid,
     useTheme,
-    Box,
     ThemeProvider,
 } from "@mui/material";
 import copy from 'copy-text-to-clipboard';
@@ -28,12 +26,15 @@ import { DndProvider } from "react-dnd-multi-backend";
 import AccountDragPreview from "../components/AccountDragPreview.tsx";
 import {Flipped, Flipper} from "react-flip-toolkit";
 import {HTML5toTouch} from "../drag.ts";
+import {FlatButton} from "../components/FlatButton.tsx";
+import {useL10n} from "../hooks/useL10n.ts";
 
 const NewAccount = lazy(() => import("./NewAccount.tsx"));
 const NewUpdateDialog = lazy(() => import("../components/NewUpdateDialog.tsx"));
 
 const Accounts: FC = () => {
     const navigate = useNavigate();
+    const l10n = useL10n();
     const theme = useTheme();
     const { selectionChanged, } = useTelegramHaptics();
 
@@ -154,18 +155,8 @@ const Accounts: FC = () => {
             </Stack>
         </ThemeProvider>
         <NewUpdateDialog/>
-        <Box sx={{bgcolor: "background.paper", borderRadius: "6px"}}>
-            <Button
-                fullWidth
-                startIcon={<SettingsIcon />}
-                variant="text"
-                sx={{textTransform: 'none', paddingY: theme.spacing(1.5)}}
-                onClick={() => { navigate("/settings"); }}
-            >
-                <Typography fontWeight="bold" color="text" fontSize="small">Open settings</Typography>
-            </Button>
-        </Box>
-
+        <FlatButton onClick={() => { navigate("/settings"); }} text={l10n("ActionOpenSettings")}
+                    icon={SettingsIcon} center={true}/>
     </Stack>;
 }
 

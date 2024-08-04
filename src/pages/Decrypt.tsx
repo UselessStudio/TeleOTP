@@ -9,12 +9,14 @@ import ClearIcon from '@mui/icons-material/Clear';
 import {useNavigate} from "react-router-dom";
 import {BiometricsManagerContext} from "../managers/biometrics.tsx";
 import { Fingerprint } from "@mui/icons-material";
+import {useL10n} from "../hooks/useL10n.ts";
 
 const Decrypt: FC = () => {
     const [password, setPassword] = useState("");
     const [wrongPassword, setWrongPassword] = useState(false);
     const encryptionManager = useContext(EncryptionManagerContext);
     const biometricsManager = useContext(BiometricsManagerContext);
+    const l10n = useL10n();
 
     const decryptAccounts = () => {
         if(encryptionManager?.unlock(password)) {
@@ -25,7 +27,7 @@ const Decrypt: FC = () => {
         }
     }
 
-    useTelegramMainButton(decryptAccounts, "Decrypt");
+    useTelegramMainButton(decryptAccounts, l10n("DecryptAction"));
 
     const [biometricsRequested, setBiometricsRequested] = useState(false);
     useEffect(() => {
@@ -40,19 +42,19 @@ const Decrypt: FC = () => {
         <Stack spacing={2} alignItems="center">
             <LottieAnimation animationData={PasswordAnimation}/>
             <Typography variant="h5" fontWeight="bold" align="center">
-                Decrypt your accounts
+                {l10n("DecryptTitle")}
             </Typography>
             <Typography variant="subtitle2" align="center">
-                Enter your decryption password to get access to your accounts
+                {l10n("DecryptDescription")}
             </Typography>
             <TelegramTextField
                 fullWidth
                 autoFocus={true}
                 type="password"
-                label="Password"
+                label={l10n("PasswordLabel")}
                 value={password}
                 error={wrongPassword}
-                helperText={wrongPassword ? "Wrong password" : null}
+                helperText={wrongPassword ? l10n("WrongPasswordError") : null}
                 onChange={e => {
                     setPassword(e.target.value);
                     setWrongPassword(false);
@@ -82,7 +84,7 @@ const Decrypt: FC = () => {
                     onClick={() => {
                         navigate("/reset");
                     }}>
-                    Reset password...
+                    {l10n("ResetPasswordAction")}
                 </Button>
                 : null}
         </Stack>

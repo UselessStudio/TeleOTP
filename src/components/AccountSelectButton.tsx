@@ -1,4 +1,4 @@
-import {Box, ButtonBase, CircularProgress, Stack, SvgIcon, Typography} from "@mui/material";
+import {Box, ButtonBase, CircularProgress, Stack, SvgIcon, SxProps, Theme, Typography} from "@mui/material";
 import {FC, useContext, useEffect, useRef, useState} from "react";
 import { icons } from "../globals";
 import SVG from 'react-inlinesvg';
@@ -21,6 +21,10 @@ export interface AccountSelectButtonProps {
     color: string,
     animating: boolean,
     onClick: () => void,
+}
+
+function createIconStyle(theme: Theme, selected: boolean): SxProps<Theme> {
+    return { height:35, width:35, color: selected ? theme.palette.primary.contrastText : theme.palette.primary.main };
 }
 
 const AccountSelectButton: FC<AccountSelectButtonProps> = (props) => {
@@ -121,8 +125,8 @@ const AccountSelectButton: FC<AccountSelectButtonProps> = (props) => {
                 {
                     Object.keys(icons).includes(icon) 
                     // shorthand for const Icon = icons[icon]; <Icon />;
-                    ? ((Icon) => <Icon sx={{ height:35, width:35, color: selected ? theme.palette.primary.contrastText : color }}/>)(icons[icon])
-                    : <SvgIcon sx={{height: 35, width:35, color: selected ? theme.palette.primary.contrastText : color }} component="center">
+                    ? ((Icon) => <Icon sx={createIconStyle(theme, selected)}/>)(icons[icon])
+                    : <SvgIcon sx={createIconStyle(theme, selected)} component="center">
                         <SVG 
                             // only for dev purposes
                             title={import.meta.env.DEV ? icon : ""}

@@ -1,7 +1,7 @@
-import { FC, useContext } from "react";
-import { ButtonBase, Link, Stack, Typography, useTheme } from "@mui/material";
-import { StorageManagerContext } from "../managers/storage/storage.tsx";
-import { EncryptionManagerContext } from "../managers/encryption.tsx";
+import {FC, useContext} from "react";
+import {Link, Stack, Typography, useTheme} from "@mui/material";
+import {StorageManagerContext} from "../managers/storage/storage.tsx";
+import {EncryptionManagerContext} from "../managers/encryption.tsx";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import KeyOutlinedIcon from "@mui/icons-material/KeyOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
@@ -9,58 +9,15 @@ import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
 import FingerprintIcon from '@mui/icons-material/Fingerprint';
-import {Newspaper,SvgIconComponent} from "@mui/icons-material";
-import {useNavigate} from "react-router-dom";
+import {Newspaper, Language} from "@mui/icons-material";
+import {Link as RouterLink, useNavigate} from "react-router-dom";
 import {SettingsManagerContext} from "../managers/settings.tsx";
 import useTelegramHaptics from "../hooks/telegram/useTelegramHaptics.ts";
 import {BiometricsManagerContext} from "../managers/biometrics.tsx";
 import {PlausibleAnalyticsContext} from "../components/PlausibleAnalytics.tsx";
-import { Link as RouterLink } from "react-router-dom";
-
-interface OptionParams {
-    onClick(): void;
-    text: string;
-    value?: string;
-    disabled?: boolean;
-    icon: SvgIconComponent;
-}
-
-const SettingsOption: FC<OptionParams> = ({ onClick,
-                                              text,
-                                              icon,
-                                              value,
-                                              disabled = false }) => {
-    const theme = useTheme();
-    const Icon = icon;
-    return <ButtonBase
-        sx={{
-            textTransform: "none",
-            paddingY: theme.spacing(1),
-            paddingX: theme.spacing(1.5),
-            width: "100%",
-            bgcolor: "background.paper",
-            borderRadius: "6px",
-        }}
-        disabled={disabled}
-        onClick={onClick}
-    >
-        <Stack direction="row" alignItems="center" sx={{width: "100%"}} spacing={1.5}>
-            <Icon color="action" />
-            <Typography
-                fontWeight="medium"
-                color="text"
-                fontSize="small"
-                sx={{ flexGrow: 1 }}
-                align="left"
-            >
-                {text}
-            </Typography>
-            <Typography fontWeight="800" color="primary" fontSize="small">
-                {value}
-            </Typography>
-        </Stack>
-    </ButtonBase>;
-}
+import {FlatButton} from "../components/FlatButton.tsx";
+import {useL10n} from "../hooks/useL10n.ts";
+import {defaultLanguage, languageDescriptions} from "../globals.tsx";
 
 const Settings: FC = () => {
     const theme = useTheme();
@@ -71,6 +28,8 @@ const Settings: FC = () => {
     const encryptionManager = useContext(EncryptionManagerContext);
     const settingsManager = useContext(SettingsManagerContext);
     const analytics = useContext(PlausibleAnalyticsContext);
+    const l10n = useL10n();
+
     return (
         <Stack spacing={1}>
             <Typography
@@ -79,14 +38,22 @@ const Settings: FC = () => {
                 fontSize="small"
                 sx={{ paddingY: theme.spacing(0.5) }}
             >
-                General
+                {l10n("Settings.General")}
             </Typography>
-            <SettingsOption
+            <FlatButton
+                onClick={() => {
+                    navigate("lang");
+                }}
+                text={l10n("Language")}
+                icon={Language}
+                value={languageDescriptions[settingsManager?.selectedLanguage ?? defaultLanguage].native}
+            />
+            <FlatButton
                 onClick={() => {
                     window.Telegram.WebApp.openTelegramLink(import.meta.env.VITE_CHANNEL_LINK);
                 }}
-                text="TeleOTP News"
-                value="Open"
+                text={l10n("NewsChannel")}
+                value={l10n("ActionOpen")}
                 icon={Newspaper}
             />
 
@@ -96,26 +63,27 @@ const Settings: FC = () => {
                 fontSize="small"
                 sx={{ paddingY: theme.spacing(0.5) }}
             >
-                Security
+                {l10n("Settings.Security")}
             </Typography>
-            <SettingsOption
+            <FlatButton
                 onClick={() => {
                     navigate("/changePassword");
                 }}
-                text="Password"
-                value="Change"
+                text={l10n("Password")}
+                value={l10n("ActionChange")}
                 icon={LockOutlinedIcon}
             />
 
-        <SettingsOption
+        <FlatButton
             onClick={() => {
                 impactOccurred("light");
                 settingsManager?.setKeepUnlocked(!settingsManager.shouldKeepUnlocked);
             }}
-            text="Keep unlocked" value={settingsManager?.shouldKeepUnlocked ? "Enabled" : "Disabled"}
+            text={l10n("KeepUnlocked")}
+            value={settingsManager?.shouldKeepUnlocked ? l10n("Enabled") : l10n("Disabled")}
             icon={KeyOutlinedIcon}/>
 
-        <SettingsOption
+        <FlatButton
             onClick={() => {
                 if(!biometricsManager?.isAvailable) {
                     notificationOccurred("error");
@@ -129,18 +97,18 @@ const Settings: FC = () => {
                     analytics?.trackEvent("Biometrics enabled");
                 }
             }}
-            text="Use biometrics"
+            text={l10n("UseBiometrics")}
             value={
-                biometricsManager?.isAvailable ? (biometricsManager.isSaved ? "Enabled" : "Disabled") : "Not available"
+                biometricsManager?.isAvailable ? (biometricsManager.isSaved ? l10n("Enabled") : l10n("Disabled")) : l10n("NotAvailable")
             }
             disabled={!biometricsManager?.isAvailable}
             icon={FingerprintIcon}/>
 
-            <SettingsOption
+            <FlatButton
                 onClick={() => {
                     encryptionManager?.lock();
                 }}
-                text="Lock accounts"
+                text={l10n("LockAccounts")}
                 icon={LogoutOutlinedIcon}
             />
 
@@ -150,13 +118,13 @@ const Settings: FC = () => {
                 fontSize="small"
                 sx={{ paddingY: theme.spacing(0.5) }}
             >
-                Accounts
+                {l10n("Settings.Accounts")}
             </Typography>
-            <SettingsOption
+            <FlatButton
                 onClick={() => {
                     navigate("/");
                 }}
-                text="Accounts"
+                text={l10n("Accounts")}
                 value={
                     storageManager
                         ? storageManager.accounts.length.toString()
@@ -165,24 +133,25 @@ const Settings: FC = () => {
                 icon={PersonOutlineOutlinedIcon}
             />
 
-            <SettingsOption
+            <FlatButton
                 onClick={() => {
-                    window.Telegram.WebApp.openTelegramLink(
-                        `https://t.me/${
-                            import.meta.env.VITE_BOT_USERNAME
-                        }?start=export`
-                    );
+                    navigate("/export");
+                    // window.Telegram.WebApp.openTelegramLink(
+                    //     `https://t.me/${
+                    //         import.meta.env.VITE_BOT_USERNAME
+                    //     }?start=export`
+                    // );
                 }}
-                text="Export accounts"
+                text={l10n("ActionExportAccounts")}
                 icon={FileDownloadOutlinedIcon}
             />
 
-            <SettingsOption
+            <FlatButton
                 onClick={() => {
                     notificationOccurred("warning");
                     navigate("/reset");
                 }}
-                text="Remove all accounts"
+                text={l10n("ActionRemoveAccounts")}
                 icon={CloseOutlinedIcon}
             />
 
@@ -190,31 +159,34 @@ const Settings: FC = () => {
                 color="text.secondary"
                 fontSize="small"
                 align="center"
-                sx={{ paddingY: theme.spacing(1) }}
+                sx={{paddingY: theme.spacing(1)}}
             >
                 TeleOTP
-                <br />
-                Version: {APP_VERSION}
-                <br />
+                <br/>
+                {l10n("Version")}: {APP_VERSION}
+                <br/>
                 <Link
                     color="inherit"
                     target="_blank"
                     rel="noopener"
                     href={APP_HOMEPAGE}
                 >
-                    Star us on GitHub
+                    {l10n("StarUs")}
+                </Link>
+                <br/>
+                <Link
+                    color="inherit"
+                    target="_blank"
+                    rel="noopener"
+                    href={import.meta.env.VITE_TRANSLATE_LINK}
+                >
+                    {l10n("HelpTranslating")}
                 </Link>
                 {import.meta.env.DEV && (
                     <>
-                        <br />
-                        <RouterLink color="text.secondary" style={{textDecorationColor: "unset"}} to="/devtools">
-                            <Link
-                                color="text.secondary"
-                                target="_blank"
-                                rel="noopener"
-                            >
-                                Dev tools
-                            </Link>
+                        <br/>
+                        <RouterLink style={{color: "inherit"}} to="/devtools">
+                            {l10n("DevTools")}
                         </RouterLink>
                     </>
                 )}

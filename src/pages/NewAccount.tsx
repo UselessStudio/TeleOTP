@@ -1,5 +1,5 @@
 import {FC, useCallback, useContext} from "react";
-import {Button, Divider, Stack, Typography} from "@mui/material";
+import {Button, Stack, Typography} from "@mui/material";
 import NewAccountAnimation from "../assets/new_account_lottie.json";
 import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
 import useTelegramQrScanner from "../hooks/telegram/useTelegramQrScanner.ts";
@@ -10,15 +10,20 @@ import LottieAnimation from "../components/LottieAnimation.tsx";
 import decodeGoogleAuthenticator from "../migration/import.ts";
 import useTelegramHaptics from "../hooks/telegram/useTelegramHaptics.ts";
 import {StorageManagerContext} from "../managers/storage/storage.tsx";
+import {PlausibleAnalyticsContext} from "../components/PlausibleAnalytics.tsx";
+import {FlatButton} from "../components/FlatButton.tsx";
+import {useL10n} from "../hooks/useL10n.ts";
 
 const NewAccount: FC = () => {
     const navigate = useNavigate();
     const { notificationOccurred } = useTelegramHaptics();
     const storageManager = useContext(StorageManagerContext);
+    const analytics = useContext(PlausibleAnalyticsContext);
+    const l10n = useL10n();
 
     const scan = useTelegramQrScanner(useCallback((scanned) => {
         function invalidPopup() {
-            window.Telegram.WebApp.showAlert("Invalid QR code");
+            window.Telegram.WebApp.showAlert(l10n("InvalidQRCodeAlert"));
             notificationOccurred("error");
         }
 
@@ -33,7 +38,7 @@ const NewAccount: FC = () => {
 
             if (otp instanceof HOTP) {
                 // TODO implement HOTP
-                window.Telegram.WebApp.showAlert("HOTP support is not implemented yet :(");
+                window.Telegram.WebApp.showAlert(l10n("HOTPUnimplementedAlert"));
                 notificationOccurred("error");
                 return;
             }
@@ -48,6 +53,7 @@ const NewAccount: FC = () => {
             }
 
             storageManager?.saveAccounts(accounts);
+            analytics?.trackEvent("Accounts imported from QR");
             navigate("/");
         } else {
             invalidPopup();
@@ -59,23 +65,18 @@ const NewAccount: FC = () => {
         <Stack spacing={2} alignItems="center">
             <LottieAnimation animationData={NewAccountAnimation}/>
             <Typography variant="h5" fontWeight="bold" align="center">
-                Add new account
+                {l10n("NewAccountTitle")}
             </Typography>
             <Typography variant="subtitle2" align="center">
-                Protect your account with two-factor authentication (Google Authenticator import is also supported)
+                {l10n("NewAccountDescription")}
             </Typography>
-            <Button fullWidth variant="contained" startIcon={<QrCodeScannerIcon/>} onClick={() => {
+            <FlatButton center={true} text={l10n("ScanQRText")} icon={QrCodeScannerIcon} onClick={() => {
                 scan()
-            }}>
-                Scan QR code
-            </Button>
-            <Divider sx={{width: '100%'}}>
-                <Typography>OR</Typography>
-            </Divider>
+            }}/>
             <Button fullWidth onClick={() => {
                 navigate("/manual");
             }}>
-                Enter manually
+                {l10n("EnterManuallyAction")}
             </Button>
         </Stack>
     </>;

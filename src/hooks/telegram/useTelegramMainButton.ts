@@ -1,6 +1,14 @@
 import {useEffect} from "react";
 import useTelegramTheme from "./useTelegramTheme";
 
+/**
+ * This hook shows a main button and adds the callback as the listener for clicks.
+ * The button is automatically hidden if the component using this hook is disposed.
+ * @param onClick - a callback that is executed when user presses the button.
+ * If the callback returns true, the button will be hidden.
+ * @param text - a string which contains the text that should be displayed on the button.
+ * @param [disabled = false] - a boolean flag that indicates, whether the button should be disabled or not.
+ */
 export default function useTelegramMainButton(onClick: () => boolean, text: string, disabled = false) {
     const { palette } = useTelegramTheme();
     

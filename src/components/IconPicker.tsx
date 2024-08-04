@@ -20,6 +20,8 @@ import { EditAccountState } from "../pages/EditAccount.tsx";
 import SVG from 'react-inlinesvg';
 import { iconUrl } from "../icons/icons.ts";
 import SearchIcon from "@mui/icons-material/Search";
+import normalizeCustomColor from "../icons/normalizeCustomColor.ts";
+import {useL10n} from "../hooks/useL10n.ts";
 
 interface IconPickerProps {
     selectedIcon: Icon;
@@ -46,6 +48,7 @@ const IconPicker: FC<IconPickerProps> = ({ selectedIcon, setSelectedIcon, select
     const location = useLocation();
     const state = location.state as NewAccountState | EditAccountState;
     const navigate = useNavigate();
+    const l10n = useL10n();
     const [pickerColor, setPickerColor] = useState<ColorResult>();
     
     useEffect(() => {
@@ -58,6 +61,7 @@ const IconPicker: FC<IconPickerProps> = ({ selectedIcon, setSelectedIcon, select
     }, [selectedColor])
 
     const isCustom = !Object.keys(icons).includes(selectedIcon);
+    selectedColor = normalizeCustomColor(selectedColor, theme);
 
     return <Stack sx={{width: '100%'}} spacing={1}>
         <Stack direction="row" justifyContent="center" sx={{width: '100%'}} spacing={1}>
@@ -103,7 +107,7 @@ const IconPicker: FC<IconPickerProps> = ({ selectedIcon, setSelectedIcon, select
                                 </SVG>
                             </SvgIcon> : <SearchIcon sx={{color: alpha(selectedColor, 0.7)}}/>}
                             <Typography color={isCustom ? theme.palette.getContrastText(selectedColor) : alpha(selectedColor, 0.7)}>
-                                {isCustom ? "Change..." : "More..."}
+                                {isCustom ? l10n("ActionChangeMenu") : l10n("ActionMoreMenu")}
                             </Typography>
                         </Stack>
                     </IconButton>

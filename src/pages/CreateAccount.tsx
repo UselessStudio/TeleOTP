@@ -12,6 +12,7 @@ import {Icon} from "../globals.tsx";
 import LottieAnimation from "../components/LottieAnimation.tsx";
 import {SettingsManagerContext} from "../managers/settings.tsx";
 import {PlausibleAnalyticsContext} from "../components/PlausibleAnalytics.tsx";
+import {useL10n} from "../hooks/useL10n.ts";
 
 export interface NewAccountState {
     otp: TOTP,
@@ -33,10 +34,11 @@ export default function CreateAccount() {
     const [selectedIcon, setSelectedIcon] = useState<Icon>(state.icon ?? "key");
     const [selectedColor, setSelectedColor] = useState<string>(state.color ?? "#1c98e6");
     const labelInput: Ref<HTMLInputElement> = createRef();
+    const l10n = useL10n();
 
     useTelegramMainButton(() => {
         if (!label && !labelInput.current?.checkValidity()) {
-            window.Telegram.WebApp.showAlert("Label field cannot be empty!");
+            window.Telegram.WebApp.showAlert(l10n("EmptyLabelAlert"));
             return false;
         }
         analytics?.trackEvent("New account");
@@ -53,19 +55,19 @@ export default function CreateAccount() {
         settingsManager?.setLastSelectedAccount(id);
         navigate("/");
         return true;
-    }, "Create");
+    }, l10n("CreateAction"));
 
     return <Stack spacing={2} alignItems="center">
         <LottieAnimation animationData={CreateAnimation}/>
         <Typography variant="h5" fontWeight="bold" align="center">
-            Add new account
+            {l10n("NewAccountTitle")}
         </Typography>
         <Typography variant="subtitle2" align="center">
-            Enter additional account information
+            {l10n("AdditionalInfo")}
         </Typography>
         <TelegramTextField
             fullWidth
-            label="Label (required)"
+            label={`${l10n("LabelLabel")} ${l10n("RequiredLabel")}`}
             value={label}
             onChange={e => {
                 state.otp.label = e.target.value;
@@ -74,7 +76,7 @@ export default function CreateAccount() {
         />
         <TelegramTextField
             fullWidth
-            label="Service"
+            label={l10n("IssuerLabel")}
             value={issuer}
             onChange={e => {
                 state.otp.issuer = e.target.value;

@@ -1,6 +1,11 @@
 import { useTheme } from "@mui/material/styles";
-import {Theme, alpha, createTheme, getLuminance} from "@mui/material";
+import {Theme, createTheme} from "@mui/material";
+import normalizeCustomColor from "../icons/normalizeCustomColor.ts";
 
+/**
+ * Creates a Material UI theme for the provided account color.
+ * @param {?string} color - account primary color
+ */
 export default function useAccountTheme(
     color: string | undefined
 ): Theme | null {
@@ -8,21 +13,13 @@ export default function useAccountTheme(
 
     if (!color) return null;
 
-    const colorMain = alpha(color, .9);
-
-    let mode = theme.palette.mode;
-    if (getLuminance(color) < 0.1) {
-        mode = "light";
-    } else if(getLuminance(color) > 0.9) {
-        mode = "dark";
-    }
+    color = normalizeCustomColor(color, theme);
 
     return createTheme(theme, {
         palette: {
-            mode,
             primary: theme.palette.augmentColor({
                 color: {
-                    main: colorMain,
+                    main: color,
                 },
             })
             // primary: {

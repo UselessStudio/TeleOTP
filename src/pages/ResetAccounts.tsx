@@ -6,47 +6,52 @@ import LottieAnimation from "../components/LottieAnimation.tsx";
 import TelegramTextField from "../components/TelegramTextField.tsx";
 import PasswordResetAnimation from "../assets/password_reset_lottie.json";
 import {useNavigate} from "react-router-dom";
+import {useL10n} from "../hooks/useL10n.ts";
 
 const ResetAccounts: FC = () => {
     const [phrase, setPhrase] = useState("");
     const [verified, setVerified] = useState(false);
     const storageManager = useContext(StorageManagerContext);
     const navigate = useNavigate();
+    const l10n = useL10n();
+
     useTelegramMainButton(() => {
         if (!verified) return false;
         storageManager?.clearStorage();
         navigate("/");
         return true;
-    }, "Remove PERMANENTLY", !verified);
+    }, l10n("RemovePermanentlyAction"), !verified);
 
     return <>
         <Stack spacing={2} alignItems="center">
             <LottieAnimation animationData={PasswordResetAnimation}/>
             <Typography variant="h5" fontWeight="bold" align="center">
-                Password reset
+                {l10n("PasswordResetTitle")}
             </Typography>
             <Stack>
                 <Typography variant="subtitle2" align="center">
-                    You are about to delete all your accounts <b>PERMANENTLY</b>. You won&apos;t be able to restore them.
+                    {l10n("DeleteWarning")}
                 </Typography>
                 <Typography variant="subtitle2" align="center">
-                    If you are absolutely sure, type the phrase
+                    {l10n("TypeDeleteConfirmationPhrase")}
                 </Typography>
                 <Typography variant="subtitle2" align="center" fontWeight={900}>
-                    &quot;Yes, delete everything&quot;:
+                    &quot;{l10n("DeleteConfirmationPhrase")}&quot;:
                 </Typography>
             </Stack>
             <TelegramTextField
                 fullWidth
                 type="phrase"
-                label="Delete your accounts and reset the password?"
+                label={l10n("DeleteConfirmationLabel")}
                 value={phrase}
                 error={!verified}
-                helperText={!verified ? "Type \"Yes, delete everything\"" : null}
+                helperText={!verified ? l10n("DeleteConfirmationPhraseError", {
+                    phrase: l10n("DeleteConfirmationPhrase")
+                }) : null}
                 onChange={e => {
                     const value = e.target.value;
                     setPhrase(value);
-                    setVerified(value.trim().toLowerCase() === "yes, delete everything");
+                    setVerified(value.trim().toLowerCase() === l10n("DeleteConfirmationPhrase").toLowerCase());
                 }}
             />
         </Stack>

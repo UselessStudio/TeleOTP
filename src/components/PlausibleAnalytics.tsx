@@ -3,7 +3,20 @@ import Plausible from "plausible-tracker";
 import {EventOptions} from "plausible-tracker/src/lib/request.ts";
 import {PlausibleOptions} from "plausible-tracker/src/lib/tracker.ts";
 
+/**
+ * PlausibleAnalytics is responsible for tracking custom event goals.
+ *
+ * To get an instance of PlausibleAnalytics, you should use the useContext hook:
+ * @example
+ * const analytics = useContext(PlausibleAnalyticsContext);
+ */
 export interface PlausibleAnalytics {
+    /**
+     * Tracks a new event.
+     * @param eventName - name of the event to track
+     * @param options - callback and additional event props
+     * @param eventData
+     */
     trackEvent: (
         eventName: string,
         options?: EventOptions,
@@ -17,6 +30,9 @@ export interface PlausibleAnalyticsProps {
     apiHost: string;
 }
 
+/**
+ * PlausibleAnalytics is created using PlausibleAnalyticsProvider component
+ */
 export const PlausibleAnalyticsProvider: FC<PropsWithChildren<PlausibleAnalyticsProps>> = ({children, domain, apiHost}) => {
     const plausible = useMemo(() => {
         return Plausible({

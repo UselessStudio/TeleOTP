@@ -1,6 +1,16 @@
 import {useEffect, useState} from "react";
 import {HOTP, TOTP, URI} from "otpauth";
 
+/**
+ * This hook generates the actual 2FA code.
+ * Progress is updated every 300ms. If accountUri is not provided or invalid, the code returned is "N/A".
+ *
+ * Generation of codes is implemented in the [otpauth library](https://github.com/hectorm/otpauth).
+ * @param {string} accountUri - a string which contains a [key URI](https://github.com/google/google-authenticator/wiki/Key-Uri-Format).
+ * @returns - `code` is the generated code string.
+ * - `period` is the token time-to-live duration in seconds.
+ * - `progress` is the current token lifespan progress. A number between 0 (fresh) and 1 (expired).
+ */
 export default function useAccount(accountUri?: string): { code: string, period: number, progress: number } {
   const [code, setCode] = useState("N/A");
   const [period, setPeriod] = useState(30);

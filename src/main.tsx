@@ -25,6 +25,7 @@ import CacheProvider from "react-inlinesvg/provider";
 import Accounts from "./pages/Accounts.tsx";
 import EditAccount from "./pages/EditAccount.tsx";
 import Settings from "./pages/Settings.tsx";
+import {LocalizationManagerProvider} from "./managers/localization.tsx";
 
 // lazy loaded pages
 const CreateAccount = lazy(() => import("./pages/CreateAccount.tsx"));
@@ -34,6 +35,11 @@ const PasswordSetup = lazy(() => import("./pages/PasswordSetup.tsx"));
 const ResetAccounts = lazy(() => import("./pages/ResetAccounts.tsx"));
 const DevToolsPage = lazy(() => import("./pages/DevToolsPage.tsx"));
 const IconBrowser = lazy(() => import("./pages/IconBrowser.tsx"));
+const ExportAccounts = lazy(() => import("./pages/export/ExportAccounts.tsx"));
+const QrExport = lazy(() => import("./pages/export/QrExport.tsx"));
+const LinkExport = lazy(() => import("./pages/export/LinkExport.tsx"));
+const SelectLanguage = lazy(() => import("./pages/SelectLanguage.tsx"));
+const UserErrorPage = lazy(() => import("./pages/UserErrorPage.tsx"));
 
 
 declare global {
@@ -42,12 +48,13 @@ declare global {
     }
 }
 
+export const IS_TELEGRAM_APP_SUPPORTED = window.Telegram.WebApp.isVersionAtLeast("6.9");
+
 const router = createBrowserRouter(
-    // TODO: Make user error page
     createRoutesFromElements(
         <Route
             path="/"
-            errorElement={import.meta.env.DEV ? <DevToolsPage /> : undefined}
+            errorElement={import.meta.env.DEV ? <DevToolsPage /> : <UserErrorPage />}
             element={<Root />}
         >
             <Route index={true} element={<Accounts />} />
@@ -57,8 +64,12 @@ const router = createBrowserRouter(
             <Route path="icons" element={<IconBrowser />} />
             <Route path="edit" element={<EditAccount />} />
             <Route path="settings" element={<Settings />} />
+            <Route path="settings/lang" element={<SelectLanguage />} />
             <Route path="reset" element={<ResetAccounts />} />
             <Route path="changePassword" element={<PasswordSetup change />} />
+            <Route path="export" element={<ExportAccounts />} />
+            <Route path="export/qr" element={<QrExport />} />
+            <Route path="export/link" element={<LinkExport />} />
             {import.meta.env.DEV && (
                 <Route path="devtools" element={<DevToolsPage />} />
             )}
@@ -71,25 +82,27 @@ const router = createBrowserRouter(
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 ReactDOM.createRoot(document.getElementById("root")!).render(
+    !IS_TELEGRAM_APP_SUPPORTED ? <div className={"outdated-container"}>
+        <h1>Your Telegram app is outdated!</h1>
+        </div> :
     <PlausibleAnalyticsProvider
         domain={import.meta.env.VITE_PLAUSIBLE_DOMAIN}
         apiHost={import.meta.env.VITE_PLAUSIBLE_API_HOST}
     >
         <SettingsManagerProvider>
-            <BiometricsManagerProvider
-                requestReason="Allow access to biometrics to be able to decrypt your accounts"
-                authenticateReason="Authenticate to decrypt your accounts"
-            >
-                <EncryptionManagerProvider>
-                    <StorageManagerProvider>
-                        <CacheProvider>
-                            <Suspense fallback={<LoadingIndicator/>}>
-                                <RouterProvider router={router} />
-                            </Suspense>
-                        </CacheProvider>
-                    </StorageManagerProvider>
-                </EncryptionManagerProvider>
-            </BiometricsManagerProvider>
+            <LocalizationManagerProvider>
+                <BiometricsManagerProvider>
+                    <EncryptionManagerProvider>
+                        <StorageManagerProvider>
+                            <CacheProvider>
+                                <Suspense fallback={<LoadingIndicator/>}>
+                                    <RouterProvider router={router} />
+                                </Suspense>
+                            </CacheProvider>
+                        </StorageManagerProvider>
+                    </EncryptionManagerProvider>
+                </BiometricsManagerProvider>
+            </LocalizationManagerProvider>
         </SettingsManagerProvider>
     </PlausibleAnalyticsProvider>
 );
