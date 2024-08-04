@@ -1,4 +1,4 @@
-import {FC, useContext} from "react";
+import {FC, useContext, useEffect, useState} from "react";
 import {useLocation, useRouteError} from "react-router-dom";
 import {CssBaseline, Stack, ThemeProvider, Typography} from "@mui/material";
 import LottieAnimation from "../components/LottieAnimation.tsx";
@@ -34,6 +34,10 @@ const UserErrorPage: FC = () => {
     const storage = useContext(StorageManagerContext);
     const settings = useContext(SettingsManagerContext);
     const localization = useContext(LocalizationManagerContext);
+    const [time, setTime] = useState(0);
+    useEffect(() => {
+        setTime(performance.now())
+    }, []);
 
     return <ThemeProvider theme={tgTheme}>
         <CssBaseline />
@@ -53,6 +57,7 @@ const UserErrorPage: FC = () => {
                         version: window.Telegram.WebApp.version,
                         userId: window.Telegram.WebApp.initDataUnsafe.user?.id
                     },
+                    time,
                     path: location.pathname,
                     href: window.location.href,
                     managers: {
