@@ -62,5 +62,4 @@ export const languageDescriptions: Record<Language, LanguageDescription> = {
         default: "Hindi"
     }
 } as const;
-
 export const defaultLanguage: Language = "en";
