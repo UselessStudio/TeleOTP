@@ -1,4 +1,14 @@
-import {Box, ButtonBase, CircularProgress, Stack, SvgIcon, SxProps, Theme, Typography} from "@mui/material";
+import {
+    Box,
+    ButtonBase,
+    CircularProgress,
+    Stack,
+    SvgIcon,
+    SxProps,
+    Theme,
+    TouchRippleActions,
+    Typography
+} from "@mui/material";
 import {FC, useContext, useEffect, useRef, useState} from "react";
 import { icons } from "../globals";
 import SVG from 'react-inlinesvg';
@@ -9,7 +19,6 @@ import {DragTypes, wobbleAnimation} from "../drag.ts";
 import {getEmptyImage} from "react-dnd-html5-backend";
 import {StorageManagerContext} from "../managers/storage/storage.tsx";
 import useTelegramHaptics from "../hooks/telegram/useTelegramHaptics.ts";
-import TouchRipple, {TouchRippleActions} from "@mui/material/ButtonBase/TouchRipple.js";
 
 export interface AccountSelectButtonProps {
     id: string;
@@ -44,7 +53,7 @@ const AccountSelectButton: FC<AccountSelectButtonProps> = (props) => {
     const storageManager = useContext(StorageManagerContext);
     const { impactOccurred } = useTelegramHaptics();
 
-    const rippleRef = useRef<TouchRippleActions>();
+    const rippleRef = useRef<TouchRippleActions>(null);
 
     const [isHolding, setHolding] = useState<boolean>(false);
     const [isTouching, setTouching] = useState<boolean>(false);
@@ -94,7 +103,7 @@ const AccountSelectButton: FC<AccountSelectButtonProps> = (props) => {
             }
         },
     });
-    const ref = useRef();
+    const ref = useRef(null);
     drag(drop(ref));
 
     return <ButtonBase component="div"
@@ -104,7 +113,7 @@ const AccountSelectButton: FC<AccountSelectButtonProps> = (props) => {
                            opacity: isDragging ? 0: 1,
                            ...(isHolding ? wobbleAnimation : {})
                         }}
-                       disableRipple={true}
+                       touchRippleRef={rippleRef}
                        onClick={onClick}
                        onTouchMove={() => {
                            if(!isHolding) {
@@ -118,7 +127,6 @@ const AccountSelectButton: FC<AccountSelectButtonProps> = (props) => {
                        onTouchEnd={() => { setTouching(false); }}
                        onTouchStart={() => { setTouching(true); }}
     >
-        <TouchRipple ref={rippleRef}/>
         <Box sx={{bgcolor: selected ? theme.palette.primary.main : theme.palette.background.paper,
             padding: theme.spacing(1), borderRadius: "6px"}} ref={ref}>
             <Stack alignItems="center" spacing={1} justifyContent="space-between">

@@ -1,7 +1,5 @@
 import {createContext, FC, PropsWithChildren, useEffect, useMemo} from "react";
-import Plausible from "plausible-tracker";
-import {EventOptions} from "plausible-tracker/src/lib/request.ts";
-import {PlausibleOptions} from "plausible-tracker/src/lib/tracker.ts";
+import Plausible, {EventOptions, PlausibleOptions} from "plausible-tracker";
 
 /**
  * PlausibleAnalytics is responsible for tracking custom event goals.
