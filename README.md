@@ -6,7 +6,7 @@
 
 Telegram Mini App that allows you to generate one-time 2FA passwords inside Telegram.
 
-[➡️ **OPEN**]([TeleOTP](http://t.me/TeleOTPAppBot))
+[➡️ **OPEN**](http://t.me/TeleOTPAppBot)
 
 ## ✨ Features
 
