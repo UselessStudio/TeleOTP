@@ -104,4 +104,21 @@ export const lang = {
         "Autoriser l'accès à la biométrie pour pouvoir déchiffrer vos comptes",
     BiometricsAuthenticateReason:
         "Authentifiez-vous pour déchiffrer vos comptes",
+    PinCode: "Code PIN",
+    CredentialType: "Méthode de déverrouillage",
+    LinkExportBatchDescription:
+        "Cette exportation contient {count} liens. Ouvrez chaque lien pour importer tous les comptes.",
+    QRExportBatchDescription:
+        "Scannez les {count} codes QR numérotés pour importer tous les comptes.",
+    PinUnlockDescription:
+        "Saisissez votre code PIN à 4 chiffres pour accéder à vos comptes",
+    WrongPinError: "Code PIN incorrect",
+    ResetCredentialAction: "Réinitialiser la méthode de déverrouillage...",
+    PinSetupDescription:
+        "Saisissez un code PIN à 4 chiffres pour chiffrer vos comptes",
+    EnterPinTitle: "Saisissez le code PIN",
+    RepeatPinTitle: "Répétez le code PIN",
+    PinRepeatIncorrectError: "Les codes PIN ne correspondent pas",
+    CreatePinAction: "Créer le code PIN",
+    ChangePinAction: "Modifier le code PIN",
 };

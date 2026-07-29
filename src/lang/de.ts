@@ -104,4 +104,21 @@ export const lang = {
         "Erlaube Zugriff auf biometrische Daten, um Ihre Konten entschlüsseln zu können",
     BiometricsAuthenticateReason:
         "Authentifizieren, um Ihre Konten zu entschlüsseln",
+    PinCode: "PIN-Code",
+    CredentialType: "Entsperrmethode",
+    LinkExportBatchDescription:
+        "Dieser Export enthält {count} Links. Öffne jeden Link, um alle Konten zu importieren.",
+    QRExportBatchDescription:
+        "Scanne alle {count} nummerierten QR-Codes, um alle Konten zu importieren.",
+    PinUnlockDescription:
+        "Gib deine 4-stellige PIN ein, um auf deine Konten zuzugreifen",
+    WrongPinError: "Falscher PIN-Code",
+    ResetCredentialAction: "Entsperrmethode zurücksetzen...",
+    PinSetupDescription:
+        "Gib eine 4-stellige PIN ein, um deine Konten zu verschlüsseln",
+    EnterPinTitle: "PIN-Code eingeben",
+    RepeatPinTitle: "PIN-Code wiederholen",
+    PinRepeatIncorrectError: "Die PIN-Codes stimmen nicht überein",
+    CreatePinAction: "PIN erstellen",
+    ChangePinAction: "PIN ändern",
 };

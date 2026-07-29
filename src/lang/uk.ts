@@ -102,4 +102,21 @@ export const lang = {
         "Дозволити доступ до біометрики, щоб розшифрувати свої облікові записи",
     BiometricsAuthenticateReason:
         "Автентифікуйтесь для дешифрування ваших облікових записів",
+    PinCode: "ПІН-код",
+    CredentialType: "Спосіб розблокування",
+    LinkExportBatchDescription:
+        "Експорт містить {count} посилань. Відкрийте кожне посилання, щоб імпортувати всі облікові записи.",
+    QRExportBatchDescription:
+        "Відскануйте всі пронумеровані QR-коди ({count}), щоб імпортувати всі облікові записи.",
+    PinUnlockDescription:
+        "Введіть 4-значний ПІН-код для доступу до облікових записів",
+    WrongPinError: "Неправильний ПІН-код",
+    ResetCredentialAction: "Скинути спосіб розблокування...",
+    PinSetupDescription:
+        "Введіть 4-значний ПІН-код для шифрування облікових записів",
+    EnterPinTitle: "Введіть ПІН-код",
+    RepeatPinTitle: "Повторіть ПІН-код",
+    PinRepeatIncorrectError: "ПІН-коди не збігаються",
+    CreatePinAction: "Створити ПІН-код",
+    ChangePinAction: "Змінити ПІН-код",
 };

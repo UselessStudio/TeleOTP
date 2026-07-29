@@ -102,4 +102,21 @@ export const lang = {
     BiometricsRequestReason:
         "Permitir el acceso a los biométricos, para poder descifrar tus cuentas",
     BiometricsAuthenticateReason: "Autenticar para descifrar tus cuentas",
+    PinCode: "Código PIN",
+    CredentialType: "Método de desbloqueo",
+    LinkExportBatchDescription:
+        "Esta exportación contiene {count} enlaces. Abre cada enlace para importar todas las cuentas.",
+    QRExportBatchDescription:
+        "Escanea los {count} códigos QR numerados para importar todas las cuentas.",
+    PinUnlockDescription:
+        "Introduce tu PIN de 4 dígitos para acceder a tus cuentas",
+    WrongPinError: "Código PIN incorrecto",
+    ResetCredentialAction: "Restablecer método de desbloqueo...",
+    PinSetupDescription:
+        "Introduce un PIN de 4 dígitos para cifrar tus cuentas",
+    EnterPinTitle: "Introduce el código PIN",
+    RepeatPinTitle: "Repite el código PIN",
+    PinRepeatIncorrectError: "Los códigos PIN no coinciden",
+    CreatePinAction: "Crear PIN",
+    ChangePinAction: "Cambiar PIN",
 };

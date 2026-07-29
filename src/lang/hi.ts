@@ -99,4 +99,19 @@ export const lang = {
     BiometricsRequestReason:
         "अपने खातों को डिक्रिप्ट करने के लिए बायोमेट्रिक्स तक पहुंच की अनुमति दें",
     BiometricsAuthenticateReason: "अपने खातों को डिक्रिप्ट करने के लिए प्रमाणित करें",
+    PinCode: "पिन कोड",
+    CredentialType: "अनलॉक करने का तरीका",
+    LinkExportBatchDescription:
+        "इस एक्सपोर्ट में {count} लिंक हैं। सभी खातों को इंपोर्ट करने के लिए हर लिंक खोलें।",
+    QRExportBatchDescription:
+        "सभी खातों को इंपोर्ट करने के लिए सभी {count} क्रमांकित QR कोड स्कैन करें।",
+    PinUnlockDescription: "अपने खातों तक पहुँचने के लिए अपना 4 अंकों का पिन दर्ज करें",
+    WrongPinError: "गलत पिन कोड",
+    ResetCredentialAction: "अनलॉक करने का तरीका रीसेट करें...",
+    PinSetupDescription: "अपने खातों को एन्क्रिप्ट करने के लिए 4 अंकों का पिन दर्ज करें",
+    EnterPinTitle: "पिन कोड दर्ज करें",
+    RepeatPinTitle: "पिन कोड दोबारा दर्ज करें",
+    PinRepeatIncorrectError: "पिन कोड मेल नहीं खाते",
+    CreatePinAction: "पिन बनाएँ",
+    ChangePinAction: "पिन बदलें",
 };

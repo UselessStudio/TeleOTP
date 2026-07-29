@@ -99,4 +99,19 @@ export const lang = {
         "Предоставьте доступ к биометрическим данным для расшифрования Ваших аккаунтов",
     BiometricsAuthenticateReason:
         "Авторизуйтесь для расшифровки ваших аккаунтов",
+    PinCode: "ПИН-код",
+    CredentialType: "Способ разблокировки",
+    LinkExportBatchDescription:
+        "Экспорт содержит {count} ссылок. Откройте каждую ссылку, чтобы импортировать все аккаунты.",
+    QRExportBatchDescription:
+        "Отсканируйте все пронумерованные QR-коды ({count}), чтобы импортировать все аккаунты.",
+    PinUnlockDescription: "Введите 4-значный ПИН-код для доступа к аккаунтам",
+    WrongPinError: "Неверный ПИН-код",
+    ResetCredentialAction: "Сбросить способ разблокировки...",
+    PinSetupDescription: "Введите 4-значный ПИН-код для шифрования аккаунтов",
+    EnterPinTitle: "Введите ПИН-код",
+    RepeatPinTitle: "Повторите ПИН-код",
+    PinRepeatIncorrectError: "ПИН-коды не совпадают",
+    CreatePinAction: "Создать ПИН-код",
+    ChangePinAction: "Изменить ПИН-код",
 };
