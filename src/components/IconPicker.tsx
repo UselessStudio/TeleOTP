@@ -73,9 +73,11 @@ const IconPicker: FC<IconPickerProps> = ({
         <Stack sx={{ width: "100%" }} spacing={1}>
             <Stack
                 direction="row"
-                justifyContent="center"
-                sx={{ width: "100%" }}
                 spacing={1}
+                sx={{
+                    justifyContent: "center",
+                    width: "100%",
+                }}
             >
                 {colors.map((color: string) => {
                     return (
@@ -104,21 +106,25 @@ const IconPicker: FC<IconPickerProps> = ({
             </Stack>
             <Stack
                 direction="column"
-                justifyContent="center"
-                justifyItems="center"
-                sx={{ width: "100%" }}
                 spacing={1}
+                sx={{
+                    justifyContent: "center",
+                    justifyItems: "center",
+                    width: "100%",
+                }}
             >
                 <Grid
                     container
                     direction="row"
-                    justifyContent="center"
-                    flexWrap="wrap"
                     spacing={0.3}
+                    sx={{
+                        justifyContent: "center",
+                        flexWrap: "wrap",
+                    }}
                 >
                     {Object.entries(icons).map(([key, Icon]) => {
                         return (
-                            <Grid key={key} item>
+                            <Grid key={key}>
                                 <IconButton
                                     disableRipple={true}
                                     sx={buttonStyle(
@@ -143,7 +149,7 @@ const IconPicker: FC<IconPickerProps> = ({
                             </Grid>
                         );
                     })}
-                    <Grid item>
+                    <Grid>
                         <IconButton
                             disableRipple={true}
                             sx={buttonStyle(isCustom, mainColor)}
@@ -151,7 +157,13 @@ const IconPicker: FC<IconPickerProps> = ({
                                 navigate("/icons", { state });
                             }}
                         >
-                            <Stack direction="row" gap={1} paddingX={0.5}>
+                            <Stack
+                                direction="row"
+                                sx={{
+                                    gap: 1,
+                                    paddingX: 0.5,
+                                }}
+                            >
                                 {isCustom ? (
                                     <SvgIcon
                                         sx={{

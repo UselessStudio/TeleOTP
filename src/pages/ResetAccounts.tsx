@@ -27,9 +27,20 @@ const ResetAccounts: FC = () => {
     );
 
     return (
-        <Stack spacing={2} alignItems="center">
+        <Stack
+            spacing={2}
+            sx={{
+                alignItems: "center",
+            }}
+        >
             <LottieAnimation animationData={PasswordResetAnimation} />
-            <Typography variant="h5" fontWeight="bold" align="center">
+            <Typography
+                variant="h5"
+                align="center"
+                sx={{
+                    fontWeight: "bold",
+                }}
+            >
                 {l10n("PasswordResetTitle")}
             </Typography>
             <Stack>
@@ -39,7 +50,13 @@ const ResetAccounts: FC = () => {
                 <Typography variant="subtitle2" align="center">
                     {l10n("TypeDeleteConfirmationPhrase")}
                 </Typography>
-                <Typography variant="subtitle2" align="center" fontWeight={900}>
+                <Typography
+                    variant="subtitle2"
+                    align="center"
+                    sx={{
+                        fontWeight: 900,
+                    }}
+                >
                     &quot;{l10n("DeleteConfirmationPhrase")}&quot;:
                 </Typography>
             </Stack>

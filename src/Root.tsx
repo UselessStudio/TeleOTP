@@ -19,9 +19,13 @@ const PasswordSetup = lazy(() => import("./pages/PasswordSetup.tsx"));
 export function LoadingIndicator() {
     return (
         <Stack
-            sx={{ width: "100vw", height: "100vh", position: "fixed" }}
-            justifyContent="center"
-            alignItems="center"
+            sx={{
+                justifyContent: "center",
+                alignItems: "center",
+                width: "100vw",
+                height: "100vh",
+                position: "fixed",
+            }}
         >
             <CircularProgress />
         </Stack>

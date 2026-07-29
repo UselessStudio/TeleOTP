@@ -33,7 +33,7 @@ export default function useAccount(accountUri?: string): {
         }
 
         setPeriod(otp.period);
-        let timeout: NodeJS.Timeout | null = null;
+        let timeout: ReturnType<typeof setTimeout> | null = null;
 
         function cycle() {
             setCode(otp.generate());

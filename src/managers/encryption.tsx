@@ -10,7 +10,12 @@ import {
 import { BiometricsManagerContext } from "./biometrics.tsx";
 import { SettingsManagerContext } from "./settings.tsx";
 
-const kdfOptions = { keySize: 256 / 8 };
+// See brix/crypto-js#479
+const kdfOptions = {
+    keySize: 256 / 8,
+    hasher: crypto.algo.SHA1,
+    iterations: 1,
+};
 const saltBytes = 128 / 8;
 const ivBytes = 128 / 8;
 const keyCheckValuePlaintext = "key-check-value";

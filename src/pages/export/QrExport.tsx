@@ -32,23 +32,31 @@ export default function QrExport() {
     return (
         <Stack
             spacing={2}
-            alignItems="center"
-            justifyContent={"center"}
-            sx={{ flex: 1 }}
+            sx={{
+                alignItems: "center",
+                justifyContent: "center",
+                flex: 1,
+            }}
         >
-            <Typography variant="h5" fontWeight="bold" align="center">
+            <Typography
+                variant="h5"
+                align="center"
+                sx={{
+                    fontWeight: "bold",
+                }}
+            >
                 {l10n("ExportAccountsTitle")}
             </Typography>
             <Stack
                 sx={{
+                    alignItems: "center",
+                    justifyContent: "center",
+                    bgcolor: "background.paper",
                     padding: 2,
                     borderRadius: "30px",
                     width: "75%",
                     aspectRatio: 1,
                 }}
-                alignItems="center"
-                justifyContent="center"
-                bgcolor="background.paper"
             >
                 {qrContent === null ? (
                     <CircularProgress />

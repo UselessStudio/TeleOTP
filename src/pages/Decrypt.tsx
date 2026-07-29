@@ -44,9 +44,20 @@ const Decrypt: FC = () => {
     const navigate = useNavigate();
 
     return (
-        <Stack spacing={2} alignItems="center">
+        <Stack
+            spacing={2}
+            sx={{
+                alignItems: "center",
+            }}
+        >
             <LottieAnimation animationData={PasswordAnimation} />
-            <Typography variant="h5" fontWeight="bold" align="center">
+            <Typography
+                variant="h5"
+                align="center"
+                sx={{
+                    fontWeight: "bold",
+                }}
+            >
                 {l10n("DecryptTitle")}
             </Typography>
             <Typography variant="subtitle2" align="center">

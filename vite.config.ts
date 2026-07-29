@@ -7,8 +7,13 @@ import svgr from "vite-plugin-svgr";
 import packageJson from "./package.json";
 
 // https://vitejs.dev/config/
-export default defineConfig({
-    plugins: [react(), svgr(), mkcert()],
+export default defineConfig(({ mode }) => ({
+    plugins: [react(), svgr(), ...(mode === "test" ? [] : [mkcert()])],
+    resolve: {
+        alias: {
+            "lottie-react": "lottie-react/build/index.es.js",
+        },
+    },
     define: {
         APP_VERSION: JSON.stringify(packageJson.version),
         APP_HOMEPAGE: JSON.stringify(packageJson.homepage),
@@ -17,4 +22,4 @@ export default defineConfig({
         globals: true,
         environment: "jsdom",
     },
-});
+}));

@@ -15,8 +15,14 @@ const AccountDragPreview: FC<PropsWithChildren> = () => {
 
     return (
         <div className={"item-list__item"} style={style}>
-            <Grid container spacing={1} width={"100vw"}>
-                <Grid item xs={3} sx={wobbleAnimation}>
+            <Grid
+                container
+                spacing={1}
+                sx={{
+                    width: "100vw",
+                }}
+            >
+                <Grid sx={wobbleAnimation} size={3}>
                     <AccountSelectButton {...item} />
                 </Grid>
             </Grid>

@@ -51,7 +51,9 @@ export default function SelectLanguage() {
                                         value={key}
                                         disableRipple
                                         name="languages"
-                                        inputProps={{ "aria-label": key }}
+                                        slotProps={{
+                                            input: { "aria-label": key },
+                                        }}
                                     />
                                 </ListItemIcon>
                                 <ListItemText

@@ -44,12 +44,21 @@ const UserErrorPage: FC = () => {
             <CssBaseline />
             <Stack
                 spacing={1}
-                alignItems="center"
-                justifyContent={"center"}
-                sx={{ flex: 1, padding: 2 }}
+                sx={{
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flex: 1,
+                    padding: 2,
+                }}
             >
                 <LottieAnimation animationData={CrashAnimation} />
-                <Typography variant="h5" fontWeight="bold" align="center">
+                <Typography
+                    variant="h5"
+                    align="center"
+                    sx={{
+                        fontWeight: "bold",
+                    }}
+                >
                     Oops! TeleOTP has crashed
                 </Typography>
                 <Typography variant="subtitle2" align="center">

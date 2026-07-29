@@ -13,12 +13,20 @@ export default function ExportAccounts() {
     return (
         <Stack
             spacing={1}
-            alignItems="center"
-            justifyContent={"center"}
-            sx={{ flex: 1 }}
+            sx={{
+                alignItems: "center",
+                justifyContent: "center",
+                flex: 1,
+            }}
         >
             <LottieAnimation animationData={ExportAnimation} />
-            <Typography variant="h5" fontWeight="bold" align="center">
+            <Typography
+                variant="h5"
+                align="center"
+                sx={{
+                    fontWeight: "bold",
+                }}
+            >
                 {l10n("ExportAccountsTitle")}
             </Typography>
             <Typography variant="subtitle2" align="center">

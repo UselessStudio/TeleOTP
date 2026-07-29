@@ -152,9 +152,11 @@ const AccountSelectButton: FC<AccountSelectButtonProps> = (props) => {
                 ref={ref}
             >
                 <Stack
-                    alignItems="center"
                     spacing={1}
-                    justifyContent="space-between"
+                    sx={{
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                    }}
                 >
                     {Object.keys(icons).includes(icon) ? (
                         // shorthand for const Icon = icons[icon]; <Icon />;
@@ -176,23 +178,24 @@ const AccountSelectButton: FC<AccountSelectButtonProps> = (props) => {
                         </SvgIcon>
                     )}
                     <Stack
-                        justifyContent="center"
-                        sx={{ width: "100%", height: "2em" }}
+                        sx={{
+                            justifyContent: "center",
+                            width: "100%",
+                            height: "2em",
+                        }}
                     >
                         <Typography
                             align="center"
                             noWrap
+                            variant="subtitle2"
                             sx={{
+                                color: selected
+                                    ? theme.palette.primary.contrastText
+                                    : theme.palette.text.primary,
+                                fontWeight: selected ? "bold" : "lighter",
                                 lineHeight: "1.2em",
                                 verticalAlign: "center",
                             }}
-                            variant="subtitle2"
-                            fontWeight={selected ? "bold" : "lighter"}
-                            color={
-                                selected
-                                    ? theme.palette.primary.contrastText
-                                    : theme.palette.text.primary
-                            }
                         >
                             {issuer ? issuer : label}
                         </Typography>
@@ -201,17 +204,15 @@ const AccountSelectButton: FC<AccountSelectButtonProps> = (props) => {
                             <Typography
                                 align="center"
                                 noWrap
+                                variant="subtitle2"
                                 sx={{
+                                    color: selected
+                                        ? theme.palette.primary.contrastText
+                                        : theme.palette.text.primary,
+                                    fontWeight: selected ? "bold" : "lighter",
                                     lineHeight: "1.2em",
                                     verticalAlign: "center",
                                 }}
-                                variant="subtitle2"
-                                fontWeight={selected ? "bold" : "lighter"}
-                                color={
-                                    selected
-                                        ? theme.palette.primary.contrastText
-                                        : theme.palette.text.primary
-                                }
                             >
                                 ({label})
                             </Typography>

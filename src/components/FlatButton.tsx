@@ -37,22 +37,32 @@ export const FlatButton: FC<ButtonParams> = ({
         >
             <Stack
                 direction="row"
-                alignItems="center"
-                sx={{ width: "100%" }}
                 spacing={1.5}
-                justifyContent={center ? "center" : "start"}
+                sx={{
+                    alignItems: "center",
+                    justifyContent: center ? "center" : "start",
+                    width: "100%",
+                }}
             >
                 <Icon color="primary" />
                 <Typography
-                    fontWeight="medium"
                     color="text"
-                    fontSize="small"
-                    sx={{ flexGrow: center ? 0 : 1 }}
                     align="left"
+                    sx={{
+                        fontWeight: "medium",
+                        fontSize: "small",
+                        flexGrow: center ? 0 : 1,
+                    }}
                 >
                     {text}
                 </Typography>
-                <Typography fontWeight="800" color="primary" fontSize="small">
+                <Typography
+                    color="primary"
+                    sx={{
+                        fontWeight: "800",
+                        fontSize: "small",
+                    }}
+                >
                     {value}
                 </Typography>
             </Stack>

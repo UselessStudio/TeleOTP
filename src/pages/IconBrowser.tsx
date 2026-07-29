@@ -164,8 +164,19 @@ const IconBrowser: FC = () => {
     }, [phrase, verified]);
 
     return (
-        <Stack spacing={2} alignItems="center">
-            <Typography variant="h5" fontWeight="bold" align="center">
+        <Stack
+            spacing={2}
+            sx={{
+                alignItems: "center",
+            }}
+        >
+            <Typography
+                variant="h5"
+                align="center"
+                sx={{
+                    fontWeight: "bold",
+                }}
+            >
                 {l10n("BrowseIconsTitle")}
             </Typography>
             <TelegramTextField
@@ -186,11 +197,12 @@ const IconBrowser: FC = () => {
             {!searching && (
                 <>
                     <Typography
-                        // fontFamily={"monospace"}
-                        color="text.secondary"
                         align="center"
                         variant="subtitle1"
-                        fontWeight={400}
+                        sx={{
+                            color: "text.secondary",
+                            fontWeight: 400,
+                        }}
                     >
                         {l10n("StartTyping")}
                     </Typography>
@@ -204,14 +216,21 @@ const IconBrowser: FC = () => {
             {searching && iconsData && (
                 <IconsList icons={iconsData.icons} searchQuery={query} />
             )}
-            <Typography justifySelf={"flex-end"} variant="subtitle2">
+            <Typography
+                variant="subtitle2"
+                sx={{
+                    justifySelf: "flex-end",
+                }}
+            >
                 {l10n("IconsProvidedBy")}
                 <Link
                     rel="noopener"
                     target="_blank"
                     variant="subtitle2"
-                    color="text.secondary"
                     href="https://github.com/simple-icons/simple-icons"
+                    sx={{
+                        color: "text.secondary",
+                    }}
                 >
                     @simpleicons
                 </Link>

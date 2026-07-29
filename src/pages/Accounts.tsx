@@ -84,7 +84,13 @@ const Accounts: FC = () => {
     }
 
     return (
-        <Stack justifyContent="space-between" sx={{ flex: 1 }} spacing={2}>
+        <Stack
+            spacing={2}
+            sx={{
+                justifyContent: "space-between",
+                flex: 1,
+            }}
+        >
             <ThemeProvider theme={accountTheme}>
                 <Stack spacing={2}>
                     <Container
@@ -97,8 +103,10 @@ const Accounts: FC = () => {
                         <Stack
                             spacing={1}
                             direction="row"
-                            justifyContent="center"
-                            alignItems="center"
+                            sx={{
+                                justifyContent: "center",
+                                alignItems: "center",
+                            }}
                         >
                             <Typography variant="body2">
                                 {selectedAccount?.issuer
@@ -121,8 +129,10 @@ const Accounts: FC = () => {
                         <Stack
                             spacing={1}
                             direction="row"
-                            justifyContent="center"
-                            alignItems="center"
+                            sx={{
+                                justifyContent: "center",
+                                alignItems: "center",
+                            }}
                         >
                             <Typography variant="h3">
                                 {code.match(/.{1,3}/g)?.join(" ")}
@@ -174,11 +184,7 @@ const Accounts: FC = () => {
                                                     }));
                                                 }}
                                             >
-                                                <Grid
-                                                    key={account.id}
-                                                    item
-                                                    xs={3}
-                                                >
+                                                <Grid key={account.id} size={3}>
                                                     <AccountSelectButton
                                                         index={index}
                                                         animating={
@@ -210,7 +216,7 @@ const Accounts: FC = () => {
                                         ),
                                     )}
                                     <ThemeProvider theme={theme}>
-                                        <Grid item xs={3}>
+                                        <Grid size={3}>
                                             <NewAccountButton />
                                         </Grid>
                                     </ThemeProvider>

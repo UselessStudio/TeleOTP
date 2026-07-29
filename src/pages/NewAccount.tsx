@@ -78,9 +78,20 @@ const NewAccount: FC = () => {
     );
 
     return (
-        <Stack spacing={2} alignItems="center">
+        <Stack
+            spacing={2}
+            sx={{
+                alignItems: "center",
+            }}
+        >
             <LottieAnimation animationData={NewAccountAnimation} />
-            <Typography variant="h5" fontWeight="bold" align="center">
+            <Typography
+                variant="h5"
+                align="center"
+                sx={{
+                    fontWeight: "bold",
+                }}
+            >
                 {l10n("NewAccountTitle")}
             </Typography>
             <Typography variant="subtitle2" align="center">

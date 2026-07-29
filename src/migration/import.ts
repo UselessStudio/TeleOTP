@@ -38,7 +38,7 @@ export default function decodeGoogleAuthenticator(
         const totp = new TOTP({
             issuer: otp.issuer ?? undefined,
             label: otp.name ? otp.name.split(":").pop() : undefined,
-            secret: new Secret({ buffer: otp.secret }),
+            secret: new Secret({ buffer: otp.secret.buffer }),
             digits:
                 otp.digits ===
                 Payload.OtpParameters.DigitCount.DIGIT_COUNT_EIGHT

@@ -42,14 +42,25 @@ const PasswordSetup: FC<{ change?: boolean }> = ({ change = false }) => {
     );
 
     return (
-        <Stack spacing={2} alignItems="center">
+        <Stack
+            spacing={2}
+            sx={{
+                alignItems: "center",
+            }}
+        >
             <LottieAnimation
                 initialSegment={change ? [105, 285] : undefined}
                 animationData={
                     change ? ChangePasswordAnimation : NewPasswordAnimation
                 }
             />
-            <Typography variant="h5" fontWeight="bold" align="center">
+            <Typography
+                variant="h5"
+                align="center"
+                sx={{
+                    fontWeight: "bold",
+                }}
+            >
                 {change
                     ? l10n("ChangePasswordTitle")
                     : l10n("CreatePasswordTitle")}

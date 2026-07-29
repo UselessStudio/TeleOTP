@@ -22,20 +22,27 @@ export default function NewAccountButton() {
                 }}
             >
                 <Stack
-                    alignItems="center"
                     spacing={1}
-                    justifyContent="space-between"
+                    sx={{
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                    }}
                 >
                     <AddIcon sx={{ color: "primary.main" }} fontSize="large" />
                     <Stack
-                        justifyContent="center"
-                        sx={{ width: "100%", height: "2em" }}
+                        sx={{
+                            justifyContent: "center",
+                            width: "100%",
+                            height: "2em",
+                        }}
                     >
                         <Typography
                             align="center"
                             variant="subtitle2"
-                            color="text.primary"
-                            sx={{ lineHeight: "1em" }}
+                            sx={{
+                                color: "text.primary",
+                                lineHeight: "1em",
+                            }}
                         >
                             {l10n("ActionAddNewAccount")}
                         </Typography>

@@ -33,10 +33,12 @@ const Settings: FC = () => {
     return (
         <Stack spacing={1}>
             <Typography
-                fontWeight="800"
                 color="primary"
-                fontSize="small"
-                sx={{ paddingY: theme.spacing(0.5) }}
+                sx={{
+                    fontWeight: "800",
+                    fontSize: "small",
+                    paddingY: theme.spacing(0.5),
+                }}
             >
                 {l10n("Settings.General")}
             </Typography>
@@ -62,12 +64,13 @@ const Settings: FC = () => {
                 value={l10n("ActionOpen")}
                 icon={Newspaper}
             />
-
             <Typography
-                fontWeight="800"
                 color="primary"
-                fontSize="small"
-                sx={{ paddingY: theme.spacing(0.5) }}
+                sx={{
+                    fontWeight: "800",
+                    fontSize: "small",
+                    paddingY: theme.spacing(0.5),
+                }}
             >
                 {l10n("Settings.Security")}
             </Typography>
@@ -79,7 +82,6 @@ const Settings: FC = () => {
                 value={l10n("ActionChange")}
                 icon={LockOutlinedIcon}
             />
-
             <FlatButton
                 onClick={() => {
                     impactOccurred("light");
@@ -95,7 +97,6 @@ const Settings: FC = () => {
                 }
                 icon={KeyOutlinedIcon}
             />
-
             <FlatButton
                 onClick={() => {
                     if (!biometricsManager?.isAvailable) {
@@ -121,7 +122,6 @@ const Settings: FC = () => {
                 disabled={!biometricsManager?.isAvailable}
                 icon={FingerprintIcon}
             />
-
             <FlatButton
                 onClick={() => {
                     encryptionManager?.lock();
@@ -129,12 +129,13 @@ const Settings: FC = () => {
                 text={l10n("LockAccounts")}
                 icon={LogoutOutlinedIcon}
             />
-
             <Typography
-                fontWeight="800"
                 color="primary"
-                fontSize="small"
-                sx={{ paddingY: theme.spacing(0.5) }}
+                sx={{
+                    fontWeight: "800",
+                    fontSize: "small",
+                    paddingY: theme.spacing(0.5),
+                }}
             >
                 {l10n("Settings.Accounts")}
             </Typography>
@@ -150,7 +151,6 @@ const Settings: FC = () => {
                 }
                 icon={PersonOutlineOutlinedIcon}
             />
-
             <FlatButton
                 onClick={() => {
                     navigate("/export");
@@ -163,7 +163,6 @@ const Settings: FC = () => {
                 text={l10n("ActionExportAccounts")}
                 icon={FileDownloadOutlinedIcon}
             />
-
             <FlatButton
                 onClick={() => {
                     notificationOccurred("warning");
@@ -172,12 +171,13 @@ const Settings: FC = () => {
                 text={l10n("ActionRemoveAccounts")}
                 icon={CloseOutlinedIcon}
             />
-
             <Typography
-                color="text.secondary"
-                fontSize="small"
                 align="center"
-                sx={{ paddingY: theme.spacing(1) }}
+                sx={{
+                    color: "text.secondary",
+                    fontSize: "small",
+                    paddingY: theme.spacing(1),
+                }}
             >
                 TeleOTP
                 <br />
