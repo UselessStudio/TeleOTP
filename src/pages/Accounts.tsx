@@ -132,9 +132,24 @@ const OtpCodeCarousel: FC<OtpCodeCarouselProps> = ({
 
     useEffect(() => {
         if (phase !== "prepared") return;
-        const frame = requestAnimationFrame(() => setPhase("sliding"));
-        return () => cancelAnimationFrame(frame);
+        let innerFrame: number | null = null;
+        const outerFrame = requestAnimationFrame(() => {
+            innerFrame = requestAnimationFrame(() => setPhase("sliding"));
+        });
+        return () => {
+            cancelAnimationFrame(outerFrame);
+            if (innerFrame !== null) cancelAnimationFrame(innerFrame);
+        };
     }, [phase]);
+
+    useEffect(() => {
+        if (phase !== "sliding") return;
+        const fallback = window.setTimeout(() => {
+            setDisplayedCodes([previousCode, code, nextCode]);
+            setPhase("idle");
+        }, 400);
+        return () => window.clearTimeout(fallback);
+    }, [code, nextCode, phase, previousCode]);
 
     useEffect(
         () => () => {
@@ -327,6 +342,7 @@ const OtpCodeCarousel: FC<OtpCodeCarouselProps> = ({
                             sx={{
                                 alignItems: "center",
                                 backfaceVisibility: "hidden",
+                                WebkitBackfaceVisibility: "hidden",
                                 color: isCurrent
                                     ? "text.primary"
                                     : "text.secondary",
