@@ -44,11 +44,15 @@ export const lang = {
     LinkExportTitle: "Export link",
     LinkExportDescription:
         "Copy the link to move accounts to another Telegram user. Or just keep it, to have a backup.",
+    LinkExportBatchDescription:
+        "This export contains {count} links. Open every link to import all accounts.",
     LinkExportSecretWarning:
         "Make sure to keep it secret! Anyone can get access to your codes using this link.",
 
     QRExportDescription:
         "You can import your accounts into Google Authenticator or TeleOTP by scanning the QR code.",
+    QRExportBatchDescription:
+        "Scan all {count} numbered QR codes to import every account.",
 
     EmptyLabelAlert: "Label field cannot be empty!",
     CreateAction: "Create",

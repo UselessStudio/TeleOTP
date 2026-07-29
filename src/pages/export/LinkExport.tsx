@@ -9,17 +9,24 @@ import LottieAnimation from "../../components/LottieAnimation.tsx";
 import useTelegramMainButton from "../../hooks/telegram/useTelegramMainButton.ts";
 import { useL10n } from "../../hooks/useL10n.ts";
 import { StorageManagerContext } from "../../managers/storage/storage.tsx";
-import exportGoogleAuthenticator from "../../migration/export.ts";
+import { exportGoogleAuthenticatorBatches } from "../../migration/export.ts";
+
+const MAX_STARTAPP_LENGTH = 512;
 
 export default function LinkExport() {
-    const [linkData, setLinkData] = useState<string | null>(null);
+    const [links, setLinks] = useState<string[]>([]);
     const storageManager = useContext(StorageManagerContext);
     useEffect(() => {
         if (!storageManager?.accounts || !storageManager.ready) return;
 
-        const data = exportGoogleAuthenticator(storageManager.accounts);
-        setLinkData(
-            data.replaceAll("+", "-").replaceAll("/", "_").replaceAll("=", ""),
+        setLinks(
+            exportGoogleAuthenticatorBatches(
+                storageManager.accounts,
+                MAX_STARTAPP_LENGTH,
+            ).map(
+                (data) =>
+                    `https://t.me/${import.meta.env.VITE_BOT_USERNAME}/${import.meta.env.VITE_APP_NAME}?startapp=${data}`,
+            ),
         );
     }, [storageManager?.accounts, storageManager?.ready]);
 
@@ -53,15 +60,20 @@ export default function LinkExport() {
                 <Typography variant="subtitle2" align="center">
                     {l10n("LinkExportDescription")}
                 </Typography>
+                {links.length > 1 ? (
+                    <Typography variant="subtitle2" align="center">
+                        {l10n("LinkExportBatchDescription", {
+                            count: links.length,
+                        })}
+                    </Typography>
+                ) : null}
             </Stack>
             <FlatButton
                 center={true}
                 text={l10n("CopyLinkAction")}
                 icon={ContentCopyIcon}
                 onClick={() => {
-                    copyTextToClipboard(
-                        `https://t.me/${import.meta.env.VITE_BOT_USERNAME}/${import.meta.env.VITE_APP_NAME}?startapp=${linkData}`,
-                    );
+                    if (links.length > 0) copyTextToClipboard(links.join("\n"));
                 }}
             />
             <Typography variant="subtitle2" align="center" color={"error"}>
