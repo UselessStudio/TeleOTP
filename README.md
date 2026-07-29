@@ -110,54 +110,28 @@ The app is built and deployed automatically using **Cloudflare Pages**.
 
 ## 💬 Bot
 
-TeleOTP uses a helper bot to send user a link to the app and assist with account migration.
-The bot is written in **Python** using [Python Telegram Bot library](https://github.com/python-telegram-bot/python-telegram-bot).
+TeleOTP uses a serverless Telegram bot to send users a link to the Mini App and
+assist with account migration. The bot lives in [`bot/`](bot/) and runs on
+Telegram's serverless platform.
 
 ### Starting bot
 
-To start the bot, you have to run the `main.py` script with environment variables.
+Install the local deployment CLI and link the project to a bot:
 ```shell
-python main.py
+cd bot
+npm install
+npx tgcloud login
 ```
 
-### Environment variables
-
-* `TOKEN` - Telegram bot token provided by @BotFather
-* `TG_APP` - A link to the Mini App in Telegram (e.g. https://t.me/TeleOTPAppBot/app)
-* `WEBAPP_URL` - Deployed Mini App URL (e.g. https://uselessstudio.github.io/TeleOTP)
-
-> [!NOTE]
-> Make sure that `WEBAPP_URL` doesn't end with a `/`! 
-> It is added automatically by the bot.
-
-### Running in Docker
-
-We recommend running the bot inside the Docker container. 
-The latest image is available at `ghcr.io/uselessstudio/teleotp-bot:main`.
-
-Example `docker-compose.yml` file:
-
-```yaml
-services:
-  bot:
-    image: ghcr.io/uselessstudio/teleotp-bot:main
-    restart: unless-stopped
-    environment:
-      - TG_APP=https://t.me/TeleOTPAppBot/app
-      - WEBAPP_URL=https://uselessstudio.github.io/TeleOTP
-      - TOKEN=<insert your token>
-```
-
-And running is as simple as:
+Set the deployed Mini App URL in `bot/lib/config.js`, then deploy the modules:
 ```shell
-docker compose up
+npm run deploy
 ```
 
 ### 🔁 CI/CD
-GitHub Actions is used to automate the building of the bot container.
-The workflow is defined in the [`bot.yml` file](.github/workflows/bot.yml)
-and ran on every push to `main`. After a successful build, 
-the container is published in the GitHub Container Registry.  
+
+Use `TGCLOUD_TOKEN` as the deployment credential when running the tgcloud CLI in
+CI.
 
 
 # 💻 Structure
