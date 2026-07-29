@@ -10,7 +10,7 @@ import useTelegramTheme from "./useTelegramTheme";
  * @param [disabled = false] - a boolean flag that indicates, whether the button should be disabled or not.
  */
 export default function useTelegramMainButton(
-    onClick: () => boolean,
+    onClick: () => boolean | Promise<boolean>,
     text: string,
     disabled = false,
 ) {
@@ -25,8 +25,8 @@ export default function useTelegramMainButton(
     }, [text]);
 
     useEffect(() => {
-        function handler() {
-            if (onClick()) {
+        async function handler() {
+            if (await onClick()) {
                 window.Telegram.WebApp.MainButton.hide();
             }
         }

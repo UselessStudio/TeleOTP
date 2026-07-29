@@ -78,7 +78,11 @@ const Settings: FC = () => {
                 onClick={() => {
                     navigate("/changePassword");
                 }}
-                text={l10n("Password")}
+                text={l10n(
+                    encryptionManager?.credentialType === "pin"
+                        ? "PinCode"
+                        : "Password",
+                )}
                 value={l10n("ActionChange")}
                 icon={LockOutlinedIcon}
             />

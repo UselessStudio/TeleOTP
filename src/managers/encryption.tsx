@@ -16,9 +16,15 @@ const kdfOptions = {
     hasher: crypto.algo.SHA1,
     iterations: 1,
 };
+const pinKdfOptions = {
+    ...kdfOptions,
+    iterations: 10_000,
+};
 const saltBytes = 128 / 8;
 const ivBytes = 128 / 8;
 const keyCheckValuePlaintext = "key-check-value";
+
+export type CredentialType = "password" | "pin";
 
 /**
  * EncryptionManager is used to handle everything related to encryption.
@@ -47,12 +53,18 @@ export interface EncryptionManager {
      */
     passwordCreated: boolean | null;
 
+    /** The UI credential used to derive the encryption key. */
+    credentialType: CredentialType;
+
     /**
      * This method is used to create a new password or change the existing one.
      * If this method is called with the EncryptionManager being unlocked, the previous key is stored in the oldKey variable.
      * @param password - The new password. It should be provided in the plaintext form.
      */
-    createPassword(password: string): void;
+    createPassword(password: string): Promise<void>;
+
+    /** Creates or changes the credential and persists its type in CloudStorage. */
+    createCredential(value: string, type: CredentialType): Promise<void>;
 
     /**
      * This method removes the salt and KCV from the storage. After it is called, passwordCreated would become false.
@@ -81,7 +93,7 @@ export interface EncryptionManager {
      * isLocked would change to false.
      * @param password - a boolean indicating whether the provided password is correct.
      */
-    unlock(password: string): boolean;
+    unlock(password: string): Promise<boolean>;
 
     /**
      * This method tries to unlock the storage by using the biometric token. The behaviour is the same as `unlock`.
@@ -135,6 +147,57 @@ function checkKey(
     return kcv === keyCheckValue;
 }
 
+function wordArrayToBuffer(value: crypto.lib.WordArray): ArrayBuffer {
+    const buffer = new ArrayBuffer(value.sigBytes);
+    const bytes = new Uint8Array(buffer);
+    for (let index = 0; index < value.sigBytes; index++) {
+        bytes[index] =
+            (value.words[index >>> 2] >>> (24 - (index % 4) * 8)) & 0xff;
+    }
+    return buffer;
+}
+
+function bytesToWordArray(value: ArrayBuffer): crypto.lib.WordArray {
+    const bytes = new Uint8Array(value);
+    const words: number[] = [];
+    for (let index = 0; index < bytes.length; index++) {
+        words[index >>> 2] =
+            (words[index >>> 2] ?? 0) |
+            (bytes[index] << (24 - (index % 4) * 8));
+    }
+    return crypto.lib.WordArray.create(words, bytes.length);
+}
+
+async function deriveKey(
+    value: string,
+    salt: crypto.lib.WordArray,
+    type: CredentialType,
+): Promise<crypto.lib.WordArray> {
+    const options = type === "pin" ? pinKdfOptions : kdfOptions;
+    if (!globalThis.crypto?.subtle) {
+        return crypto.PBKDF2(value, salt, options);
+    }
+
+    const sourceKey = await globalThis.crypto.subtle.importKey(
+        "raw",
+        new TextEncoder().encode(value),
+        "PBKDF2",
+        false,
+        ["deriveBits"],
+    );
+    const derivedKey = await globalThis.crypto.subtle.deriveBits(
+        {
+            name: "PBKDF2",
+            hash: "SHA-1",
+            salt: wordArrayToBuffer(salt),
+            iterations: options.iterations,
+        },
+        sourceKey,
+        options.keySize * 32,
+    );
+    return bytesToWordArray(derivedKey);
+}
+
 function getStoredKey(): crypto.lib.WordArray | null {
     const key = localStorage.getItem("key");
     return key !== null ? crypto.enc.Base64.parse(key) : null;
@@ -152,6 +215,8 @@ export const EncryptionManagerProvider: FC<PropsWithChildren> = ({
     const [storageChecked, setStorageChecked] = useState(false);
     const [salt, setSalt] = useState<crypto.lib.WordArray | null>(null);
     const [keyCheckValue, setKeyCheckValue] = useState<string | null>(null);
+    const [credentialType, setCredentialType] =
+        useState<CredentialType>("password");
     const [oldKey, setOldKey] = useState<crypto.lib.WordArray | null>(null);
 
     const biometricsManager = useContext(BiometricsManagerContext);
@@ -170,7 +235,7 @@ export const EncryptionManagerProvider: FC<PropsWithChildren> = ({
 
     useEffect(() => {
         window.Telegram.WebApp.CloudStorage.getItems(
-            ["salt", "kcv"],
+            ["salt", "kcv", "credentialType"],
             (error, result) => {
                 if (error) {
                     window.Telegram.WebApp.showAlert(
@@ -182,6 +247,9 @@ export const EncryptionManagerProvider: FC<PropsWithChildren> = ({
                     ? crypto.enc.Base64.parse(result.salt)
                     : null;
                 const kcv = result?.kcv ?? null;
+                setCredentialType(
+                    result?.credentialType === "pin" ? "pin" : "password",
+                );
                 setSalt(salt);
                 setKeyCheckValue(kcv);
                 const key = getStoredKey();
@@ -202,10 +270,14 @@ export const EncryptionManagerProvider: FC<PropsWithChildren> = ({
         oldKey,
         storageChecked,
         passwordCreated: storageChecked ? salt !== null : null,
-        createPassword(password: string) {
+        credentialType,
+        async createPassword(password: string) {
+            await this.createCredential(password, "password");
+        },
+        async createCredential(value, type) {
             setOldKey(key);
             const salt = crypto.lib.WordArray.random(saltBytes);
-            const newKey = crypto.PBKDF2(password, salt, kdfOptions);
+            const newKey = await deriveKey(value, salt, type);
             const kcv = crypto.AES.encrypt(keyCheckValuePlaintext, newKey, {
                 iv: salt,
             }).toString(crypto.format.OpenSSL);
@@ -219,14 +291,22 @@ export const EncryptionManagerProvider: FC<PropsWithChildren> = ({
             setKeyCheckValue(kcv);
             window.Telegram.WebApp.CloudStorage.setItem("kcv", kcv);
 
+            setCredentialType(type);
+            window.Telegram.WebApp.CloudStorage.setItem("credentialType", type);
+
             setKey(newKey);
         },
         removePassword() {
-            window.Telegram.WebApp.CloudStorage.removeItems(["kcv", "salt"]);
+            window.Telegram.WebApp.CloudStorage.removeItems([
+                "kcv",
+                "salt",
+                "credentialType",
+            ]);
             localStorage.removeItem("key");
             setKey(null);
             setSalt(null);
             setKeyCheckValue(null);
+            setCredentialType("password");
         },
         saveBiometricToken() {
             if (key === null) return;
@@ -237,11 +317,11 @@ export const EncryptionManagerProvider: FC<PropsWithChildren> = ({
         },
 
         isLocked: !storageChecked || key === null,
-        unlock(enteredPassword) {
+        async unlock(enteredPassword) {
             if (salt === null || keyCheckValue === null) {
                 return false;
             }
-            const key = crypto.PBKDF2(enteredPassword, salt, kdfOptions);
+            const key = await deriveKey(enteredPassword, salt, credentialType);
 
             if (checkKey(key, salt, keyCheckValue)) {
                 setKey(key);
