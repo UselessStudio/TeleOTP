@@ -10,6 +10,7 @@ import {
     Stack,
     ThemeProvider,
     Typography,
+    useMediaQuery,
     useTheme,
 } from "@mui/material";
 import copy from "copy-text-to-clipboard";
@@ -67,6 +68,7 @@ const OtpCodeCarousel: FC<OtpCodeCarouselProps> = ({
     nextCode,
     onCopy,
 }) => {
+    const isSmallLayout = useMediaQuery("(max-width:400px)");
     const [displayedCodes, setDisplayedCodes] = useState([
         previousCode,
         code,
@@ -150,18 +152,16 @@ const OtpCodeCarousel: FC<OtpCodeCarouselProps> = ({
                 spacing={1}
                 sx={{
                     alignItems: "center",
-                    height: { xs: "3.5rem", sm: "4rem" },
+                    height: "4rem",
                     justifyContent: "center",
                     width: "100%",
                 }}
             >
                 <Typography
                     sx={{
-                        fontSize: {
-                            xs: "clamp(2rem, 10vw, 2.5rem)",
-                            sm: "3rem",
-                        },
+                        fontSize: "2.75rem",
                         fontVariantNumeric: "tabular-nums",
+                        lineHeight: 1,
                         whiteSpace: "nowrap",
                     }}
                 >
@@ -181,7 +181,7 @@ const OtpCodeCarousel: FC<OtpCodeCarouselProps> = ({
                 minWidth: 0,
                 overflow: "hidden",
                 position: "relative",
-                height: { xs: "3.5rem", sm: "4rem" },
+                height: "4rem",
             }}
         >
             <Box
@@ -205,7 +205,7 @@ const OtpCodeCarousel: FC<OtpCodeCarouselProps> = ({
                               : 0.55;
                     const isLeftCode =
                         phase === "sliding" ? index <= 1 : index === 0;
-                    const position =
+                    const desktopPosition =
                         phase === "sliding"
                             ? [
                                   {
@@ -259,6 +259,47 @@ const OtpCodeCarousel: FC<OtpCodeCarouselProps> = ({
                                       height: "100%",
                                   },
                               ][index];
+                    const mobilePosition =
+                        phase === "sliding"
+                            ? [
+                                  {
+                                      left: "-110%",
+                                      width: "55%",
+                                  },
+                                  {
+                                      left: "-55%",
+                                      width: "55%",
+                                  },
+                                  {
+                                      left: "0%",
+                                      width: "55%",
+                                  },
+                                  {
+                                      left: "55%",
+                                      width: "45%",
+                                  },
+                              ][index]
+                            : [
+                                  {
+                                      left: "-55%",
+                                      width: "55%",
+                                  },
+                                  {
+                                      left: "0%",
+                                      width: "55%",
+                                  },
+                                  {
+                                      left: "55%",
+                                      width: "45%",
+                                  },
+                                  {
+                                      left: "100%",
+                                      width: "45%",
+                                  },
+                              ][index];
+                    const position = isSmallLayout
+                        ? mobilePosition
+                        : desktopPosition;
 
                     return (
                         <Typography
@@ -290,37 +331,36 @@ const OtpCodeCarousel: FC<OtpCodeCarouselProps> = ({
                                     ? "text.primary"
                                     : "text.secondary",
                                 display: "flex",
-                                contain: "layout paint style",
+                                contain: "layout style",
                                 fontSize: isCurrent
-                                    ? {
-                                          xs: "clamp(2rem, 10vw, 2.5rem)",
-                                          sm: "3rem",
-                                      }
-                                    : {
-                                          xs: "clamp(0.8rem, 3.6vw, 1rem)",
-                                          sm: "1.125rem",
-                                      },
+                                    ? isSmallLayout
+                                        ? "2.75rem"
+                                        : "2.3rem"
+                                    : isSmallLayout
+                                      ? "1.125rem"
+                                      : "0.875rem",
                                 fontVariantNumeric: "tabular-nums",
-                                height: position?.height,
-                                justifyContent: {
-                                    xs: isCurrent
-                                        ? "center"
-                                        : isLeftCode
-                                          ? "flex-start"
-                                          : "flex-end",
-                                    sm: "center",
-                                },
+                                lineHeight: 1,
+                                height: desktopPosition?.height,
+                                justifyContent: isSmallLayout
+                                    ? isCurrent || isLeftCode
+                                        ? "flex-start"
+                                        : "flex-end"
+                                    : "center",
                                 left: position?.left,
                                 opacity,
                                 overflow: "visible",
                                 position: "absolute",
                                 textAlign: "center",
-                                top: position?.top,
+                                top: desktopPosition?.top,
                                 transform: isCurrent
-                                    ? "translate3d(-24px, 0, 0)"
+                                    ? isSmallLayout
+                                        ? "translate3d(0, 0, 0)"
+                                        : "translate3d(-24px, 0, 0)"
                                     : "translate3d(0, 0, 0)",
                                 whiteSpace: "nowrap",
                                 width: position?.width,
+                                zIndex: isCurrent ? 1 : 0,
                                 willChange:
                                     phase === "sliding"
                                         ? "left, top, width, height, transform, font-size, opacity"
@@ -344,11 +384,13 @@ const OtpCodeCarousel: FC<OtpCodeCarouselProps> = ({
                 color="primary"
                 onClick={onCopy}
                 sx={{
-                    left: `calc(50% - 24px + ${currentCodeWidth / 2 + 8}px)`,
+                    left: isSmallLayout
+                        ? `${currentCodeWidth + 4}px`
+                        : `calc(50% - 24px + ${currentCodeWidth / 2 + 4}px)`,
                     position: "absolute",
                     top: "50%",
                     transform: "translateY(-50%)",
-                    zIndex: 1,
+                    zIndex: 2,
                 }}
             >
                 <ContentCopyIcon fontSize="large" />
