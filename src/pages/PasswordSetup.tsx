@@ -17,9 +17,11 @@ import {
     type CredentialType,
     EncryptionManagerContext,
 } from "../managers/encryption.tsx";
+import { StorageManagerContext } from "../managers/storage/storage.tsx";
 
 const PasswordSetup: FC<{ change?: boolean }> = ({ change = false }) => {
     const encryptionManager = useContext(EncryptionManagerContext);
+    const storageManager = useContext(StorageManagerContext);
     const [credentialType, setCredentialType] = useState<CredentialType>(
         change ? (encryptionManager?.credentialType ?? "password") : "password",
     );
@@ -30,14 +32,27 @@ const PasswordSetup: FC<{ change?: boolean }> = ({ change = false }) => {
     const [confirmingPin, setConfirmingPin] = useState(false);
     const [notMatches, setNotMatches] = useState(false);
     const [badLength, setBadLength] = useState(false);
+    const [saving, setSaving] = useState(false);
 
     const navigate = useNavigate();
     const l10n = useL10n();
 
     const finish = async (value: string, type: CredentialType) => {
-        await encryptionManager?.createCredential(value, type);
-        if (change) navigate("/");
-        return true;
+        if (saving) return false;
+        setSaving(true);
+        try {
+            if (change) {
+                const changed =
+                    (await storageManager?.changeCredential(value, type)) ??
+                    false;
+                if (changed) navigate("/");
+                return changed;
+            }
+            await encryptionManager?.createCredential(value, type);
+            return true;
+        } finally {
+            setSaving(false);
+        }
     };
 
     const submit = async () => {
@@ -75,7 +90,7 @@ const PasswordSetup: FC<{ change?: boolean }> = ({ change = false }) => {
                 ? l10n(change ? "ChangePinAction" : "CreatePinAction")
                 : l10n("NextStepAction")
             : l10n(change ? "ChangePasswordAction" : "CreatePasswordAction");
-    useTelegramMainButton(submit, actionText);
+    useTelegramMainButton(submit, actionText, saving, saving);
 
     const changeType = (type: CredentialType | null) => {
         if (!type) return;
@@ -131,6 +146,7 @@ const PasswordSetup: FC<{ change?: boolean }> = ({ change = false }) => {
                     <PinCodeInput
                         value={pin}
                         error={notMatches}
+                        disabled={saving}
                         onChange={(value) => {
                             setPin(value);
                             setNotMatches(false);
@@ -149,6 +165,7 @@ const PasswordSetup: FC<{ change?: boolean }> = ({ change = false }) => {
                         type="password"
                         label={l10n("PasswordLabel")}
                         value={password}
+                        disabled={saving}
                         error={badLength}
                         helperText={
                             badLength ? l10n("PasswordRequirementError") : null
@@ -164,6 +181,7 @@ const PasswordSetup: FC<{ change?: boolean }> = ({ change = false }) => {
                         type="password"
                         label={l10n("RepeatPasswordLabel")}
                         value={passwordRepeat}
+                        disabled={saving}
                         error={notMatches}
                         helperText={
                             notMatches

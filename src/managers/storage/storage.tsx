@@ -1,4 +1,5 @@
 // biome-ignore-all lint/correctness/useExhaustiveDependencies: Storage effects intentionally preserve the manager's existing render-time semantics.
+import { nanoid } from "nanoid";
 import {
     createContext,
     type FC,
@@ -10,7 +11,10 @@ import {
 import { PlausibleAnalyticsContext } from "../../components/PlausibleAnalytics.tsx";
 import type { Color, Icon } from "../../globals.tsx";
 import decodeGoogleAuthenticator from "../../migration/import.ts";
-import { EncryptionManagerContext } from "../encryption.tsx";
+import {
+    type CredentialType,
+    EncryptionManagerContext,
+} from "../encryption.tsx";
 import { migrate, type Version } from "./migrate.ts";
 import { MIGRATIONS_SCHEMA } from "./migrations.ts";
 
@@ -66,6 +70,9 @@ export interface StorageManager {
      */
     accounts: Account[];
 
+    /** Re-encrypts all accounts before atomically activating a new credential. */
+    changeCredential(value: string, type: CredentialType): Promise<boolean>;
+
     /**
      * This method saves the provided account in the CloudStorage. If the account with the same id exists, it is overridden.
      * @param account - account to be saved
@@ -110,6 +117,22 @@ export interface StorageManager {
 
 export const StorageManagerContext = createContext<StorageManager | null>(null);
 
+function setCloudItem(key: string, value: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+        window.Telegram.WebApp.CloudStorage.setItem(
+            key,
+            value,
+            (error, success) => {
+                if (error || !success) {
+                    reject(new Error(error ?? `Failed to store ${key}`));
+                    return;
+                }
+                resolve();
+            },
+        );
+    });
+}
+
 /**
  * StorageManager is created using StorageManagerProvider component
  *
@@ -150,7 +173,9 @@ export const StorageManagerProvider: FC<PropsWithChildren> = ({ children }) => {
                 );
                 return;
             }
-            const accounts = keys?.filter((a) => a.startsWith("account")) ?? [];
+            const accountPrefix = encryptionManager?.accountPrefix ?? "account";
+            const accounts =
+                keys?.filter((key) => key.startsWith(accountPrefix)) ?? [];
             window.Telegram.WebApp.CloudStorage.getItems(
                 [...accounts, "version"],
                 (error, result) => {
@@ -209,6 +234,57 @@ export const StorageManagerProvider: FC<PropsWithChildren> = ({ children }) => {
     const storageManager: StorageManager = {
         ready,
         accounts,
+        async changeCredential(value, type) {
+            if (!encryptionManager || encryptionManager.isLocked) return false;
+
+            const nextPrefix = `vault_${nanoid(16)}_`;
+            const stagedKeys = accounts.map(
+                (account) => `${nextPrefix}${account.id}`,
+            );
+            try {
+                const credential = await encryptionManager.prepareCredential(
+                    value,
+                    type,
+                );
+                await Promise.all(
+                    accounts.map((account, index) =>
+                        setCloudItem(
+                            stagedKeys[index],
+                            encryptionManager.encryptWithCredential(
+                                JSON.stringify(account),
+                                credential,
+                            ),
+                        ),
+                    ),
+                );
+                const previousPrefix = encryptionManager.accountPrefix;
+                await encryptionManager.commitCredential(
+                    credential,
+                    nextPrefix,
+                );
+
+                window.Telegram.WebApp.CloudStorage.getKeys((error, keys) => {
+                    if (error || !keys) return;
+                    const oldKeys = keys.filter((key) =>
+                        key.startsWith(previousPrefix),
+                    );
+                    if (oldKeys.length > 0) {
+                        window.Telegram.WebApp.CloudStorage.removeItems(
+                            oldKeys,
+                        );
+                    }
+                });
+                return true;
+            } catch (error) {
+                if (stagedKeys.length > 0) {
+                    window.Telegram.WebApp.CloudStorage.removeItems(stagedKeys);
+                }
+                window.Telegram.WebApp.showAlert(
+                    `Failed to change unlock method: ${String(error)}`,
+                );
+                return false;
+            }
+        },
         saveAccounts(accounts: Account[]) {
             const newAccounts: Record<string, Account> = {};
             for (const account of this.accounts) {
@@ -220,7 +296,7 @@ export const StorageManagerProvider: FC<PropsWithChildren> = ({ children }) => {
                 );
                 if (!encrypted) continue;
                 window.Telegram.WebApp.CloudStorage.setItem(
-                    `account${account.id}`,
+                    `${encryptionManager?.accountPrefix ?? "account"}${account.id}`,
                     encrypted,
                 );
                 newAccounts[account.id] = account;
@@ -233,7 +309,7 @@ export const StorageManagerProvider: FC<PropsWithChildren> = ({ children }) => {
         },
         removeAccount(id: string) {
             window.Telegram.WebApp.CloudStorage.removeItem(
-                `account${id}`,
+                `${encryptionManager?.accountPrefix ?? "account"}${id}`,
                 (error, result) => {
                     if (error ?? !result) return;
                     setAccounts(accounts.filter((acc) => acc.id !== id));
@@ -275,29 +351,6 @@ export const StorageManagerProvider: FC<PropsWithChildren> = ({ children }) => {
             });
         },
     };
-
-    const [keyChanged, setKeyChanged] = useState(false);
-
-    useEffect(() => {
-        if (!encryptionManager?.oldKey) return;
-        setKeyChanged(true);
-    }, [encryptionManager?.oldKey]);
-
-    useEffect(() => {
-        if (!keyChanged) return;
-        setKeyChanged(false);
-
-        Object.values(accounts).forEach((account) => {
-            const encrypted = encryptionManager?.encrypt(
-                JSON.stringify(account),
-            );
-            if (!encrypted) return;
-            window.Telegram.WebApp.CloudStorage.setItem(
-                `account${account.id}`,
-                encrypted,
-            );
-        });
-    }, [accounts, encryptionManager, keyChanged]);
 
     const [imported, setImported] = useState(false);
     useEffect(() => {

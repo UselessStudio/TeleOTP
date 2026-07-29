@@ -8,11 +8,13 @@ import useTelegramTheme from "./useTelegramTheme";
  * If the callback returns true, the button will be hidden.
  * @param text - a string which contains the text that should be displayed on the button.
  * @param [disabled = false] - a boolean flag that indicates, whether the button should be disabled or not.
+ * @param [loading = false] - whether Telegram's native progress indicator should be displayed.
  */
 export default function useTelegramMainButton(
     onClick: () => boolean | Promise<boolean>,
     text: string,
     disabled = false,
+    loading = false,
 ) {
     const { palette } = useTelegramTheme();
 
@@ -36,6 +38,15 @@ export default function useTelegramMainButton(
             window.Telegram.WebApp.MainButton.offClick(handler);
         };
     }, [onClick]);
+
+    useEffect(() => {
+        if (loading) {
+            window.Telegram.WebApp.MainButton.showProgress(false);
+        } else {
+            window.Telegram.WebApp.MainButton.hideProgress();
+        }
+        return () => window.Telegram.WebApp.MainButton.hideProgress();
+    }, [loading]);
 
     useEffect(() => {
         if (disabled) {
