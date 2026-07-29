@@ -8,15 +8,20 @@ import { useEffect, useState } from "react";
  * Generation of codes is implemented in the [otpauth library](https://github.com/hectorm/otpauth).
  * @param {string} accountUri - a string which contains a [key URI](https://github.com/google/google-authenticator/wiki/Key-Uri-Format).
  * @returns - `code` is the generated code string.
+ * - `previousCode` and `nextCode` are generated for the adjacent time windows.
  * - `period` is the token time-to-live duration in seconds.
  * - `progress` is the current token lifespan progress. A number between 0 (fresh) and 1 (expired).
  */
 export default function useAccount(accountUri?: string): {
     code: string;
+    previousCode: string;
+    nextCode: string;
     period: number;
     progress: number;
 } {
     const [code, setCode] = useState("N/A");
+    const [previousCode, setPreviousCode] = useState("N/A");
+    const [nextCode, setNextCode] = useState("N/A");
     const [period, setPeriod] = useState(30);
     useEffect(() => {
         if (!accountUri) return;
@@ -26,18 +31,30 @@ export default function useAccount(accountUri?: string): {
         } catch (_e) {
             console.error("weird uri!", accountUri);
             setCode("N/A");
+            setPreviousCode("N/A");
+            setNextCode("N/A");
             return;
         }
         if (otp instanceof HOTP) {
             throw new Error("HOTP is not supported");
         }
+        const totp = otp;
 
-        setPeriod(otp.period);
+        setPeriod(totp.period);
         let timeout: ReturnType<typeof setTimeout> | null = null;
 
         function cycle() {
-            setCode(otp.generate());
-            const untilNext = period - (Math.floor(Date.now() / 1000) % period);
+            const timestamp = Date.now();
+            const periodMilliseconds = totp.period * 1000;
+            setPreviousCode(
+                totp.generate({ timestamp: timestamp - periodMilliseconds }),
+            );
+            setCode(totp.generate({ timestamp }));
+            setNextCode(
+                totp.generate({ timestamp: timestamp + periodMilliseconds }),
+            );
+            const untilNext =
+                totp.period - (Math.floor(timestamp / 1000) % totp.period);
             timeout = setTimeout(cycle, untilNext * 1000);
         }
         cycle();
@@ -45,7 +62,7 @@ export default function useAccount(accountUri?: string): {
         return () => {
             if (timeout) clearTimeout(timeout);
         };
-    }, [accountUri, period]);
+    }, [accountUri]);
 
     const [progress, setProgress] = useState(0);
     useEffect(() => {
@@ -58,5 +75,5 @@ export default function useAccount(accountUri?: string): {
             clearInterval(timer);
         };
     }, [accountUri, period]);
-    return { code, period, progress };
+    return { code, previousCode, nextCode, period, progress };
 }
