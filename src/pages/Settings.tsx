@@ -6,6 +6,7 @@ import KeyOutlinedIcon from "@mui/icons-material/KeyOutlined";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
+import ViewCarouselOutlinedIcon from "@mui/icons-material/ViewCarouselOutlined";
 import { Link, Stack, Typography, useTheme } from "@mui/material";
 import { type FC, useContext } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
@@ -63,6 +64,21 @@ const Settings: FC = () => {
                 text={l10n("NewsChannel")}
                 value={l10n("ActionOpen")}
                 icon={Newspaper}
+            />
+            <FlatButton
+                onClick={() => {
+                    impactOccurred("light");
+                    settingsManager?.setShowAdjacentCodes(
+                        !settingsManager.showAdjacentCodes,
+                    );
+                }}
+                text={l10n("ShowAdjacentCodes")}
+                value={
+                    settingsManager?.showAdjacentCodes
+                        ? l10n("Enabled")
+                        : l10n("Disabled")
+                }
+                icon={ViewCarouselOutlinedIcon}
             />
             <Typography
                 color="primary"

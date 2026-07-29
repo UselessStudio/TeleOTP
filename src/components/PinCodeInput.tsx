@@ -1,4 +1,5 @@
 import BackspaceOutlinedIcon from "@mui/icons-material/BackspaceOutlined";
+import FingerprintIcon from "@mui/icons-material/Fingerprint";
 import { Box, ButtonBase, Stack, Typography } from "@mui/material";
 import { type FC, useEffect } from "react";
 
@@ -7,6 +8,8 @@ interface PinCodeInputProps {
     onChange(value: string): void;
     error?: boolean;
     disabled?: boolean;
+    onBiometrics?: () => void;
+    biometricsLabel?: string;
 }
 
 const keys = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0"];
@@ -16,6 +19,8 @@ const PinCodeInput: FC<PinCodeInputProps> = ({
     onChange,
     error = false,
     disabled = false,
+    onBiometrics,
+    biometricsLabel = "Use biometrics",
 }) => {
     const append = (digit: string) => {
         if (disabled || value.length >= 4) return;
@@ -103,6 +108,20 @@ const PinCodeInput: FC<PinCodeInputProps> = ({
                             }}
                         >
                             <Typography variant="h5">{key}</Typography>
+                        </ButtonBase>
+                    ) : onBiometrics ? (
+                        <ButtonBase
+                            key="biometrics"
+                            aria-label={biometricsLabel}
+                            disabled={disabled}
+                            onClick={onBiometrics}
+                            sx={{
+                                bgcolor: "action.hover",
+                                borderRadius: 1.5,
+                                minHeight: 58,
+                            }}
+                        >
+                            <FingerprintIcon fontSize="large" />
                         </ButtonBase>
                     ) : (
                         <Box key="empty" />

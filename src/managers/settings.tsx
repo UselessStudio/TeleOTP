@@ -28,6 +28,12 @@ export interface SettingsManager {
      */
     setKeepUnlocked(keep: boolean): void;
 
+    /** Whether previous and next OTP codes are shown around the current code. */
+    showAdjacentCodes: boolean;
+
+    /** Updates the adjacent OTP code display preference. */
+    setShowAdjacentCodes(show: boolean): void;
+
     /**
      * This value contains the id of the account that was previously selected.
      * If this value is missing in the storage, returns null.
@@ -82,6 +88,10 @@ export const SettingsManagerProvider: FC<PropsWithChildren> = ({
         const item = localStorage.getItem("biometricsEnabled");
         return item ? (JSON.parse(item) as boolean) : false;
     });
+    const [showAdjacentCodes, setShowAdjacentCodes] = useState<boolean>(() => {
+        const item = localStorage.getItem("showAdjacentCodes");
+        return item ? (JSON.parse(item) as boolean) : true;
+    });
     const [lastSelectedAccount, setLastSelectedAccount] = useState<
         string | null
     >(() => {
@@ -110,6 +120,11 @@ export const SettingsManagerProvider: FC<PropsWithChildren> = ({
         setKeepUnlocked(keep: boolean) {
             setKeepUnlocked(keep);
             localStorage.setItem("keepUnlocked", JSON.stringify(keep));
+        },
+        showAdjacentCodes,
+        setShowAdjacentCodes(show: boolean) {
+            setShowAdjacentCodes(show);
+            localStorage.setItem("showAdjacentCodes", JSON.stringify(show));
         },
         biometricsEnabled,
         setBiometricsEnabled(enable: boolean) {

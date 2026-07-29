@@ -2,6 +2,7 @@ export const lang = {
     "Settings.General": "सामान्य",
     Language: "भाषा",
     NewsChannel: "TeleOTP समाचार",
+    ShowAdjacentCodes: "आस-पास के कोड दिखाएँ",
     ActionOpen: "खोलें",
     "Settings.Security": "सुरक्षा",
     Password: "पासवर्ड",

@@ -155,18 +155,18 @@ export const StorageManagerProvider: FC<PropsWithChildren> = ({ children }) => {
         );
     }
 
-    const [checking, setChecking] = useState<boolean>(false);
     useEffect(() => {
-        if (checking) return;
-        setChecking(true);
-        if (encryptionManager?.isLocked && encryptionManager.storageChecked) {
+        if (!encryptionManager?.storageChecked) return;
+
+        if (encryptionManager.isLocked) {
             setReady(true);
             return;
-        } else {
-            setReady(false);
         }
+        let cancelled = false;
+        setReady(false);
 
         window.Telegram.WebApp.CloudStorage.getKeys((error, keys) => {
+            if (cancelled) return;
             if (error) {
                 window.Telegram.WebApp.showAlert(
                     `Failed to get accounts: ${error}`,
@@ -179,6 +179,7 @@ export const StorageManagerProvider: FC<PropsWithChildren> = ({ children }) => {
             window.Telegram.WebApp.CloudStorage.getItems(
                 [...accounts, "version"],
                 (error, result) => {
+                    if (cancelled) return;
                     if (error ?? !result) {
                         window.Telegram.WebApp.showAlert(
                             `Failed to get accounts: ${error}`,
@@ -225,11 +226,18 @@ export const StorageManagerProvider: FC<PropsWithChildren> = ({ children }) => {
 
                     setAccounts(accounts as Account[]);
                     setReady(true);
-                    setChecking(false);
                 },
             );
         });
-    }, [encryptionManager?.isLocked]);
+
+        return () => {
+            cancelled = true;
+        };
+    }, [
+        encryptionManager?.accountPrefix,
+        encryptionManager?.isLocked,
+        encryptionManager?.storageChecked,
+    ]);
 
     const storageManager: StorageManager = {
         ready,

@@ -99,6 +99,12 @@ const Decrypt: FC = () => {
                         error={wrongPassword}
                         disabled={unlocking}
                         onChange={(value) => void updatePin(value)}
+                        onBiometrics={
+                            biometricsManager?.isSaved
+                                ? () => encryptionManager?.unlockBiometrics()
+                                : undefined
+                        }
+                        biometricsLabel={l10n("UseBiometrics")}
                     />
                     {wrongPassword && (
                         <Typography color="error" variant="caption">
@@ -124,21 +130,22 @@ const Decrypt: FC = () => {
                     onSubmit={decryptAccounts}
                 />
             )}
-            {biometricsManager?.isSaved && (
-                <Button
-                    size="small"
-                    sx={{
-                        borderRadius: 1000,
-                        width: 64,
-                        height: 64,
-                    }}
-                    onClick={() => {
-                        encryptionManager?.unlockBiometrics();
-                    }}
-                >
-                    <Fingerprint fontSize="large" />
-                </Button>
-            )}
+            {biometricsManager?.isSaved &&
+                encryptionManager?.credentialType !== "pin" && (
+                    <Button
+                        size="small"
+                        sx={{
+                            borderRadius: 1000,
+                            width: 64,
+                            height: 64,
+                        }}
+                        onClick={() => {
+                            encryptionManager?.unlockBiometrics();
+                        }}
+                    >
+                        <Fingerprint fontSize="large" />
+                    </Button>
+                )}
             {wrongPassword ? (
                 <Button
                     startIcon={<ClearIcon />}

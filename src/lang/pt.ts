@@ -2,6 +2,7 @@ export const lang = {
     "Settings.General": "Gerais",
     Language: "Idioma",
     NewsChannel: "Notícias TeleOTP",
+    ShowAdjacentCodes: "Mostrar códigos adjacentes",
     ActionOpen: "Abrir",
     "Settings.Security": "Segurança",
     Password: "Senha",

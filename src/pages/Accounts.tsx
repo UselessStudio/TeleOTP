@@ -13,7 +13,15 @@ import {
     useTheme,
 } from "@mui/material";
 import copy from "copy-text-to-clipboard";
-import { type FC, lazy, useContext, useEffect, useRef, useState } from "react";
+import {
+    type FC,
+    lazy,
+    useCallback,
+    useContext,
+    useEffect,
+    useRef,
+    useState,
+} from "react";
 import { DndProvider } from "react-dnd-multi-backend";
 import { Flipped, Flipper } from "react-flip-toolkit";
 import { useNavigate } from "react-router-dom";
@@ -37,6 +45,7 @@ const NewAccount = lazy(() => import("./NewAccount.tsx"));
 const NewUpdateDialog = lazy(() => import("../components/NewUpdateDialog.tsx"));
 
 interface OtpCodeCarouselProps {
+    showAdjacentCodes: boolean;
     accountId: string | null;
     previousCode: string;
     code: string;
@@ -51,6 +60,7 @@ function formatCode(code: string): string {
 }
 
 const OtpCodeCarousel: FC<OtpCodeCarouselProps> = ({
+    showAdjacentCodes,
     accountId,
     previousCode,
     code,
@@ -63,13 +73,37 @@ const OtpCodeCarousel: FC<OtpCodeCarouselProps> = ({
         nextCode,
     ]);
     const [phase, setPhase] = useState<TransitionPhase>("idle");
+    const phaseRef = useRef<TransitionPhase>(phase);
+    phaseRef.current = phase;
     const lastCodeSet = useRef(`${previousCode}:${code}:${nextCode}`);
     const lastAccountId = useRef(accountId);
     const pendingAccountReset = useRef(false);
     const cleanupFrame = useRef<number | null>(null);
+    const codeResizeObserver = useRef<ResizeObserver | null>(null);
+    const [currentCodeWidth, setCurrentCodeWidth] = useState(136);
+    const observeCurrentCode = useCallback(
+        (element: HTMLSpanElement | null) => {
+            codeResizeObserver.current?.disconnect();
+            if (!element) return;
+            const updateWidth = () => {
+                if (phaseRef.current !== "idle") return;
+                setCurrentCodeWidth(element.getBoundingClientRect().width);
+            };
+            updateWidth();
+            codeResizeObserver.current = new ResizeObserver(updateWidth);
+            codeResizeObserver.current.observe(element);
+        },
+        [],
+    );
 
     useEffect(() => {
         const codeSet = `${previousCode}:${code}:${nextCode}`;
+        if (!showAdjacentCodes) {
+            lastCodeSet.current = codeSet;
+            setDisplayedCodes([previousCode, code, nextCode]);
+            setPhase("idle");
+            return;
+        }
         if (accountId !== lastAccountId.current) {
             lastAccountId.current = accountId;
             lastCodeSet.current = codeSet;
@@ -92,7 +126,7 @@ const OtpCodeCarousel: FC<OtpCodeCarouselProps> = ({
             setPhase("prepared");
         }
         lastCodeSet.current = codeSet;
-    }, [accountId, code, nextCode, previousCode]);
+    }, [accountId, code, nextCode, previousCode, showAdjacentCodes]);
 
     useEffect(() => {
         if (phase !== "prepared") return;
@@ -104,9 +138,41 @@ const OtpCodeCarousel: FC<OtpCodeCarouselProps> = ({
         () => () => {
             if (cleanupFrame.current !== null)
                 cancelAnimationFrame(cleanupFrame.current);
+            codeResizeObserver.current?.disconnect();
         },
         [],
     );
+
+    if (!showAdjacentCodes) {
+        return (
+            <Stack
+                direction="row"
+                spacing={1}
+                sx={{
+                    alignItems: "center",
+                    height: { xs: "3.5rem", sm: "4rem" },
+                    justifyContent: "center",
+                    width: "100%",
+                }}
+            >
+                <Typography
+                    sx={{
+                        fontSize: {
+                            xs: "clamp(2rem, 10vw, 2.5rem)",
+                            sm: "3rem",
+                        },
+                        fontVariantNumeric: "tabular-nums",
+                        whiteSpace: "nowrap",
+                    }}
+                >
+                    {formatCode(code)}
+                </Typography>
+                <IconButton color="primary" onClick={onCopy}>
+                    <ContentCopyIcon fontSize="large" />
+                </IconButton>
+            </Stack>
+        );
+    }
 
     return (
         <Box
@@ -115,7 +181,7 @@ const OtpCodeCarousel: FC<OtpCodeCarouselProps> = ({
                 minWidth: 0,
                 overflow: "hidden",
                 position: "relative",
-                height: "clamp(3.5rem, 12vw, 4rem)",
+                height: { xs: "3.5rem", sm: "4rem" },
             }}
         >
             <Box
@@ -123,6 +189,7 @@ const OtpCodeCarousel: FC<OtpCodeCarouselProps> = ({
                     height: "100%",
                     position: "relative",
                     width: "100%",
+                    contain: "layout paint",
                 }}
             >
                 {displayedCodes.map((displayedCode, index) => {
@@ -136,19 +203,61 @@ const OtpCodeCarousel: FC<OtpCodeCarouselProps> = ({
                             : isCurrent
                               ? 1
                               : 0.55;
+                    const isLeftCode =
+                        phase === "sliding" ? index <= 1 : index === 0;
                     const position =
                         phase === "sliding"
                             ? [
-                                  { left: "-25%", width: "25%" },
-                                  { left: "0%", width: "25%" },
-                                  { left: "25%", width: "50%" },
-                                  { left: "75%", width: "25%" },
+                                  {
+                                      left: "-22%",
+                                      top: "0%",
+                                      width: "22%",
+                                      height: "100%",
+                                  },
+                                  {
+                                      left: "0%",
+                                      top: "0%",
+                                      width: "22%",
+                                      height: "100%",
+                                  },
+                                  {
+                                      left: "22%",
+                                      top: "0%",
+                                      width: "56%",
+                                      height: "100%",
+                                  },
+                                  {
+                                      left: "78%",
+                                      top: "0%",
+                                      width: "22%",
+                                      height: "100%",
+                                  },
                               ][index]
                             : [
-                                  { left: "0%", width: "25%" },
-                                  { left: "25%", width: "50%" },
-                                  { left: "75%", width: "25%" },
-                                  { left: "100%", width: "25%" },
+                                  {
+                                      left: "0%",
+                                      top: "0%",
+                                      width: "22%",
+                                      height: "100%",
+                                  },
+                                  {
+                                      left: "22%",
+                                      top: "0%",
+                                      width: "56%",
+                                      height: "100%",
+                                  },
+                                  {
+                                      left: "78%",
+                                      top: "0%",
+                                      width: "22%",
+                                      height: "100%",
+                                  },
+                                  {
+                                      left: "100%",
+                                      top: "0%",
+                                      width: "22%",
+                                      height: "100%",
+                                  },
                               ][index];
 
                     return (
@@ -176,32 +285,57 @@ const OtpCodeCarousel: FC<OtpCodeCarouselProps> = ({
                             }}
                             sx={{
                                 alignItems: "center",
+                                backfaceVisibility: "hidden",
                                 color: isCurrent
                                     ? "text.primary"
                                     : "text.secondary",
                                 display: "flex",
+                                contain: "layout paint style",
                                 fontSize: isCurrent
-                                    ? "clamp(1.75rem, 9vw, 3rem)"
-                                    : "clamp(0.65rem, 2.8vw, 1rem)",
-                                height: "100%",
-                                justifyContent: "center",
+                                    ? {
+                                          xs: "clamp(2rem, 10vw, 2.5rem)",
+                                          sm: "3rem",
+                                      }
+                                    : {
+                                          xs: "clamp(0.8rem, 3.6vw, 1rem)",
+                                          sm: "1.125rem",
+                                      },
+                                fontVariantNumeric: "tabular-nums",
+                                height: position?.height,
+                                justifyContent: {
+                                    xs: isCurrent
+                                        ? "center"
+                                        : isLeftCode
+                                          ? "flex-start"
+                                          : "flex-end",
+                                    sm: "center",
+                                },
                                 left: position?.left,
                                 opacity,
                                 overflow: "visible",
                                 position: "absolute",
                                 textAlign: "center",
+                                top: position?.top,
                                 transform: isCurrent
-                                    ? "translateX(-24px)"
-                                    : "translateX(0)",
+                                    ? "translate3d(-24px, 0, 0)"
+                                    : "translate3d(0, 0, 0)",
                                 whiteSpace: "nowrap",
                                 width: position?.width,
+                                willChange:
+                                    phase === "sliding"
+                                        ? "left, top, width, height, transform, font-size, opacity"
+                                        : "auto",
                                 transition:
                                     phase === "sliding"
-                                        ? "left 400ms cubic-bezier(0.4, 0, 0.2, 1), width 400ms cubic-bezier(0.4, 0, 0.2, 1), transform 400ms cubic-bezier(0.4, 0, 0.2, 1), font-size 400ms cubic-bezier(0.4, 0, 0.2, 1), color 400ms ease, opacity 400ms ease"
+                                        ? "left 320ms cubic-bezier(0.22, 1, 0.36, 1), top 320ms cubic-bezier(0.22, 1, 0.36, 1), width 320ms cubic-bezier(0.22, 1, 0.36, 1), height 320ms cubic-bezier(0.22, 1, 0.36, 1), transform 320ms cubic-bezier(0.22, 1, 0.36, 1), font-size 320ms cubic-bezier(0.22, 1, 0.36, 1), color 240ms ease, opacity 240ms ease"
                                         : "none",
                             }}
                         >
-                            {formatCode(displayedCode)}
+                            <span
+                                ref={isCurrent ? observeCurrentCode : undefined}
+                            >
+                                {formatCode(displayedCode)}
+                            </span>
                         </Typography>
                     );
                 })}
@@ -210,7 +344,7 @@ const OtpCodeCarousel: FC<OtpCodeCarouselProps> = ({
                 color="primary"
                 onClick={onCopy}
                 sx={{
-                    left: "calc(50% + min(18vw, 80px) - 24px)",
+                    left: `calc(50% - 24px + ${currentCodeWidth / 2 + 8}px)`,
                     position: "absolute",
                     top: "50%",
                     transform: "translateY(-50%)",
@@ -324,6 +458,9 @@ const Accounts: FC = () => {
                             }}
                         >
                             <OtpCodeCarousel
+                                showAdjacentCodes={
+                                    settingsManager?.showAdjacentCodes ?? true
+                                }
                                 accountId={selectedAccountId}
                                 previousCode={previousCode}
                                 code={code}
