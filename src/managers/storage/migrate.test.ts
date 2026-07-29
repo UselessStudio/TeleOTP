@@ -1,11 +1,7 @@
-import { describe, it, expect } from "vitest";
-import {
-    migrationDirection,
-    migrate,
-    MigrationDirection,
-} from "./migrate";
-import { AccountV1, AccountV2 } from "./storage";
+import { describe, expect, it } from "vitest";
+import { MigrationDirection, migrate, migrationDirection } from "./migrate";
 import { MIGRATIONS_SCHEMA } from "./migrations";
+import type { AccountV1, AccountV2 } from "./storage";
 
 describe("migrationDirection", () => {
     it("should return MigrationDirection.up if fromVersion is less than toVersion", () => {
@@ -26,13 +22,13 @@ describe("migrationDirection", () => {
         expect(actual).toEqual(expected);
     });
 
-      it("should return MigrationDirection.down if fromVersion is greater than toVersion", () => {
+    it("should return MigrationDirection.down if fromVersion is greater than toVersion", () => {
         const fromVersion = "2";
         const toVersion = "1";
         const expected = MigrationDirection.down;
         const actual = migrationDirection(fromVersion, toVersion);
         expect(actual).toEqual(expected);
-      });
+    });
 });
 
 describe("migrate", () => {
@@ -50,7 +46,12 @@ describe("migrate", () => {
         const toVersion = "1";
         const expected = schema;
 
-        const actual = migrate(MIGRATIONS_SCHEMA, schema, fromVersion, toVersion);
+        const actual = migrate(
+            MIGRATIONS_SCHEMA,
+            schema,
+            fromVersion,
+            toVersion,
+        );
         expect(actual).toEqual(expected);
     });
 
@@ -102,7 +103,7 @@ describe("migrate", () => {
                 uri: "uri",
                 issuer: "issuer",
 
-                icon: 'discord',
+                icon: "discord",
                 color: "#ed6c02",
                 order: -1,
             },
@@ -117,7 +118,12 @@ describe("migrate", () => {
         ];
 
         accounts.forEach((account, i) => {
-            const actual = migrate(MIGRATIONS_SCHEMA, account, fromVersion, toVersion);
+            const actual = migrate(
+                MIGRATIONS_SCHEMA,
+                account,
+                fromVersion,
+                toVersion,
+            );
             expect(actual).toEqual(expected[i]);
         });
     });

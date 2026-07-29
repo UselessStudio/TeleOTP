@@ -1,9 +1,16 @@
-import {createContext, FC, PropsWithChildren, useContext, useEffect, useState} from "react";
 import * as crypto from "crypto-js";
-import {SettingsManagerContext} from "./settings.tsx";
-import {BiometricsManagerContext} from "./biometrics.tsx";
+import {
+    createContext,
+    type FC,
+    type PropsWithChildren,
+    useContext,
+    useEffect,
+    useState,
+} from "react";
+import { BiometricsManagerContext } from "./biometrics.tsx";
+import { SettingsManagerContext } from "./settings.tsx";
 
-const kdfOptions = {keySize: 256 / 8};
+const kdfOptions = { keySize: 256 / 8 };
 const saltBytes = 128 / 8;
 const ivBytes = 128 / 8;
 const keyCheckValuePlaintext = "key-check-value";
@@ -104,14 +111,22 @@ export interface EncryptionManager {
 }
 
 export interface EncryptedData {
-    iv: string,
-    cipher: string,
+    iv: string;
+    cipher: string;
 }
 
-export const EncryptionManagerContext = createContext<EncryptionManager | null>(null);
+export const EncryptionManagerContext = createContext<EncryptionManager | null>(
+    null,
+);
 
-function checkKey(key: crypto.lib.WordArray, salt: crypto.lib.WordArray, keyCheckValue: string): boolean {
-    const kcv = crypto.AES.encrypt(keyCheckValuePlaintext, key, {iv: salt}).toString(crypto.format.OpenSSL);
+function checkKey(
+    key: crypto.lib.WordArray,
+    salt: crypto.lib.WordArray,
+    keyCheckValue: string,
+): boolean {
+    const kcv = crypto.AES.encrypt(keyCheckValuePlaintext, key, {
+        iv: salt,
+    }).toString(crypto.format.OpenSSL);
     return kcv === keyCheckValue;
 }
 
@@ -125,7 +140,9 @@ function getStoredKey(): crypto.lib.WordArray | null {
  *
  * @note EncryptionManagerProvider must be used inside the SettingsManagerProvider
  */
-export const EncryptionManagerProvider: FC<PropsWithChildren> = ({ children }) => {
+export const EncryptionManagerProvider: FC<PropsWithChildren> = ({
+    children,
+}) => {
     const [key, setKey] = useState<crypto.lib.WordArray | null>(getStoredKey);
     const [storageChecked, setStorageChecked] = useState(false);
     const [salt, setSalt] = useState<crypto.lib.WordArray | null>(null);
@@ -137,8 +154,8 @@ export const EncryptionManagerProvider: FC<PropsWithChildren> = ({ children }) =
     const settingsManager = useContext(SettingsManagerContext);
 
     useEffect(() => {
-        if(settingsManager?.shouldKeepUnlocked) {
-            if(key !== null) {
+        if (settingsManager?.shouldKeepUnlocked) {
+            if (key !== null) {
                 localStorage.setItem("key", crypto.enc.Base64.stringify(key));
             }
         } else {
@@ -147,21 +164,33 @@ export const EncryptionManagerProvider: FC<PropsWithChildren> = ({ children }) =
     }, [key, settingsManager?.shouldKeepUnlocked]);
 
     useEffect(() => {
-        window.Telegram.WebApp.CloudStorage.getItems(["salt", "kcv"], (error, result) => {
-            if (error) {
-                window.Telegram.WebApp.showAlert(`Failed to get salt: ${error}`);
-                return;
-            }
-            const salt = result?.salt ? crypto.enc.Base64.parse(result.salt) : null;
-            const kcv = result?.kcv ?? null;
-            setSalt(salt);
-            setKeyCheckValue(kcv);
-            const key = getStoredKey();
-            if (salt === null || kcv === null || key === null || !checkKey(key, salt, kcv)) {
-                setKey(null);
-            }
-            setStorageChecked(true);
-        });
+        window.Telegram.WebApp.CloudStorage.getItems(
+            ["salt", "kcv"],
+            (error, result) => {
+                if (error) {
+                    window.Telegram.WebApp.showAlert(
+                        `Failed to get salt: ${error}`,
+                    );
+                    return;
+                }
+                const salt = result?.salt
+                    ? crypto.enc.Base64.parse(result.salt)
+                    : null;
+                const kcv = result?.kcv ?? null;
+                setSalt(salt);
+                setKeyCheckValue(kcv);
+                const key = getStoredKey();
+                if (
+                    salt === null ||
+                    kcv === null ||
+                    key === null ||
+                    !checkKey(key, salt, kcv)
+                ) {
+                    setKey(null);
+                }
+                setStorageChecked(true);
+            },
+        );
     }, []);
 
     const encryptionManager: EncryptionManager = {
@@ -172,10 +201,15 @@ export const EncryptionManagerProvider: FC<PropsWithChildren> = ({ children }) =
             setOldKey(key);
             const salt = crypto.lib.WordArray.random(saltBytes);
             const newKey = crypto.PBKDF2(password, salt, kdfOptions);
-            const kcv = crypto.AES.encrypt(keyCheckValuePlaintext, newKey, {iv: salt}).toString(crypto.format.OpenSSL);
+            const kcv = crypto.AES.encrypt(keyCheckValuePlaintext, newKey, {
+                iv: salt,
+            }).toString(crypto.format.OpenSSL);
 
             setSalt(salt);
-            window.Telegram.WebApp.CloudStorage.setItem("salt", crypto.enc.Base64.stringify(salt));
+            window.Telegram.WebApp.CloudStorage.setItem(
+                "salt",
+                crypto.enc.Base64.stringify(salt),
+            );
 
             setKeyCheckValue(kcv);
             window.Telegram.WebApp.CloudStorage.setItem("kcv", kcv);
@@ -204,7 +238,7 @@ export const EncryptionManagerProvider: FC<PropsWithChildren> = ({ children }) =
             }
             const key = crypto.PBKDF2(enteredPassword, salt, kdfOptions);
 
-            if(checkKey(key, salt, keyCheckValue)) {
+            if (checkKey(key, salt, keyCheckValue)) {
                 setKey(key);
                 return true;
             }
@@ -223,31 +257,36 @@ export const EncryptionManagerProvider: FC<PropsWithChildren> = ({ children }) =
             biometricsManager?.getToken((token?) => {
                 if (token) {
                     const key = crypto.enc.Base64.parse(token);
-                    if(checkKey(key, salt, keyCheckValue)) {
+                    if (checkKey(key, salt, keyCheckValue)) {
                         setKey(key);
                     }
                 }
             });
-
         },
 
         encrypt(data) {
-            if(key === null) return null;
+            if (key === null) return null;
 
             const iv = crypto.lib.WordArray.random(ivBytes);
             return JSON.stringify({
                 iv: crypto.enc.Base64.stringify(iv),
-                cipher: crypto.AES.encrypt(crypto.enc.Utf8.parse(data), key, {iv}).toString()
+                cipher: crypto.AES.encrypt(crypto.enc.Utf8.parse(data), key, {
+                    iv,
+                }).toString(),
             } as EncryptedData);
         },
         decrypt(data) {
-            if(key === null) return null;
+            if (key === null) return null;
             try {
-                const {iv, cipher}: EncryptedData = JSON.parse(data) as EncryptedData;
+                const { iv, cipher }: EncryptedData = JSON.parse(
+                    data,
+                ) as EncryptedData;
 
-                return crypto.enc.Utf8.stringify(crypto.AES.decrypt(cipher, key, {
-                    iv: crypto.enc.Base64.parse(iv)
-                }));
+                return crypto.enc.Utf8.stringify(
+                    crypto.AES.decrypt(cipher, key, {
+                        iv: crypto.enc.Base64.parse(iv),
+                    }),
+                );
             } catch (e) {
                 console.error(e);
                 return null;
@@ -255,7 +294,9 @@ export const EncryptionManagerProvider: FC<PropsWithChildren> = ({ children }) =
         },
     };
 
-    return <EncryptionManagerContext.Provider value={encryptionManager}>
-        {children}
-    </EncryptionManagerContext.Provider>;
-}
+    return (
+        <EncryptionManagerContext.Provider value={encryptionManager}>
+            {children}
+        </EncryptionManagerContext.Provider>
+    );
+};

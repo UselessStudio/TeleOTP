@@ -1,15 +1,15 @@
-import {FC, useContext, useEffect, useState} from "react";
-import {Button, Stack, Typography} from "@mui/material";
-import PasswordAnimation from "../assets/unlock_lottie.json";
-import useTelegramMainButton from "../hooks/telegram/useTelegramMainButton.ts";
-import {EncryptionManagerContext} from "../managers/encryption.tsx";
-import TelegramTextField from "../components/TelegramTextField.tsx";
-import LottieAnimation from "../components/LottieAnimation.tsx";
-import ClearIcon from '@mui/icons-material/Clear';
-import {useNavigate} from "react-router-dom";
-import {BiometricsManagerContext} from "../managers/biometrics.tsx";
 import { Fingerprint } from "@mui/icons-material";
-import {useL10n} from "../hooks/useL10n.ts";
+import ClearIcon from "@mui/icons-material/Clear";
+import { Button, Stack, Typography } from "@mui/material";
+import { type FC, useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import PasswordAnimation from "../assets/unlock_lottie.json";
+import LottieAnimation from "../components/LottieAnimation.tsx";
+import TelegramTextField from "../components/TelegramTextField.tsx";
+import useTelegramMainButton from "../hooks/telegram/useTelegramMainButton.ts";
+import { useL10n } from "../hooks/useL10n.ts";
+import { BiometricsManagerContext } from "../managers/biometrics.tsx";
+import { EncryptionManagerContext } from "../managers/encryption.tsx";
 
 const Decrypt: FC = () => {
     const [password, setPassword] = useState("");
@@ -19,28 +19,33 @@ const Decrypt: FC = () => {
     const l10n = useL10n();
 
     const decryptAccounts = () => {
-        if(encryptionManager?.unlock(password)) {
+        if (encryptionManager?.unlock(password)) {
             return true;
         } else {
             setWrongPassword(true);
             return false;
         }
-    }
+    };
 
     useTelegramMainButton(decryptAccounts, l10n("DecryptAction"));
 
     const [biometricsRequested, setBiometricsRequested] = useState(false);
     useEffect(() => {
-        if(!biometricsManager?.isSaved || biometricsRequested) return;
+        if (!biometricsManager?.isSaved || biometricsRequested) return;
         setBiometricsRequested(true);
         encryptionManager?.unlockBiometrics();
-    }, [biometricsManager, biometricsManager?.isSaved, encryptionManager, biometricsRequested]);
+    }, [
+        biometricsManager,
+        biometricsManager?.isSaved,
+        encryptionManager,
+        biometricsRequested,
+    ]);
 
     const navigate = useNavigate();
 
-    return <>
+    return (
         <Stack spacing={2} alignItems="center">
-            <LottieAnimation animationData={PasswordAnimation}/>
+            <LottieAnimation animationData={PasswordAnimation} />
             <Typography variant="h5" fontWeight="bold" align="center">
                 {l10n("DecryptTitle")}
             </Typography>
@@ -55,13 +60,13 @@ const Decrypt: FC = () => {
                 value={password}
                 error={wrongPassword}
                 helperText={wrongPassword ? l10n("WrongPasswordError") : null}
-                onChange={e => {
+                onChange={(e) => {
                     setPassword(e.target.value);
                     setWrongPassword(false);
                 }}
                 onSubmit={decryptAccounts}
             />
-            {biometricsManager?.isSaved  && 
+            {biometricsManager?.isSaved && (
                 <Button
                     size="small"
                     sx={{
@@ -69,26 +74,29 @@ const Decrypt: FC = () => {
                         width: 64,
                         height: 64,
                     }}
-                    onClick={() => {encryptionManager?.unlockBiometrics()}}
+                    onClick={() => {
+                        encryptionManager?.unlockBiometrics();
+                    }}
                 >
                     <Fingerprint fontSize="large" />
                 </Button>
-            }
-            {wrongPassword ?
+            )}
+            {wrongPassword ? (
                 <Button
                     startIcon={<ClearIcon />}
                     variant="text"
                     size="small"
-                    sx={{width: 1}}
+                    sx={{ width: 1 }}
                     color="error"
                     onClick={() => {
                         navigate("/reset");
-                    }}>
+                    }}
+                >
                     {l10n("ResetPasswordAction")}
                 </Button>
-                : null}
+            ) : null}
         </Stack>
-    </>;
-}
+    );
+};
 
 export default Decrypt;

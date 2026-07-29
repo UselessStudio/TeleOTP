@@ -1,17 +1,18 @@
+// biome-ignore-all lint/correctness/useExhaustiveDependencies: Storage effects intentionally preserve the manager's existing render-time semantics.
 import {
     createContext,
-    FC,
-    PropsWithChildren,
+    type FC,
+    type PropsWithChildren,
     useContext,
     useEffect,
     useState,
 } from "react";
-import { EncryptionManagerContext } from "../encryption.tsx";
-import { Color, Icon } from "../../globals.tsx";
+import { PlausibleAnalyticsContext } from "../../components/PlausibleAnalytics.tsx";
+import type { Color, Icon } from "../../globals.tsx";
 import decodeGoogleAuthenticator from "../../migration/import.ts";
-import { migrate, Version } from "./migrate.ts";
+import { EncryptionManagerContext } from "../encryption.tsx";
+import { migrate, type Version } from "./migrate.ts";
 import { MIGRATIONS_SCHEMA } from "./migrations.ts";
-import {PlausibleAnalyticsContext} from "../../components/PlausibleAnalytics.tsx";
 
 export interface AccountBase {
     id: string;
@@ -24,7 +25,7 @@ export interface AccountV1 extends AccountBase {
     color: Color;
     icon: Icon;
 }
-// prettier-ignore
+// biome-ignore format: Keep the picked account fields on one line.
 export interface AccountV2 extends Pick<AccountV1, "id" | "label" | "issuer" | "uri"> {
     order: number;
     color: string;
@@ -121,18 +122,21 @@ export const StorageManagerProvider: FC<PropsWithChildren> = ({ children }) => {
     const [ready, setReady] = useState(false);
     const [accounts, setAccountsRaw] = useState<Account[]>([]);
     function setAccounts(accounts: Account[]) {
-        setAccountsRaw(accounts.sort((a, b) => a.order - b.order)
-            .map((acc, index) => {
-                acc.order = index;
-                return acc;
-            }));
+        setAccountsRaw(
+            accounts
+                .sort((a, b) => a.order - b.order)
+                .map((acc, index) => {
+                    acc.order = index;
+                    return acc;
+                }),
+        );
     }
 
     const [checking, setChecking] = useState<boolean>(false);
     useEffect(() => {
-        if(checking) return;
+        if (checking) return;
         setChecking(true);
-        if(encryptionManager?.isLocked && encryptionManager.storageChecked) {
+        if (encryptionManager?.isLocked && encryptionManager.storageChecked) {
             setReady(true);
             return;
         } else {
@@ -141,54 +145,67 @@ export const StorageManagerProvider: FC<PropsWithChildren> = ({ children }) => {
 
         window.Telegram.WebApp.CloudStorage.getKeys((error, keys) => {
             if (error) {
-                window.Telegram.WebApp.showAlert(`Failed to get accounts: ${error}`);
+                window.Telegram.WebApp.showAlert(
+                    `Failed to get accounts: ${error}`,
+                );
                 return;
             }
-            const accounts = keys?.filter(a => a.startsWith("account")) ?? [];
-            window.Telegram.WebApp.CloudStorage.getItems([...accounts, "version"],
+            const accounts = keys?.filter((a) => a.startsWith("account")) ?? [];
+            window.Telegram.WebApp.CloudStorage.getItems(
+                [...accounts, "version"],
                 (error, result) => {
-                if (error ?? !result) {
-                    window.Telegram.WebApp.showAlert(`Failed to get accounts: ${error}`);
-                    return;
-                }
-                const storageVersion: string = keys?.includes("version") ? result.version : "1";
-                delete result.version;
-                
-                let accounts = Object.values(result)
-                    .map(value => encryptionManager?.decrypt(value))
-                    .filter((x): x is string => !!x)
-                    .map(value => JSON.parse(value) as AccountBase);
+                    if (error ?? !result) {
+                        window.Telegram.WebApp.showAlert(
+                            `Failed to get accounts: ${error}`,
+                        );
+                        return;
+                    }
+                    const storageVersion: string = keys?.includes("version")
+                        ? result.version
+                        : "1";
+                    delete result.version;
 
-                console.log(`Storage version: ${storageVersion}, Latest version: ${LATEST_ACCOUNT_VERSION}, Accounts: ${accounts.length}`)
-                if (accounts.length > 0 && (!storageVersion || storageVersion !== LATEST_ACCOUNT_VERSION)) {
-                    console.log("Version mismatch", accounts);
-                    accounts = accounts.map((account, index) => {
-                        const migrated = migrate(
-                            MIGRATIONS_SCHEMA,
-                            account as Account,
-                            storageVersion as Version,
-                            LATEST_ACCOUNT_VERSION as Version
-                        ) as Account;
-                        console.log("migrated", migrated);
-                        if (migrated.order < 0) migrated.order = index;
-                        return migrated;
-                    });
+                    let accounts = Object.values(result)
+                        .map((value) => encryptionManager?.decrypt(value))
+                        .filter((x): x is string => !!x)
+                        .map((value) => JSON.parse(value) as AccountBase);
 
-                    storageManager.saveAccounts(accounts as Account[]);
-                    window.Telegram.WebApp.CloudStorage.setItem(
-                        "version",
-                        LATEST_ACCOUNT_VERSION
+                    console.log(
+                        `Storage version: ${storageVersion}, Latest version: ${LATEST_ACCOUNT_VERSION}, Accounts: ${accounts.length}`,
                     );
-                }
-                
-                setAccounts(accounts as Account[]);
-                setReady(true);
-                setChecking(false);
-            });
+                    if (
+                        accounts.length > 0 &&
+                        (!storageVersion ||
+                            storageVersion !== LATEST_ACCOUNT_VERSION)
+                    ) {
+                        console.log("Version mismatch", accounts);
+                        accounts = accounts.map((account, index) => {
+                            const migrated = migrate(
+                                MIGRATIONS_SCHEMA,
+                                account as Account,
+                                storageVersion as Version,
+                                LATEST_ACCOUNT_VERSION as Version,
+                            ) as Account;
+                            console.log("migrated", migrated);
+                            if (migrated.order < 0) migrated.order = index;
+                            return migrated;
+                        });
+
+                        storageManager.saveAccounts(accounts as Account[]);
+                        window.Telegram.WebApp.CloudStorage.setItem(
+                            "version",
+                            LATEST_ACCOUNT_VERSION,
+                        );
+                    }
+
+                    setAccounts(accounts as Account[]);
+                    setReady(true);
+                    setChecking(false);
+                },
+            );
         });
     }, [encryptionManager?.isLocked]);
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     const storageManager: StorageManager = {
         ready,
         accounts,
@@ -199,12 +216,12 @@ export const StorageManagerProvider: FC<PropsWithChildren> = ({ children }) => {
             }
             for (const account of accounts) {
                 const encrypted = encryptionManager?.encrypt(
-                    JSON.stringify(account)
+                    JSON.stringify(account),
                 );
                 if (!encrypted) continue;
                 window.Telegram.WebApp.CloudStorage.setItem(
-                    "account" + account.id,
-                    encrypted
+                    `account${account.id}`,
+                    encrypted,
                 );
                 newAccounts[account.id] = account;
             }
@@ -216,11 +233,11 @@ export const StorageManagerProvider: FC<PropsWithChildren> = ({ children }) => {
         },
         removeAccount(id: string) {
             window.Telegram.WebApp.CloudStorage.removeItem(
-                "account" + id,
+                `account${id}`,
                 (error, result) => {
                     if (error ?? !result) return;
-                    setAccounts(accounts.filter(acc => acc.id !== id));
-                }
+                    setAccounts(accounts.filter((acc) => acc.id !== id));
+                },
             );
         },
         clearStorage(): void {
@@ -235,7 +252,7 @@ export const StorageManagerProvider: FC<PropsWithChildren> = ({ children }) => {
                             encryptionManager?.removePassword();
                             setReady(true);
                         }
-                    }
+                    },
                 );
             });
         },
@@ -243,9 +260,12 @@ export const StorageManagerProvider: FC<PropsWithChildren> = ({ children }) => {
             return Math.max(...accounts.map((acc) => acc.order));
         },
         reorder(accountId: string, destination: number) {
-            setAccountsRaw(accounts => {
-                const source = accounts.findIndex(acc => acc.id == accountId);
-                if(source == -1 || accounts[source].order === destination) return accounts;
+            setAccountsRaw((accounts) => {
+                const source = accounts.findIndex(
+                    (acc) => acc.id === accountId,
+                );
+                if (source === -1 || accounts[source].order === destination)
+                    return accounts;
                 const account = accounts.splice(source, 1)[0];
                 accounts.splice(destination, 0, account);
                 return accounts.map((acc, index) => {
@@ -254,7 +274,6 @@ export const StorageManagerProvider: FC<PropsWithChildren> = ({ children }) => {
                 });
             });
         },
-
     };
 
     const [keyChanged, setKeyChanged] = useState(false);
@@ -270,12 +289,12 @@ export const StorageManagerProvider: FC<PropsWithChildren> = ({ children }) => {
 
         Object.values(accounts).forEach((account) => {
             const encrypted = encryptionManager?.encrypt(
-                JSON.stringify(account)
+                JSON.stringify(account),
             );
             if (!encrypted) return;
             window.Telegram.WebApp.CloudStorage.setItem(
-                "account" + account.id,
-                encrypted
+                `account${account.id}`,
+                encrypted,
             );
         });
     }, [accounts, encryptionManager, keyChanged]);
@@ -293,11 +312,13 @@ export const StorageManagerProvider: FC<PropsWithChildren> = ({ children }) => {
         if (!accounts) return;
 
         const uris = Object.values(storageManager.accounts).map((a) => a.uri);
-        const newAccounts = accounts.filter((account) => !uris.includes(account.uri));
+        const newAccounts = accounts.filter(
+            (account) => !uris.includes(account.uri),
+        );
         storageManager.saveAccounts(newAccounts);
         setImported(true);
 
-        if(newAccounts.length > 0) {
+        if (newAccounts.length > 0) {
             analytics?.trackEvent("Accounts imported from TeleOTP");
         }
     }, [ready, imported, storageManager]);

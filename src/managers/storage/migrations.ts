@@ -1,9 +1,14 @@
-import { Migrations } from "./migrate";
 import { icons } from "../../globals";
-import {ICONS_CDN, titleToIconSlug} from "../../icons/icons.ts";
+import { ICONS_CDN, titleToIconSlug } from "../../icons/icons.ts";
+import type { Migrations } from "./migrate";
 
 type V1Color = [
-    "primary", "success", "warning", "secondary", "error", "info",
+    "primary",
+    "success",
+    "warning",
+    "secondary",
+    "error",
+    "info",
 ][number];
 
 export const MIGRATIONS_SCHEMA: Migrations = [
@@ -13,7 +18,7 @@ export const MIGRATIONS_SCHEMA: Migrations = [
         up: (account) => {
             function convertV1Icon(icon: string): string {
                 if (Object.keys(icons).includes(icon)) return icon;
-                if (icon == "twitter") icon = "x"; // thanks, Elon
+                if (icon === "twitter") icon = "x"; // thanks, Elon
 
                 // prevent not simpleicons urls
                 if (icon.startsWith("https://") && !icon.includes(ICONS_CDN)) {
@@ -52,7 +57,7 @@ export const MIGRATIONS_SCHEMA: Migrations = [
                         color: convertV1Color(account.color as V1Color),
                         icon: convertV1Icon(account.icon),
                         order: -1,
-                    }
+                    },
                 );
             return {
                 ...account,

@@ -1,5 +1,14 @@
-import {createContext, FC, PropsWithChildren, useEffect, useMemo} from "react";
-import Plausible, {EventOptions, PlausibleOptions} from "plausible-tracker";
+import Plausible, {
+    type EventOptions,
+    type PlausibleOptions,
+} from "plausible-tracker";
+import {
+    createContext,
+    type FC,
+    type PropsWithChildren,
+    useEffect,
+    useMemo,
+} from "react";
 
 /**
  * PlausibleAnalytics is responsible for tracking custom event goals.
@@ -18,10 +27,11 @@ export interface PlausibleAnalytics {
     trackEvent: (
         eventName: string,
         options?: EventOptions,
-        eventData?: PlausibleOptions
+        eventData?: PlausibleOptions,
     ) => void;
 }
-export const PlausibleAnalyticsContext = createContext<PlausibleAnalytics | null>(null);
+export const PlausibleAnalyticsContext =
+    createContext<PlausibleAnalytics | null>(null);
 
 export interface PlausibleAnalyticsProps {
     domain: string;
@@ -31,19 +41,23 @@ export interface PlausibleAnalyticsProps {
 /**
  * PlausibleAnalytics is created using PlausibleAnalyticsProvider component
  */
-export const PlausibleAnalyticsProvider: FC<PropsWithChildren<PlausibleAnalyticsProps>> = ({children, domain, apiHost}) => {
+export const PlausibleAnalyticsProvider: FC<
+    PropsWithChildren<PlausibleAnalyticsProps>
+> = ({ children, domain, apiHost }) => {
     const plausible = useMemo(() => {
         return Plausible({
             domain,
-            apiHost
-        })
+            apiHost,
+        });
     }, [domain, apiHost]);
 
     useEffect(() => {
         plausible.enableAutoPageviews();
     }, [plausible]);
 
-    return <PlausibleAnalyticsContext.Provider value={plausible}>
-        {children}
-    </PlausibleAnalyticsContext.Provider>
+    return (
+        <PlausibleAnalyticsContext.Provider value={plausible}>
+            {children}
+        </PlausibleAnalyticsContext.Provider>
+    );
 };

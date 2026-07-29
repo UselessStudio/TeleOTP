@@ -1,4 +1,3 @@
-import {FC, useCallback, useEffect, useMemo, useState} from "react";
 import {
     CircularProgress,
     Link,
@@ -9,19 +8,20 @@ import {
     Stack,
     Typography,
 } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
+import Fuse from "fuse.js/min-basic";
+import { type FC, useCallback, useEffect, useMemo, useState } from "react";
+import SVG from "react-inlinesvg";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useDebounce } from "use-debounce";
+import MagnificationGlass from "../assets/magnification_glass_lottie.json";
 import LottieAnimation from "../components/LottieAnimation.tsx";
 import TelegramTextField from "../components/TelegramTextField.tsx";
-import MagnificationGlass from "../assets/magnification_glass_lottie.json";
-import { useLocation, useNavigate } from "react-router-dom";
-import SVG from "react-inlinesvg";
-import Fuse from "fuse.js/min-basic";
-import { useDebounce } from "use-debounce";
-import { EditAccountState } from "./EditAccount.tsx";
-import {ICONS_DATA_URL, iconUrl, titleToIconSlug} from "../icons/icons.ts";
-import {NewAccountState} from "./CreateAccount.tsx";
+import { useL10n } from "../hooks/useL10n.ts";
+import { ICONS_DATA_URL, iconUrl, titleToIconSlug } from "../icons/icons.ts";
 import normalizeCustomColor from "../icons/normalizeCustomColor.ts";
-import {useTheme} from "@mui/material/styles";
-import {useL10n} from "../hooks/useL10n.ts";
+import type { NewAccountState } from "./CreateAccount.tsx";
+import type { EditAccountState } from "./EditAccount.tsx";
 
 interface IconData {
     title: string;
@@ -57,33 +57,44 @@ const IconsList: FC<Pick<IconsData, "icons"> & { searchQuery: string }> = ({
     const navigate = useNavigate();
     const location = useLocation();
     const isFromEditing = location.state.account !== undefined;
-    const state = useCallback((icon: string, color: string): EditAccountState | NewAccountState => {
-        if(isFromEditing) {
-            const state = location.state as EditAccountState;
-            return {
-                account: {
-                    ...state.account,
-                    ...{
-                        icon,
-                        color,
+    const state = useCallback(
+        (icon: string, color: string): EditAccountState | NewAccountState => {
+            if (isFromEditing) {
+                const state = location.state as EditAccountState;
+                return {
+                    account: {
+                        ...state.account,
+                        ...{
+                            icon,
+                            color,
+                        },
                     },
-                },
-            };
-        } else {
-            const state = location.state as NewAccountState;
-            return {
-                ...state,
-                icon, color
-            };
-        }
-    }, [isFromEditing]);
+                };
+            } else {
+                const state = location.state as NewAccountState;
+                return {
+                    ...state,
+                    icon,
+                    color,
+                };
+            }
+        },
+        [isFromEditing, location.state],
+    );
     const fuse = useMemo(
         () =>
             new Fuse(icons, {
-                keys: ["title", "slug", "aliases.aka", "aliases.old", "aliases.loc", "aliases.dup"],
+                keys: [
+                    "title",
+                    "slug",
+                    "aliases.aka",
+                    "aliases.old",
+                    "aliases.loc",
+                    "aliases.dup",
+                ],
                 shouldSort: true,
             }),
-        [icons]
+        [icons],
     );
     const filtered = fuse.search(searchQuery, { limit: 10 });
 
@@ -96,7 +107,10 @@ const IconsList: FC<Pick<IconsData, "icons"> & { searchQuery: string }> = ({
                     key={item.title}
                     onClick={() => {
                         navigate(isFromEditing ? "/edit" : "/create", {
-                            state: state(item.slug ?? titleToIconSlug(item.title), `#${item.hex}`),
+                            state: state(
+                                item.slug ?? titleToIconSlug(item.title),
+                                `#${item.hex}`,
+                            ),
                         });
                     }}
                 >
@@ -104,7 +118,9 @@ const IconsList: FC<Pick<IconsData, "icons"> & { searchQuery: string }> = ({
                         <SVG
                             cacheRequests={false}
                             loader={<CircularProgress color="primary" />}
-                            src={iconUrl(item.slug ?? titleToIconSlug(item.title))}
+                            src={iconUrl(
+                                item.slug ?? titleToIconSlug(item.title),
+                            )}
                             fill={normalizeCustomColor(`#${item.hex}`, theme)}
                         ></SVG>
                     </ListItemIcon>
@@ -133,13 +149,11 @@ const IconBrowser: FC = () => {
                 const _cachedData = await cache.match(ICONS_DATA_URL);
                 if (_cachedData?.ok) setIconsData(await _cachedData.json());
                 else {
-                    window.Telegram.WebApp.showAlert(
-                        l10n("IconsFetchError")
-                    );
+                    window.Telegram.WebApp.showAlert(l10n("IconsFetchError"));
                 }
             }
         });
-    }, []);
+    }, [l10n]);
 
     useEffect(() => {
         if (verified && phrase.length > 2) {
@@ -147,58 +161,62 @@ const IconBrowser: FC = () => {
         } else {
             setSearching(false);
         }
-    }, [phrase]);
+    }, [phrase, verified]);
 
     return (
-        <>
-            <Stack spacing={2} alignItems="center">
-                <Typography variant="h5" fontWeight="bold" align="center">
-                    {l10n("BrowseIconsTitle")}
-                </Typography>
-                <TelegramTextField
-                    fullWidth
-                    autoComplete="false"
-                    autoFocus={true}
-                    type="search"
-                    label={l10n("SearchPatternLabel")}
-                    value={phrase}
-                    error={!verified}
-                    helperText={!verified ? l10n("SearchHelper") : null}
-                    onChange={(e) => {
-                        const value = e.target.value;
-                        setPhrase(value);
-                        setVerified(value.trim().length >= 2);
-                    }}
-                />
-                {!searching && (
-                    <>
-                        <Typography
-                            // fontFamily={"monospace"}
-                            color="text.secondary"
-                            align="center"
-                            variant="subtitle1"
-                            fontWeight={400}
-                        >
-                            {l10n("StartTyping")}
-                        </Typography>
-                        <LottieAnimation
-                            speed={1}
-                            loop={searching}
-                            animationData={MagnificationGlass}
-                        />
-                    </>
-                )}
-                {searching && iconsData && (
-                    <IconsList icons={iconsData.icons} searchQuery={query} />
-                )}
-                <Typography justifySelf={"flex-end"} variant="subtitle2">
-                    {l10n("IconsProvidedBy")}
-                    <Link rel="noopener" target="_blank" variant="subtitle2" color="text.secondary" href="https://github.com/simple-icons/simple-icons">
-                        @simpleicons
-                    </Link>
-                </Typography>
-            </Stack>
-        </>
+        <Stack spacing={2} alignItems="center">
+            <Typography variant="h5" fontWeight="bold" align="center">
+                {l10n("BrowseIconsTitle")}
+            </Typography>
+            <TelegramTextField
+                fullWidth
+                autoComplete="false"
+                autoFocus={true}
+                type="search"
+                label={l10n("SearchPatternLabel")}
+                value={phrase}
+                error={!verified}
+                helperText={!verified ? l10n("SearchHelper") : null}
+                onChange={(e) => {
+                    const value = e.target.value;
+                    setPhrase(value);
+                    setVerified(value.trim().length >= 2);
+                }}
+            />
+            {!searching && (
+                <>
+                    <Typography
+                        // fontFamily={"monospace"}
+                        color="text.secondary"
+                        align="center"
+                        variant="subtitle1"
+                        fontWeight={400}
+                    >
+                        {l10n("StartTyping")}
+                    </Typography>
+                    <LottieAnimation
+                        speed={1}
+                        loop={searching}
+                        animationData={MagnificationGlass}
+                    />
+                </>
+            )}
+            {searching && iconsData && (
+                <IconsList icons={iconsData.icons} searchQuery={query} />
+            )}
+            <Typography justifySelf={"flex-end"} variant="subtitle2">
+                {l10n("IconsProvidedBy")}
+                <Link
+                    rel="noopener"
+                    target="_blank"
+                    variant="subtitle2"
+                    color="text.secondary"
+                    href="https://github.com/simple-icons/simple-icons"
+                >
+                    @simpleicons
+                </Link>
+            </Typography>
+        </Stack>
     );
 };
 

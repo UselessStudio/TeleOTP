@@ -1,13 +1,13 @@
+import { createTheme, type Theme } from "@mui/material";
+import type { ThemeParams } from "@twa-dev/types";
 import { useEffect, useState } from "react";
-import { createTheme, Theme } from "@mui/material";
-import { ThemeParams } from "@twa-dev/types";
 
 function materialThemeFromTelegramTheme(
     mode: "light" | "dark",
-    themeParams?: ThemeParams
+    themeParams?: ThemeParams,
 ): Theme {
     // Create a default theme if not supplied by Telegram (i.e. when testing in a browser)
-    if (themeParams?.button_color == undefined) {
+    if (themeParams?.button_color === undefined) {
         return createTheme();
     }
 
@@ -62,16 +62,16 @@ export default function useTelegramTheme() {
     const [theme, setTheme] = useState(
         materialThemeFromTelegramTheme(
             window.Telegram.WebApp.colorScheme,
-            window.Telegram.WebApp.themeParams
-        )
+            window.Telegram.WebApp.themeParams,
+        ),
     );
     useEffect(() => {
         function themeChanged() {
             setTheme(
                 materialThemeFromTelegramTheme(
                     window.Telegram.WebApp.colorScheme,
-                    window.Telegram.WebApp.themeParams
-                )
+                    window.Telegram.WebApp.themeParams,
+                ),
             );
         }
 

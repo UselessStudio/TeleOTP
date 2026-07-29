@@ -1,5 +1,5 @@
-import {useLocation, useNavigate} from "react-router-dom";
-import {useCallback, useEffect} from "react";
+import { useCallback, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 /**
  * This hook sends a request to telegram to display button to navigate back in history.
@@ -18,11 +18,11 @@ export default function useTelegramBackButton() {
 
         return () => {
             window.Telegram.WebApp.BackButton.offClick(goBack);
-        }
+        };
     }, [goBack]);
 
-    useEffect(()=>{
-        if(location.key != "default" && location.pathname !== "/") {
+    useEffect(() => {
+        if (location.key !== "default" && location.pathname !== "/") {
             window.Telegram.WebApp.BackButton.show();
         } else {
             window.Telegram.WebApp.BackButton.hide();

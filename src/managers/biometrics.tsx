@@ -1,8 +1,17 @@
-import {createContext, FC, PropsWithChildren, useContext, useEffect, useState} from "react";
-import {SettingsManagerContext} from "./settings.tsx";
-import {useL10n} from "../hooks/useL10n.ts";
+import {
+    createContext,
+    type FC,
+    type PropsWithChildren,
+    useContext,
+    useEffect,
+    useState,
+} from "react";
+import { useL10n } from "../hooks/useL10n.ts";
+import { SettingsManagerContext } from "./settings.tsx";
 
-export const BiometricsManagerContext = createContext<BiometricsManager | null>(null);
+export const BiometricsManagerContext = createContext<BiometricsManager | null>(
+    null,
+);
 
 /**
  * BiometricsManager is used as an interface to Telegram's `WebApp.BiometricManager`.
@@ -42,7 +51,9 @@ export interface BiometricsManager {
  *
  * @note BiometricsManagerProvider must be used inside the SettingsManagerProvider
  */
-export const BiometricsManagerProvider: FC<PropsWithChildren> = ({ children }) => {
+export const BiometricsManagerProvider: FC<PropsWithChildren> = ({
+    children,
+}) => {
     const [isAvailable, setIsAvailable] = useState(false);
     const [isRequested, setIsRequested] = useState(false);
     const settingsManager = useContext(SettingsManagerContext);
@@ -50,8 +61,11 @@ export const BiometricsManagerProvider: FC<PropsWithChildren> = ({ children }) =
 
     useEffect(() => {
         window.Telegram.WebApp.BiometricManager.init(() => {
-            setIsAvailable(window.Telegram.WebApp.BiometricManager.isInited &&
-                window.Telegram.WebApp.BiometricManager.isBiometricAvailable);
+            setIsAvailable(
+                window.Telegram.WebApp.BiometricManager.isInited &&
+                    window.Telegram.WebApp.BiometricManager
+                        .isBiometricAvailable,
+            );
             if (!window.Telegram.WebApp.BiometricManager.isAccessGranted) {
                 settingsManager?.setBiometricsEnabled(false);
             }
@@ -63,44 +77,61 @@ export const BiometricsManagerProvider: FC<PropsWithChildren> = ({ children }) =
         isAvailable,
         isSaved,
         updateToken: (token: string) => {
-            if(!isAvailable) return;
-            if(!window.Telegram.WebApp.BiometricManager.isAccessGranted) {
-                window.Telegram.WebApp.BiometricManager.requestAccess({
-                    reason: l10n("BiometricsRequestReason")
-                }, (success) => {
-                    if (!success) {
-                        window.Telegram.WebApp.BiometricManager.openSettings();
-                    }
-                    window.Telegram.WebApp.BiometricManager.updateBiometricToken(token, () => {
-                        settingsManager?.setBiometricsEnabled(token !== '' && success);
-                    });
-                });
+            if (!isAvailable) return;
+            if (!window.Telegram.WebApp.BiometricManager.isAccessGranted) {
+                window.Telegram.WebApp.BiometricManager.requestAccess(
+                    {
+                        reason: l10n("BiometricsRequestReason"),
+                    },
+                    (success) => {
+                        if (!success) {
+                            window.Telegram.WebApp.BiometricManager.openSettings();
+                        }
+                        window.Telegram.WebApp.BiometricManager.updateBiometricToken(
+                            token,
+                            () => {
+                                settingsManager?.setBiometricsEnabled(
+                                    token !== "" && success,
+                                );
+                            },
+                        );
+                    },
+                );
             } else {
-                window.Telegram.WebApp.BiometricManager.updateBiometricToken(token, (success) => {
-                    if(!success) {
-                        window.Telegram.WebApp.BiometricManager.openSettings();
-                    }
-                    settingsManager?.setBiometricsEnabled(token !== '' && success);
-                });
+                window.Telegram.WebApp.BiometricManager.updateBiometricToken(
+                    token,
+                    (success) => {
+                        if (!success) {
+                            window.Telegram.WebApp.BiometricManager.openSettings();
+                        }
+                        settingsManager?.setBiometricsEnabled(
+                            token !== "" && success,
+                        );
+                    },
+                );
             }
         },
         getToken: (callback: (token?: string) => void) => {
-            if(!isAvailable || !isSaved || isRequested) return;
+            if (!isAvailable || !isSaved || isRequested) return;
             setIsRequested(true);
             try {
-                window.Telegram.WebApp.BiometricManager.authenticate({
-                    reason: l10n("BiometricsAuthenticateReason"),
-                }, (_success, token?: string) => {
-                    setIsRequested(false);
-                    callback(token);
-                });
-            } catch (e) {
+                window.Telegram.WebApp.BiometricManager.authenticate(
+                    {
+                        reason: l10n("BiometricsAuthenticateReason"),
+                    },
+                    (_success, token?: string) => {
+                        setIsRequested(false);
+                        callback(token);
+                    },
+                );
+            } catch (_e) {
                 // ignore for react strict mode compatibility
             }
-
-        }
+        },
     };
-    return <BiometricsManagerContext.Provider value={biometricsManager}>
-        {children}
-    </BiometricsManagerContext.Provider>;
-}
+    return (
+        <BiometricsManagerContext.Provider value={biometricsManager}>
+            {children}
+        </BiometricsManagerContext.Provider>
+    );
+};

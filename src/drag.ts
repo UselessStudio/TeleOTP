@@ -1,7 +1,11 @@
-import {HTML5Backend} from "react-dnd-html5-backend";
-import {MouseTransition, MultiBackendOptions, TouchTransition} from "react-dnd-multi-backend";
-import {TouchBackend} from "react-dnd-touch-backend";
-import {SxProps, Theme} from "@mui/material";
+import type { SxProps, Theme } from "@mui/material";
+import { HTML5Backend } from "react-dnd-html5-backend";
+import {
+    MouseTransition,
+    type MultiBackendOptions,
+    TouchTransition,
+} from "react-dnd-multi-backend";
+import { TouchBackend } from "react-dnd-touch-backend";
 
 export const wobbleAnimation: SxProps<Theme> = {
     "@keyframes rotate": {
@@ -22,21 +26,21 @@ export const wobbleAnimation: SxProps<Theme> = {
 export const HTML5toTouch: MultiBackendOptions = {
     backends: [
         {
-            id: 'html5',
+            id: "html5",
             backend: HTML5Backend,
             transition: MouseTransition,
         },
         {
-            id: 'touch',
+            id: "touch",
             backend: TouchBackend,
             options: {
-                enableMouseEvents: false
+                enableMouseEvents: false,
             },
             preview: true,
             transition: TouchTransition,
         },
     ],
-}
+};
 
 export enum DragTypes {
     AccountCard = "card",
