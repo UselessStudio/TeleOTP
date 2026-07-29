@@ -3,7 +3,7 @@ import { nanoid } from "nanoid";
 import type { TOTP } from "otpauth";
 import { createRef, type Ref, useContext, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import CreateAnimation from "../assets/create_lottie.json";
+import CreateAnimation from "../assets/create_lottie.json?url";
 import IconPicker from "../components/IconPicker.tsx";
 import LottieAnimation from "../components/LottieAnimation.tsx";
 import { PlausibleAnalyticsContext } from "../components/PlausibleAnalytics.tsx";

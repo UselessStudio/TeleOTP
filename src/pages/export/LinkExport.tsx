@@ -3,7 +3,7 @@ import { Stack, Typography } from "@mui/material";
 import copyTextToClipboard from "copy-text-to-clipboard";
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import ExportAnimation from "../../assets/export_link_lottie.json";
+import ExportAnimation from "../../assets/export_link_lottie.json?url";
 import { FlatButton } from "../../components/FlatButton.tsx";
 import LottieAnimation from "../../components/LottieAnimation.tsx";
 import useTelegramMainButton from "../../hooks/telegram/useTelegramMainButton.ts";

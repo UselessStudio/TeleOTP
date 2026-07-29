@@ -6,7 +6,12 @@
     "useIgnoreFile": true
   },
   "files": {
-    "includes": ["**", "!dist", "!src/migration/proto/generated"],
+    "includes": [
+      "**",
+      "!dist",
+      "!src/migration/proto/generated",
+      "!src/assets/*_lottie.json"
+    ],
     "maxSize": 2097152
   },
   "formatter": {

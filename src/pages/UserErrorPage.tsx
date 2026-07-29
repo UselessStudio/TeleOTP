@@ -4,7 +4,7 @@ import { CssBaseline, Stack, ThemeProvider, Typography } from "@mui/material";
 import copyTextToClipboard from "copy-text-to-clipboard";
 import { type FC, useContext, useEffect, useState } from "react";
 import { useLocation, useRouteError } from "react-router-dom";
-import CrashAnimation from "../assets/crash_lottie.json";
+import CrashAnimation from "../assets/crash_lottie.json?url";
 import { FlatButton } from "../components/FlatButton.tsx";
 import LottieAnimation from "../components/LottieAnimation.tsx";
 import useTelegramTheme from "../hooks/telegram/useTelegramTheme.ts";

@@ -3,7 +3,7 @@ import ClearIcon from "@mui/icons-material/Clear";
 import { Button, Stack, Typography } from "@mui/material";
 import { type FC, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import PasswordAnimation from "../assets/unlock_lottie.json";
+import PasswordAnimation from "../assets/unlock_lottie.json?url";
 import LottieAnimation from "../components/LottieAnimation.tsx";
 import TelegramTextField from "../components/TelegramTextField.tsx";
 import useTelegramMainButton from "../hooks/telegram/useTelegramMainButton.ts";

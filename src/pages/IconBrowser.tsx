@@ -14,7 +14,7 @@ import { type FC, useCallback, useEffect, useMemo, useState } from "react";
 import SVG from "react-inlinesvg";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDebounce } from "use-debounce";
-import MagnificationGlass from "../assets/magnification_glass_lottie.json";
+import MagnificationGlass from "../assets/magnification_glass_lottie.json?url";
 import LottieAnimation from "../components/LottieAnimation.tsx";
 import TelegramTextField from "../components/TelegramTextField.tsx";
 import { useL10n } from "../hooks/useL10n.ts";

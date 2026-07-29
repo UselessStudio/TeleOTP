@@ -3,7 +3,7 @@ import { Button, Stack, Typography } from "@mui/material";
 import { HOTP, URI } from "otpauth";
 import { type FC, useCallback, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import NewAccountAnimation from "../assets/new_account_lottie.json";
+import NewAccountAnimation from "../assets/new_account_lottie.json?url";
 import { FlatButton } from "../components/FlatButton.tsx";
 import LottieAnimation from "../components/LottieAnimation.tsx";
 import { PlausibleAnalyticsContext } from "../components/PlausibleAnalytics.tsx";

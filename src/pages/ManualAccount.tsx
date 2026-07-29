@@ -2,7 +2,7 @@ import { Stack, Typography } from "@mui/material";
 import { Secret, TOTP } from "otpauth";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import ManualAnimation from "../assets/manual_lottie.json";
+import ManualAnimation from "../assets/manual_lottie.json?url";
 import LottieAnimation from "../components/LottieAnimation.tsx";
 import TelegramTextField from "../components/TelegramTextField.tsx";
 import useTelegramMainButton from "../hooks/telegram/useTelegramMainButton.ts";

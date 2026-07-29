@@ -1,7 +1,7 @@
 import { LinkOutlined, QrCode } from "@mui/icons-material";
 import { Stack, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import ExportAnimation from "../../assets/export_lottie.json";
+import ExportAnimation from "../../assets/export_lottie.json?url";
 import { FlatButton } from "../../components/FlatButton.tsx";
 import LottieAnimation from "../../components/LottieAnimation.tsx";
 import { useL10n } from "../../hooks/useL10n.ts";

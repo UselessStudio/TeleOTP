@@ -1,8 +1,8 @@
 import { Stack, Typography } from "@mui/material";
 import { type FC, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import ChangePasswordAnimation from "../assets/change_password_lottie.json";
-import NewPasswordAnimation from "../assets/password_lottie.json";
+import ChangePasswordAnimation from "../assets/change_password_lottie.json?url";
+import NewPasswordAnimation from "../assets/password_lottie.json?url";
 import LottieAnimation from "../components/LottieAnimation.tsx";
 import TelegramTextField from "../components/TelegramTextField.tsx";
 import useTelegramMainButton from "../hooks/telegram/useTelegramMainButton.ts";
