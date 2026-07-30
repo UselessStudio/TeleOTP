@@ -1,5 +1,5 @@
 import { URI } from "otpauth";
-import type { AccountBase } from "../managers/storage/storage.tsx";
+import type { Account } from "../managers/storage/storage.tsx";
 import { Payload } from "./proto/generated/migration.js";
 
 interface ExportOptions {
@@ -9,11 +9,12 @@ interface ExportOptions {
 }
 
 export default function exportGoogleAuthenticator(
-    accounts: AccountBase[],
+    accounts: Account[],
     options: ExportOptions = {},
 ): string {
     const otpParameters: Payload.OtpParameters[] = [];
-    for (const account of accounts) {
+    const sortedAccounts = [...accounts].sort((a, b) => a.order - b.order);
+    for (const account of sortedAccounts) {
         let otp: ReturnType<typeof URI.parse> | undefined;
         try {
             otp = URI.parse(account.uri);
@@ -39,6 +40,8 @@ export default function exportGoogleAuthenticator(
                         ? Payload.OtpParameters.DigitCount.DIGIT_COUNT_EIGHT
                         : Payload.OtpParameters.DigitCount.DIGIT_COUNT_SIX,
                 type: Payload.OtpParameters.OtpType.OTP_TYPE_TOTP,
+                icon: account.icon,
+                color: account.color,
             }),
         );
     }
@@ -61,17 +64,18 @@ export function toBase64Url(data: string): string {
 }
 
 export function exportGoogleAuthenticatorBatches(
-    accounts: AccountBase[],
+    accounts: Account[],
     maxLength: number,
     serialize: (data: string) => string = toBase64Url,
 ): string[] {
     if (accounts.length === 0) return [];
 
     const batchId = crypto.getRandomValues(new Uint32Array(1))[0] & 0x7fffffff;
-    const accountBatches: AccountBase[][] = [];
-    let currentBatch: AccountBase[] = [];
+    const accountBatches: Account[][] = [];
+    let currentBatch: Account[] = [];
+    const sortedAccounts = [...accounts].sort((a, b) => a.order - b.order);
 
-    for (const account of accounts) {
+    for (const account of sortedAccounts) {
         const candidate = [...currentBatch, account];
         const candidateData = exportGoogleAuthenticator(candidate, {
             batchSize: accounts.length,

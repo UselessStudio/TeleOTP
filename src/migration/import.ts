@@ -31,7 +31,7 @@ export default function decodeGoogleAuthenticator(
 
     const accounts: Account[] = [];
 
-    for (const otp of payload.otpParameters) {
+    for (const [order, otp] of payload.otpParameters.entries()) {
         if (otp.type !== Payload.OtpParameters.OtpType.OTP_TYPE_TOTP) continue;
         if (!otp.secret || !otp.name) continue;
 
@@ -61,10 +61,10 @@ export default function decodeGoogleAuthenticator(
             id: nanoid(),
             label: totp.label,
             issuer: otp.issuer ?? undefined,
-            color: "#1976d2", // primary
-            icon: "key",
+            color: otp.color ?? "#1976d2", // primary
+            icon: otp.icon ?? "key",
             uri: totp.toString(),
-            order: -1,
+            order,
         });
     }
 
