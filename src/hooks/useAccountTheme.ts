@@ -1,5 +1,5 @@
+import { createTheme, type Theme } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import {Theme, createTheme} from "@mui/material";
 import normalizeCustomColor from "../icons/normalizeCustomColor.ts";
 
 /**
@@ -7,7 +7,7 @@ import normalizeCustomColor from "../icons/normalizeCustomColor.ts";
  * @param {?string} color - account primary color
  */
 export default function useAccountTheme(
-    color: string | undefined
+    color: string | undefined,
 ): Theme | null {
     const theme = useTheme();
 
@@ -21,7 +21,7 @@ export default function useAccountTheme(
                 color: {
                     main: color,
                 },
-            })
+            }),
             // primary: {
             //     main: colorMain,
             //     light: alpha(color, 0.5),

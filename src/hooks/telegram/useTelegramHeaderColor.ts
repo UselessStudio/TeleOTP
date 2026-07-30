@@ -1,4 +1,4 @@
-import {useEffect} from "react";
+import { useEffect } from "react";
 
 /**
  * Hook, that allows to set the app's header color.
@@ -6,10 +6,10 @@ import {useEffect} from "react";
  */
 export default function useTelegramHeaderColor(color?: `#${string}`) {
     useEffect(() => {
-        window.Telegram.WebApp.setHeaderColor(color ?? "bg_color")
+        window.Telegram.WebApp.setHeaderColor(color ?? "bg_color");
 
         return () => {
             window.Telegram.WebApp.setHeaderColor("bg_color");
-        }
+        };
     }, [color]);
 }

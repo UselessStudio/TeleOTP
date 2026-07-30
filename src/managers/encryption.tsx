@@ -1,12 +1,45 @@
-import {createContext, FC, PropsWithChildren, useContext, useEffect, useState} from "react";
 import * as crypto from "crypto-js";
-import {SettingsManagerContext} from "./settings.tsx";
-import {BiometricsManagerContext} from "./biometrics.tsx";
+import {
+    createContext,
+    type FC,
+    type PropsWithChildren,
+    useContext,
+    useEffect,
+    useState,
+} from "react";
+import { BiometricsManagerContext } from "./biometrics.tsx";
+import { SettingsManagerContext } from "./settings.tsx";
 
-const kdfOptions = {keySize: 256 / 8};
+// See brix/crypto-js#479
+const kdfOptions = {
+    keySize: 256 / 8,
+    hasher: crypto.algo.SHA1,
+    iterations: 1,
+};
+const pinKdfOptions = {
+    ...kdfOptions,
+    iterations: 10_000,
+};
 const saltBytes = 128 / 8;
 const ivBytes = 128 / 8;
 const keyCheckValuePlaintext = "key-check-value";
+
+export type CredentialType = "password" | "pin";
+
+export interface PreparedCredential {
+    key: crypto.lib.WordArray;
+    salt: crypto.lib.WordArray;
+    kcv: string;
+    type: CredentialType;
+}
+
+interface CredentialManifest {
+    version: 1;
+    salt: string;
+    kcv: string;
+    type: CredentialType;
+    accountPrefix: string;
+}
 
 /**
  * EncryptionManager is used to handle everything related to encryption.
@@ -35,12 +68,24 @@ export interface EncryptionManager {
      */
     passwordCreated: boolean | null;
 
-    /**
-     * This method is used to create a new password or change the existing one.
-     * If this method is called with the EncryptionManager being unlocked, the previous key is stored in the oldKey variable.
-     * @param password - The new password. It should be provided in the plaintext form.
-     */
-    createPassword(password: string): void;
+    /** The UI credential used to derive the encryption key. */
+    credentialType: CredentialType;
+    accountPrefix: string;
+
+    /** Creates the initial password credential. */
+    createPassword(password: string): Promise<void>;
+
+    /** Creates or changes the credential and persists its type in CloudStorage. */
+    createCredential(value: string, type: CredentialType): Promise<void>;
+    prepareCredential(
+        value: string,
+        type: CredentialType,
+    ): Promise<PreparedCredential>;
+    encryptWithCredential(data: string, credential: PreparedCredential): string;
+    commitCredential(
+        credential: PreparedCredential,
+        accountPrefix: string,
+    ): Promise<void>;
 
     /**
      * This method removes the salt and KCV from the storage. After it is called, passwordCreated would become false.
@@ -69,7 +114,7 @@ export interface EncryptionManager {
      * isLocked would change to false.
      * @param password - a boolean indicating whether the provided password is correct.
      */
-    unlock(password: string): boolean;
+    unlock(password: string): Promise<boolean>;
 
     /**
      * This method tries to unlock the storage by using the biometric token. The behaviour is the same as `unlock`.
@@ -81,12 +126,6 @@ export interface EncryptionManager {
      * isLocked would change to true.
      */
     lock(): void;
-
-    /**
-     * This variable contains the previous password's key.
-     * It is used to indicate that the password was changed to re-encrypt the accounts with the correct new key.
-     */
-    oldKey: crypto.lib.WordArray | null;
 
     /**
      * This method encrypts the `data` string with the stored key and returns the corresponding ciphertext.
@@ -104,15 +143,74 @@ export interface EncryptionManager {
 }
 
 export interface EncryptedData {
-    iv: string,
-    cipher: string,
+    iv: string;
+    cipher: string;
 }
 
-export const EncryptionManagerContext = createContext<EncryptionManager | null>(null);
+export const EncryptionManagerContext = createContext<EncryptionManager | null>(
+    null,
+);
 
-function checkKey(key: crypto.lib.WordArray, salt: crypto.lib.WordArray, keyCheckValue: string): boolean {
-    const kcv = crypto.AES.encrypt(keyCheckValuePlaintext, key, {iv: salt}).toString(crypto.format.OpenSSL);
+function checkKey(
+    key: crypto.lib.WordArray,
+    salt: crypto.lib.WordArray,
+    keyCheckValue: string,
+): boolean {
+    const kcv = crypto.AES.encrypt(keyCheckValuePlaintext, key, {
+        iv: salt,
+    }).toString(crypto.format.OpenSSL);
     return kcv === keyCheckValue;
+}
+
+function wordArrayToBuffer(value: crypto.lib.WordArray): ArrayBuffer {
+    const buffer = new ArrayBuffer(value.sigBytes);
+    const bytes = new Uint8Array(buffer);
+    for (let index = 0; index < value.sigBytes; index++) {
+        bytes[index] =
+            (value.words[index >>> 2] >>> (24 - (index % 4) * 8)) & 0xff;
+    }
+    return buffer;
+}
+
+function bytesToWordArray(value: ArrayBuffer): crypto.lib.WordArray {
+    const bytes = new Uint8Array(value);
+    const words: number[] = [];
+    for (let index = 0; index < bytes.length; index++) {
+        words[index >>> 2] =
+            (words[index >>> 2] ?? 0) |
+            (bytes[index] << (24 - (index % 4) * 8));
+    }
+    return crypto.lib.WordArray.create(words, bytes.length);
+}
+
+async function deriveKey(
+    value: string,
+    salt: crypto.lib.WordArray,
+    type: CredentialType,
+): Promise<crypto.lib.WordArray> {
+    const options = type === "pin" ? pinKdfOptions : kdfOptions;
+    if (!globalThis.crypto?.subtle) {
+        return crypto.PBKDF2(value, salt, options);
+    }
+
+    const sourceKey = await globalThis.crypto.subtle.importKey(
+        "raw",
+        new TextEncoder().encode(value),
+        "PBKDF2",
+        false,
+        ["deriveBits"],
+    );
+    const derivedKey = await globalThis.crypto.subtle.deriveBits(
+        {
+            name: "PBKDF2",
+            hash: "SHA-1",
+            salt: wordArrayToBuffer(salt),
+            iterations: options.iterations,
+        },
+        sourceKey,
+        options.keySize * 32,
+    );
+    return bytesToWordArray(derivedKey);
 }
 
 function getStoredKey(): crypto.lib.WordArray | null {
@@ -120,25 +218,55 @@ function getStoredKey(): crypto.lib.WordArray | null {
     return key !== null ? crypto.enc.Base64.parse(key) : null;
 }
 
+function encryptWithKey(data: string, key: crypto.lib.WordArray): string {
+    const iv = crypto.lib.WordArray.random(ivBytes);
+    return JSON.stringify({
+        iv: crypto.enc.Base64.stringify(iv),
+        cipher: crypto.AES.encrypt(crypto.enc.Utf8.parse(data), key, {
+            iv,
+        }).toString(),
+    } as EncryptedData);
+}
+
+function setCloudItem(key: string, value: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+        window.Telegram.WebApp.CloudStorage.setItem(
+            key,
+            value,
+            (error, success) => {
+                if (error || !success) {
+                    reject(new Error(error ?? `Failed to store ${key}`));
+                    return;
+                }
+                resolve();
+            },
+        );
+    });
+}
+
 /**
  * EncryptionManager is created using EncryptionManagerProvider component.
  *
  * @note EncryptionManagerProvider must be used inside the SettingsManagerProvider
  */
-export const EncryptionManagerProvider: FC<PropsWithChildren> = ({ children }) => {
+export const EncryptionManagerProvider: FC<PropsWithChildren> = ({
+    children,
+}) => {
     const [key, setKey] = useState<crypto.lib.WordArray | null>(getStoredKey);
     const [storageChecked, setStorageChecked] = useState(false);
     const [salt, setSalt] = useState<crypto.lib.WordArray | null>(null);
     const [keyCheckValue, setKeyCheckValue] = useState<string | null>(null);
-    const [oldKey, setOldKey] = useState<crypto.lib.WordArray | null>(null);
+    const [credentialType, setCredentialType] =
+        useState<CredentialType>("password");
+    const [accountPrefix, setAccountPrefix] = useState("account");
 
     const biometricsManager = useContext(BiometricsManagerContext);
 
     const settingsManager = useContext(SettingsManagerContext);
 
     useEffect(() => {
-        if(settingsManager?.shouldKeepUnlocked) {
-            if(key !== null) {
+        if (settingsManager?.shouldKeepUnlocked) {
+            if (key !== null) {
                 localStorage.setItem("key", crypto.enc.Base64.stringify(key));
             }
         } else {
@@ -147,47 +275,107 @@ export const EncryptionManagerProvider: FC<PropsWithChildren> = ({ children }) =
     }, [key, settingsManager?.shouldKeepUnlocked]);
 
     useEffect(() => {
-        window.Telegram.WebApp.CloudStorage.getItems(["salt", "kcv"], (error, result) => {
-            if (error) {
-                window.Telegram.WebApp.showAlert(`Failed to get salt: ${error}`);
-                return;
-            }
-            const salt = result?.salt ? crypto.enc.Base64.parse(result.salt) : null;
-            const kcv = result?.kcv ?? null;
-            setSalt(salt);
-            setKeyCheckValue(kcv);
-            const key = getStoredKey();
-            if (salt === null || kcv === null || key === null || !checkKey(key, salt, kcv)) {
-                setKey(null);
-            }
-            setStorageChecked(true);
-        });
+        window.Telegram.WebApp.CloudStorage.getItems(
+            ["credential", "salt", "kcv", "credentialType"],
+            (error, result) => {
+                if (error) {
+                    window.Telegram.WebApp.showAlert(
+                        `Failed to get salt: ${error}`,
+                    );
+                    return;
+                }
+                const manifest = result?.credential
+                    ? (JSON.parse(result.credential) as CredentialManifest)
+                    : null;
+                const saltBase64 = manifest?.salt ?? result?.salt;
+                const salt = saltBase64
+                    ? crypto.enc.Base64.parse(saltBase64)
+                    : null;
+                const kcv = manifest?.kcv ?? result?.kcv ?? null;
+                setCredentialType(
+                    (manifest?.type ?? result?.credentialType) === "pin"
+                        ? "pin"
+                        : "password",
+                );
+                setAccountPrefix(manifest?.accountPrefix ?? "account");
+                setSalt(salt);
+                setKeyCheckValue(kcv);
+                const key = getStoredKey();
+                if (
+                    salt === null ||
+                    kcv === null ||
+                    key === null ||
+                    !checkKey(key, salt, kcv)
+                ) {
+                    setKey(null);
+                }
+                setStorageChecked(true);
+            },
+        );
     }, []);
 
     const encryptionManager: EncryptionManager = {
-        oldKey,
         storageChecked,
         passwordCreated: storageChecked ? salt !== null : null,
-        createPassword(password: string) {
-            setOldKey(key);
+        credentialType,
+        accountPrefix,
+        async createPassword(password: string) {
+            await this.createCredential(password, "password");
+        },
+        async createCredential(value, type) {
+            const credential = await this.prepareCredential(value, type);
+            await this.commitCredential(credential, accountPrefix);
+        },
+        async prepareCredential(value, type) {
             const salt = crypto.lib.WordArray.random(saltBytes);
-            const newKey = crypto.PBKDF2(password, salt, kdfOptions);
-            const kcv = crypto.AES.encrypt(keyCheckValuePlaintext, newKey, {iv: salt}).toString(crypto.format.OpenSSL);
+            const newKey = await deriveKey(value, salt, type);
+            return {
+                key: newKey,
+                salt,
+                kcv: crypto.AES.encrypt(keyCheckValuePlaintext, newKey, {
+                    iv: salt,
+                }).toString(crypto.format.OpenSSL),
+                type,
+            };
+        },
+        encryptWithCredential(data, credential) {
+            return encryptWithKey(data, credential.key);
+        },
+        async commitCredential(credential, prefix) {
+            const manifest: CredentialManifest = {
+                version: 1,
+                salt: crypto.enc.Base64.stringify(credential.salt),
+                kcv: credential.kcv,
+                type: credential.type,
+                accountPrefix: prefix,
+            };
+            await setCloudItem("credential", JSON.stringify(manifest));
 
-            setSalt(salt);
-            window.Telegram.WebApp.CloudStorage.setItem("salt", crypto.enc.Base64.stringify(salt));
+            setSalt(credential.salt);
+            setKeyCheckValue(credential.kcv);
+            setCredentialType(credential.type);
+            setAccountPrefix(prefix);
+            setKey(credential.key);
 
-            setKeyCheckValue(kcv);
-            window.Telegram.WebApp.CloudStorage.setItem("kcv", kcv);
-
-            setKey(newKey);
+            if (biometricsManager?.isSaved) {
+                biometricsManager.updateToken(
+                    crypto.enc.Base64.stringify(credential.key),
+                );
+            }
         },
         removePassword() {
-            window.Telegram.WebApp.CloudStorage.removeItems(["kcv", "salt"]);
+            window.Telegram.WebApp.CloudStorage.removeItems([
+                "kcv",
+                "salt",
+                "credentialType",
+                "credential",
+            ]);
             localStorage.removeItem("key");
             setKey(null);
             setSalt(null);
             setKeyCheckValue(null);
+            setCredentialType("password");
+            setAccountPrefix("account");
         },
         saveBiometricToken() {
             if (key === null) return;
@@ -198,13 +386,13 @@ export const EncryptionManagerProvider: FC<PropsWithChildren> = ({ children }) =
         },
 
         isLocked: !storageChecked || key === null,
-        unlock(enteredPassword) {
+        async unlock(enteredPassword) {
             if (salt === null || keyCheckValue === null) {
                 return false;
             }
-            const key = crypto.PBKDF2(enteredPassword, salt, kdfOptions);
+            const key = await deriveKey(enteredPassword, salt, credentialType);
 
-            if(checkKey(key, salt, keyCheckValue)) {
+            if (checkKey(key, salt, keyCheckValue)) {
                 setKey(key);
                 return true;
             }
@@ -223,31 +411,29 @@ export const EncryptionManagerProvider: FC<PropsWithChildren> = ({ children }) =
             biometricsManager?.getToken((token?) => {
                 if (token) {
                     const key = crypto.enc.Base64.parse(token);
-                    if(checkKey(key, salt, keyCheckValue)) {
+                    if (checkKey(key, salt, keyCheckValue)) {
                         setKey(key);
                     }
                 }
             });
-
         },
 
         encrypt(data) {
-            if(key === null) return null;
-
-            const iv = crypto.lib.WordArray.random(ivBytes);
-            return JSON.stringify({
-                iv: crypto.enc.Base64.stringify(iv),
-                cipher: crypto.AES.encrypt(crypto.enc.Utf8.parse(data), key, {iv}).toString()
-            } as EncryptedData);
+            if (key === null) return null;
+            return encryptWithKey(data, key);
         },
         decrypt(data) {
-            if(key === null) return null;
+            if (key === null) return null;
             try {
-                const {iv, cipher}: EncryptedData = JSON.parse(data) as EncryptedData;
+                const { iv, cipher }: EncryptedData = JSON.parse(
+                    data,
+                ) as EncryptedData;
 
-                return crypto.enc.Utf8.stringify(crypto.AES.decrypt(cipher, key, {
-                    iv: crypto.enc.Base64.parse(iv)
-                }));
+                return crypto.enc.Utf8.stringify(
+                    crypto.AES.decrypt(cipher, key, {
+                        iv: crypto.enc.Base64.parse(iv),
+                    }),
+                );
             } catch (e) {
                 console.error(e);
                 return null;
@@ -255,7 +441,9 @@ export const EncryptionManagerProvider: FC<PropsWithChildren> = ({ children }) =
         },
     };
 
-    return <EncryptionManagerContext.Provider value={encryptionManager}>
-        {children}
-    </EncryptionManagerContext.Provider>;
-}
+    return (
+        <EncryptionManagerContext.Provider value={encryptionManager}>
+            {children}
+        </EncryptionManagerContext.Provider>
+    );
+};

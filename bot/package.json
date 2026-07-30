@@ -1,0 +1,14 @@
+{
+  "name": "bot",
+  "private": true,
+  "devDependencies": {
+    "@tgcloud/cli": "^0.1.2"
+  },
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "deploy": "tgcloud push",
+    "status": "tgcloud status",
+    "run": "tgcloud run"
+  }
+}

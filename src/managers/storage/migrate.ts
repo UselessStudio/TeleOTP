@@ -1,4 +1,4 @@
-import { AccountVersions } from "./storage";
+import type { AccountVersions } from "./storage";
 
 export enum MigrationDirection {
     up,
@@ -20,16 +20,14 @@ export interface Migration<From extends Version, To extends Version> {
 }
 
 export type MigrateUpFunc<From extends Version, To extends Version> = (
-    schema: AccountVersions[From]
+    schema: AccountVersions[From],
 ) => AccountVersions[To];
 
-export type Migrations = [
-    Migration<"1", "2">
-];
+export type Migrations = [Migration<"1", "2">];
 
 export function migrationDirection(
     fromVersion: string,
-    toVersion: string
+    toVersion: string,
 ): MigrationDirection {
     const fromNumber = Number(fromVersion);
     const toNumber = Number(toVersion);
@@ -42,7 +40,7 @@ export function migrate<From extends Version, To extends Version>(
     migrations: Migrations,
     account: AccountVersions[From],
     fromVersion: From,
-    toVersion: To
+    toVersion: To,
 ): AccountVersions[To] {
     const direction = migrationDirection(fromVersion, toVersion);
     if (direction === MigrationDirection.same) {
@@ -53,12 +51,12 @@ export function migrate<From extends Version, To extends Version>(
     let accVer: Version = fromVersion;
     while (accVer !== toVersion) {
         const currentMigration = migrations.find(
-            (migration) => migration.from === accVer
+            (migration) => migration.from === accVer,
         );
         if (!currentMigration) {
             // if there is no migration means nothing changed
             throw new Error(
-                `Could not find migration path from ${accVer} to ${toVersion}`
+                `Could not find migration path from ${accVer} to ${toVersion}`,
             );
         }
         migratedAccount = currentMigration.up(account);

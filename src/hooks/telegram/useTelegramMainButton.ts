@@ -1,4 +1,4 @@
-import {useEffect} from "react";
+import { useEffect } from "react";
 import useTelegramTheme from "./useTelegramTheme";
 
 /**
@@ -8,21 +8,27 @@ import useTelegramTheme from "./useTelegramTheme";
  * If the callback returns true, the button will be hidden.
  * @param text - a string which contains the text that should be displayed on the button.
  * @param [disabled = false] - a boolean flag that indicates, whether the button should be disabled or not.
+ * @param [loading = false] - whether Telegram's native progress indicator should be displayed.
  */
-export default function useTelegramMainButton(onClick: () => boolean, text: string, disabled = false) {
+export default function useTelegramMainButton(
+    onClick: () => boolean | Promise<boolean>,
+    text: string,
+    disabled = false,
+    loading = false,
+) {
     const { palette } = useTelegramTheme();
-    
+
     useEffect(() => {
         window.Telegram.WebApp.MainButton.setText(text);
         window.Telegram.WebApp.MainButton.show();
         return () => {
             window.Telegram.WebApp.MainButton.hide();
-        }
+        };
     }, [text]);
 
     useEffect(() => {
-        function handler() {
-            if(onClick()) {
+        async function handler() {
+            if (await onClick()) {
                 window.Telegram.WebApp.MainButton.hide();
             }
         }
@@ -30,18 +36,29 @@ export default function useTelegramMainButton(onClick: () => boolean, text: stri
         window.Telegram.WebApp.MainButton.onClick(handler);
         return () => {
             window.Telegram.WebApp.MainButton.offClick(handler);
-        }
+        };
     }, [onClick]);
+
+    useEffect(() => {
+        if (loading) {
+            window.Telegram.WebApp.MainButton.showProgress(false);
+        } else {
+            window.Telegram.WebApp.MainButton.hideProgress();
+        }
+        return () => window.Telegram.WebApp.MainButton.hideProgress();
+    }, [loading]);
 
     useEffect(() => {
         if (disabled) {
             window.Telegram.WebApp.MainButton.disable();
-            window.Telegram.WebApp.MainButton.color = palette.mode === "light" 
-                ? palette.action.disabled as `#${string}`
-                : '#858585' as `#${string}`;
+            window.Telegram.WebApp.MainButton.color =
+                palette.mode === "light"
+                    ? (palette.action.disabled as `#${string}`)
+                    : ("#858585" as `#${string}`);
         } else {
             window.Telegram.WebApp.MainButton.enable();
-            window.Telegram.WebApp.MainButton.color = palette.primary.main as `#${string}`;
+            window.Telegram.WebApp.MainButton.color = palette.primary
+                .main as `#${string}`;
         }
-    }, [disabled]);
+    }, [disabled, palette.primary.main, palette.mode, palette.action.disabled]);
 }

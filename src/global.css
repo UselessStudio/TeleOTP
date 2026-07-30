@@ -1,8 +1,14 @@
 #root {
-   padding-bottom: calc(var(--tg-safe-area-inset-bottom) + var(--tg-content-safe-area-inset-bottom)); 
+    padding-bottom: calc(
+        var(--tg-safe-area-inset-bottom) +
+        var(--tg-content-safe-area-inset-bottom)
+    );
 }
 
-html, body, #root, #root>div {
+html,
+body,
+#root,
+#root > div {
     margin: 0;
     min-height: 100%;
     display: flex;

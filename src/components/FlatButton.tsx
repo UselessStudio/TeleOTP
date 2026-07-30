@@ -1,6 +1,6 @@
-import {SvgIconComponent} from "@mui/icons-material";
-import {FC} from "react";
-import {ButtonBase, Stack, Typography, useTheme} from "@mui/material";
+import type { SvgIconComponent } from "@mui/icons-material";
+import { ButtonBase, Stack, Typography, useTheme } from "@mui/material";
+import type { FC } from "react";
 
 interface ButtonParams {
     onClick(): void;
@@ -13,41 +13,59 @@ interface ButtonParams {
 }
 
 export const FlatButton: FC<ButtonParams> = ({
-                                                     onClick,
-                                                     text,
-                                                     icon,
-                                                     value,
-                                                     disabled = false,
-                                                     center = false
-                                                 }) => {
+    onClick,
+    text,
+    icon,
+    value,
+    disabled = false,
+    center = false,
+}) => {
     const theme = useTheme();
     const Icon = icon;
-    return <ButtonBase
-        sx={{
-            textTransform: "none",
-            paddingY: theme.spacing(1),
-            paddingX: theme.spacing(1.5),
-            width: "100%",
-            bgcolor: "background.paper",
-            borderRadius: "6px",
-        }}
-        disabled={disabled}
-        onClick={onClick}
-    >
-        <Stack direction="row" alignItems="center" sx={{width: "100%"}} spacing={1.5} justifyContent={center ? "center" : "start"}>
-            <Icon color="primary"/>
-            <Typography
-                fontWeight="medium"
-                color="text"
-                fontSize="small"
-                sx={{flexGrow: center ? 0 : 1}}
-                align="left"
+    return (
+        <ButtonBase
+            sx={{
+                textTransform: "none",
+                paddingY: theme.spacing(1),
+                paddingX: theme.spacing(1.5),
+                width: "100%",
+                bgcolor: "background.paper",
+                borderRadius: "6px",
+            }}
+            disabled={disabled}
+            onClick={onClick}
+        >
+            <Stack
+                direction="row"
+                spacing={1.5}
+                sx={{
+                    alignItems: "center",
+                    justifyContent: center ? "center" : "start",
+                    width: "100%",
+                }}
             >
-                {text}
-            </Typography>
-            <Typography fontWeight="800" color="primary" fontSize="small">
-                {value}
-            </Typography>
-        </Stack>
-    </ButtonBase>;
-}
+                <Icon color="primary" />
+                <Typography
+                    color="text"
+                    align="left"
+                    sx={{
+                        fontWeight: "medium",
+                        fontSize: "small",
+                        flexGrow: center ? 0 : 1,
+                    }}
+                >
+                    {text}
+                </Typography>
+                <Typography
+                    color="primary"
+                    sx={{
+                        fontWeight: "800",
+                        fontSize: "small",
+                    }}
+                >
+                    {value}
+                </Typography>
+            </Stack>
+        </ButtonBase>
+    );
+};

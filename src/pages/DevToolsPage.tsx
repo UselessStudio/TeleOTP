@@ -1,12 +1,5 @@
-import { ReactNode, useContext, useEffect, useState } from "react";
-import { useRouteError } from "react-router-dom";
-import { AccountBase, StorageManagerContext } from "../managers/storage/storage";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
+import { ExpandMore, Refresh } from "@mui/icons-material";
+import ErrorIcon from "@mui/icons-material/Error";
 import {
     Accordion,
     AccordionDetails,
@@ -15,11 +8,24 @@ import {
     Button,
     Stack,
 } from "@mui/material";
-import { ExpandMore, Refresh } from "@mui/icons-material";
-import { EncryptedData, EncryptionManagerContext } from "../managers/encryption";
-import ErrorIcon from "@mui/icons-material/Error";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
 import copy from "copy-text-to-clipboard";
+import { type ReactNode, useContext, useEffect, useState } from "react";
+import { useRouteError } from "react-router-dom";
 import ColorPicker from "../components/ColorPicker";
+import {
+    type EncryptedData,
+    EncryptionManagerContext,
+} from "../managers/encryption";
+import {
+    type AccountBase,
+    StorageManagerContext,
+} from "../managers/storage/storage";
 
 type CloudStorageKey = string;
 type CloudStorageValue = string;
@@ -43,7 +49,7 @@ export default function DevErrorPage() {
                         }
                         console.log(values);
                         resolve(values);
-                    }
+                    },
                 );
             });
         });
@@ -53,10 +59,11 @@ export default function DevErrorPage() {
     const error = useRouteError() as Error | undefined;
     const [cloud, setCloud] = useState<CloudStorageItems>();
     const [showEncrypted, setShowEncrypted] = useState<boolean>(false);
-    const [color, setColor] = useState<string>('#000')
+    const [color, setColor] = useState<string>("#000");
     const encryptionManager = useContext(EncryptionManagerContext);
     const storageManager = useContext(StorageManagerContext);
 
+    // biome-ignore lint/correctness/useExhaustiveDependencies: updater intentionally refreshes cloud storage after mutations.
     useEffect(() => {
         getCloudStorage()
             .then((result) => {
@@ -84,7 +91,7 @@ export default function DevErrorPage() {
             (error, result) => {
                 if (error ?? !result) console.error(error);
                 else console.log("Successfully set", key, "to", value);
-            }
+            },
         );
         setUpdater((val) => val + 1);
     }
@@ -111,9 +118,9 @@ export default function DevErrorPage() {
                     const stringified = JSON.stringify(snapshot);
                     copy(stringified);
                     window.Telegram.WebApp.showAlert(
-                        `Snapshot (${stringified.length} chars) is copied to clipboard.`
+                        `Snapshot (${stringified.length} chars) is copied to clipboard.`,
                     );
-                }
+                },
             );
         });
     }
@@ -124,13 +131,13 @@ export default function DevErrorPage() {
         try {
             snapshot = JSON.parse(snapshotString) as object;
             const entries = Object.entries(snapshot) as [string, string][];
-            entries.map(([key, val], i) => {
+            entries.forEach(([key, val], i) => {
                 window.Telegram.WebApp.CloudStorage.setItem(
                     key,
                     val,
                     (error, result) => {
                         if (error ?? !result) console.error(error);
-                    }
+                    },
                 );
                 if (i === entries.length - 1) {
                     window.Telegram.WebApp.showAlert(`Loaded snapshot!`);
@@ -140,7 +147,7 @@ export default function DevErrorPage() {
         } catch (e) {
             console.error("error while loading shapshot:", e);
             window.Telegram.WebApp.showAlert(
-                `Cannot load snapshot: ${e instanceof Error ? e.message : e}`
+                `Cannot load snapshot: ${e instanceof Error ? e.message : e}`,
             );
         }
     }
@@ -148,51 +155,53 @@ export default function DevErrorPage() {
         if (!encryptionManager) return "";
         try {
             //@ts-expect-error ensure val is parseable, otherwise func will throw
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const _ = JSON.parse(val) as object;
             const account = decrypt ? encryptionManager.decrypt(val) : val;
             if (!account) throw new Error("couldn't decrypt account");
-            const accountInfo = JSON.parse(account) as AccountBase | EncryptedData;
+            const accountInfo = JSON.parse(account) as
+                | AccountBase
+                | EncryptedData;
 
             return (
-                <>
-                    <Accordion sx={{ maxWidth: 250, overflow: "auto" }}>
-                        <AccordionSummary expandIcon={<ExpandMore />}>
-                            {'iv' in accountInfo
-                                ? accountInfo.iv
-                                : `(${accountInfo.issuer ? accountInfo.issuer : accountInfo.label}) ${accountInfo.id.substring(0, 6)}`}
-                        </AccordionSummary>
-                        <AccordionDetails>
-                            <code>
-                                {Object.entries(accountInfo).map(([key, val]) => {
-                                    return (
-                                        <div key={key}>
-                                            <span key={key}>
-                                                {key}: {val}
-                                            </span>
-                                            <br />
-                                        </div>
-                                    );
-                                })}
-                            </code>
-                        </AccordionDetails>
-                    </Accordion>
-                </>
+                <Accordion sx={{ maxWidth: 250, overflow: "auto" }}>
+                    <AccordionSummary expandIcon={<ExpandMore />}>
+                        {"iv" in accountInfo
+                            ? accountInfo.iv
+                            : `(${accountInfo.issuer ? accountInfo.issuer : accountInfo.label}) ${accountInfo.id.substring(0, 6)}`}
+                    </AccordionSummary>
+                    <AccordionDetails>
+                        <code>
+                            {Object.entries(accountInfo).map(([key, val]) => {
+                                return (
+                                    <div key={key}>
+                                        <span key={key}>
+                                            {key}: {val}
+                                        </span>
+                                        <br />
+                                    </div>
+                                );
+                            })}
+                        </code>
+                    </AccordionDetails>
+                </Accordion>
             );
-        } catch (e) {
+        } catch (_e) {
             /* empty */
         }
         return val;
     }
     function clearStorage() {
-        window.Telegram.WebApp.showConfirm("Are you sure you want to delete all storage data?", confirmed => {
-            if (confirmed && storageManager) {
-                storageManager.clearStorage();
-                setTimeout(() => {
-                    location.reload();
-                }, 1500)
-            }
-        })
+        window.Telegram.WebApp.showConfirm(
+            "Are you sure you want to delete all storage data?",
+            (confirmed) => {
+                if (confirmed && storageManager) {
+                    storageManager.clearStorage();
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1500);
+                }
+            },
+        );
     }
     return (
         <div>
@@ -201,9 +210,7 @@ export default function DevErrorPage() {
                 <Alert icon={<ErrorIcon fontSize="inherit" />} severity="error">
                     Error: {error.toString()}
                 </Alert>
-            ) : (
-                <></>
-            )}
+            ) : null}
             <span>Cloud storage</span>
             <br />
             <Stack
@@ -302,11 +309,27 @@ export default function DevErrorPage() {
             <span>Migration</span>
 
             <br />
-            <ColorPicker selected={false} disableAlpha color={color} style={{ margin: 10 }} onChange={color => {setColor(color.hex)}} />
+            <ColorPicker
+                selected={false}
+                disableAlpha
+                color={color}
+                style={{ margin: 10 }}
+                onChange={(color) => {
+                    setColor(color.hex);
+                }}
+            />
 
             <br />
 
-            <Button onClick={() => {clearStorage()}} variant="outlined" color="error">Clear storage</Button>
+            <Button
+                onClick={() => {
+                    clearStorage();
+                }}
+                variant="outlined"
+                color="error"
+            >
+                Clear storage
+            </Button>
 
             <center>{APP_VERSION}</center>
         </div>

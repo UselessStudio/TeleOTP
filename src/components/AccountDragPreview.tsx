@@ -1,23 +1,33 @@
-import {FC, PropsWithChildren} from "react";
-import {usePreview} from "react-dnd-preview";
-import AccountSelectButton, {AccountSelectButtonProps} from "./AccountSelectButton.tsx";
-import {Grid} from "@mui/material";
-import {wobbleAnimation} from "../drag.ts";
+import { Grid } from "@mui/material";
+import type { FC, PropsWithChildren } from "react";
+import { usePreview } from "react-dnd-preview";
+import { wobbleAnimation } from "../drag.ts";
+import AccountSelectButton, {
+    type AccountSelectButtonProps,
+} from "./AccountSelectButton.tsx";
 
 const AccountDragPreview: FC<PropsWithChildren> = () => {
     const preview = usePreview<AccountSelectButtonProps>();
     if (!preview.display) {
-        return <></>;
+        return null;
     }
-    const {item, style} = preview;
+    const { item, style } = preview;
 
-    return <div className={"item-list__item"} style={style}>
-        <Grid container spacing={1} width={"100vw"}>
-            <Grid item xs={3} sx={wobbleAnimation}>
-                <AccountSelectButton {...item}/>
+    return (
+        <div className={"item-list__item"} style={style}>
+            <Grid
+                container
+                spacing={1}
+                sx={{
+                    width: "100vw",
+                }}
+            >
+                <Grid sx={wobbleAnimation} size={3}>
+                    <AccountSelectButton {...item} />
+                </Grid>
             </Grid>
-        </Grid>
-    </div>
-}
+        </div>
+    );
+};
 
 export default AccountDragPreview;

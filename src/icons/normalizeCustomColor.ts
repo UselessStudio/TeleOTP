@@ -1,4 +1,4 @@
-import {darken, getContrastRatio, lighten, Theme} from "@mui/material";
+import { darken, getContrastRatio, lighten, type Theme } from "@mui/material";
 
 /**
  * Adjust color to be visible on the theme background.
@@ -6,7 +6,8 @@ import {darken, getContrastRatio, lighten, Theme} from "@mui/material";
  * @param theme - the app's theme
  */
 export default function normalizeCustomColor(color: string, theme: Theme) {
-    if(getContrastRatio(color, theme.palette.background.paper) >= 2) return color;
+    if (getContrastRatio(color, theme.palette.background.paper) >= 2)
+        return color;
     if (theme.palette.mode === "dark") {
         color = lighten(color, 0.4);
     } else {

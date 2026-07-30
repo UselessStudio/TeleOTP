@@ -26,10 +26,31 @@ message Payload {
         DigitCount digits = 5;
         OtpType type = 6;
         uint64 counter = 7;
+
+        // TeleOTP extensions. Other protobuf implementations, including Google
+        // Authenticator, ignore these unknown fields.
+        optional string icon = 100;
+        optional string color = 101;
     }
     repeated OtpParameters otp_parameters = 1;
     int32 version = 2;
     int32 batch_size = 3;
     int32 batch_index = 4;
     int32 batch_id = 5;
+}
+
+// A lossless TeleOTP backup. Unlike Payload, which follows Google
+// Authenticator's interchange format, this keeps every account field.
+message Backup {
+    message Account {
+        string uri = 1;
+        string label = 2;
+        optional string issuer = 3;
+        string icon = 4;
+        string color = 5;
+        int32 order = 6;
+    }
+
+    uint32 version = 1;
+    repeated Account accounts = 2;
 }

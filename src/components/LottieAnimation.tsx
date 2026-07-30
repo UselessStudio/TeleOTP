@@ -1,44 +1,93 @@
-/* eslint-disable react/display-name */
-/* eslint-disable react/prop-types */
-import {FC, useEffect, useRef} from "react";
-import Lottie, {LottieRefCurrentProps} from "lottie-react";
+import Lottie, { type LottieRefCurrentProps } from "lottie-react";
+import { type FC, useEffect, useRef, useState } from "react";
+
+const animationCache = new Map<string, Promise<unknown>>();
+
+function loadAnimation(url: string): Promise<unknown> {
+    const cachedAnimation = animationCache.get(url);
+    if (cachedAnimation) return cachedAnimation;
+
+    const animation = fetch(url)
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error(
+                    `Failed to load Lottie animation: ${response.status} ${response.statusText}`,
+                );
+            }
+            return response.json() as Promise<unknown>;
+        })
+        .catch((error: unknown) => {
+            animationCache.delete(url);
+            throw error;
+        });
+    animationCache.set(url, animation);
+    return animation;
+}
 
 interface LottieProps {
-    animationData: unknown;
+    animationData: string;
     initialSegment?: [number, number];
-    loop?: boolean
-    speed?: number
+    loop?: boolean;
+    speed?: number;
 }
 
-const LottieAnimation: FC<LottieProps> = ({ animationData, initialSegment, loop, speed }) => {
+const LottieAnimation: FC<LottieProps> = ({
+    animationData,
+    initialSegment,
+    loop,
+    speed,
+}) => {
     const lottie = useRef<LottieRefCurrentProps | null>(null);
-    useEffect(() => {
-        if (loop === false) {
-            lottie.current?.goToAndStop(0)
-        }
-        else if (loop === true) {
-            lottie.current?.goToAndPlay(0)
-        }
-    }, [loop])
-    useEffect(() => {
-        lottie.current?.goToAndPlay(0);
-    }, []);
-    useEffect(() => {
-        if (speed)
-            lottie.current?.setSpeed(speed)
-    }, [speed])
+    const [loadedAnimation, setLoadedAnimation] = useState<unknown>();
 
-    return <Lottie
-        onClick={() => {
-            if (lottie.current?.animationItem?.isPaused) lottie.current.goToAndPlay(0);
-        }}
-        lottieRef={lottie}
-        style={{width: '50%'}}
-        initialSegment={initialSegment}
-        animationData={animationData}
-        autoplay={false}
-        loop={loop ?? false}
-    />;
-}
+    useEffect(() => {
+        let active = true;
+        loadAnimation(animationData)
+            .then((animation) => {
+                if (active) setLoadedAnimation(animation);
+            })
+            .catch((error: unknown) => {
+                console.error(error);
+            });
+
+        return () => {
+            active = false;
+        };
+    }, [animationData]);
+
+    useEffect(() => {
+        if (!loadedAnimation) return;
+        if (loop === false) {
+            lottie.current?.goToAndStop(0);
+        } else if (loop === true) {
+            lottie.current?.goToAndPlay(0);
+        }
+    }, [loadedAnimation, loop]);
+    useEffect(() => {
+        if (!loadedAnimation) return;
+        lottie.current?.goToAndPlay(0);
+    }, [loadedAnimation]);
+    useEffect(() => {
+        if (!loadedAnimation) return;
+        if (speed) lottie.current?.setSpeed(speed);
+    }, [loadedAnimation, speed]);
+
+    if (!loadedAnimation) return null;
+
+    return (
+        <Lottie
+            onClick={() => {
+                if (lottie.current?.animationItem?.isPaused)
+                    lottie.current.goToAndPlay(0);
+            }}
+            lottieRef={lottie}
+            style={{ width: "50%" }}
+            initialSegment={initialSegment}
+            animationData={loadedAnimation}
+            autoplay={false}
+            loop={loop ?? false}
+        />
+    );
+};
 
 export default LottieAnimation;

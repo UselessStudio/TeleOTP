@@ -1,15 +1,19 @@
 /// <reference types="vitest" />
 
-import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import packageJson from "./package.json";
+import { defineConfig } from "vite";
 import svgr from "vite-plugin-svgr";
+import packageJson from "./package.json";
 
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
     plugins: [react(), svgr()],
+    resolve: {
+        alias: {
+            "lottie-react": "lottie-react/build/index.es.js",
+        },
+    },
     define: {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         APP_VERSION: JSON.stringify(packageJson.version),
         APP_HOMEPAGE: JSON.stringify(packageJson.homepage),
     },
@@ -17,4 +21,4 @@ export default defineConfig({
         globals: true,
         environment: "jsdom",
     },
-});
+}));

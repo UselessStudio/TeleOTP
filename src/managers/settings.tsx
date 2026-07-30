@@ -1,6 +1,11 @@
-import {createContext, FC, PropsWithChildren, useState} from "react";
-import {Language} from "./localization.tsx";
-import {defaultLanguage, languages} from "../globals.tsx";
+import {
+    createContext,
+    type FC,
+    type PropsWithChildren,
+    useState,
+} from "react";
+import { defaultLanguage, languages } from "../globals.tsx";
+import type { Language } from "./localization.tsx";
 
 /**
  * SettingsManager is used to provide the app with user's preferences.
@@ -22,6 +27,12 @@ export interface SettingsManager {
      * @param keep - the new value
      */
     setKeepUnlocked(keep: boolean): void;
+
+    /** Whether previous and next OTP codes are shown around the current code. */
+    showAdjacentCodes: boolean;
+
+    /** Updates the adjacent OTP code display preference. */
+    setShowAdjacentCodes(show: boolean): void;
 
     /**
      * This value contains the id of the account that was previously selected.
@@ -59,27 +70,44 @@ export interface SettingsManager {
     setLanguage(language: Language): void;
 }
 
-export const SettingsManagerContext = createContext<SettingsManager | null>(null);
+export const SettingsManagerContext = createContext<SettingsManager | null>(
+    null,
+);
 
 /**
  * SettingsManager is created using SettingsManagerProvider component.
  */
-export const SettingsManagerProvider: FC<PropsWithChildren> = ({ children }) => {
+export const SettingsManagerProvider: FC<PropsWithChildren> = ({
+    children,
+}) => {
     const [shouldKeepUnlocked, setKeepUnlocked] = useState<boolean>(() => {
         const item = localStorage.getItem("keepUnlocked");
-        return item ? JSON.parse(item) as boolean : true;
+        return item ? (JSON.parse(item) as boolean) : true;
     });
     const [biometricsEnabled, setBiometricsEnabled] = useState<boolean>(() => {
         const item = localStorage.getItem("biometricsEnabled");
-        return item ? JSON.parse(item) as boolean : false;
+        return item ? (JSON.parse(item) as boolean) : false;
     });
-    const [lastSelectedAccount, setLastSelectedAccount] = useState<string | null>(() => {
+    const [showAdjacentCodes, setShowAdjacentCodes] = useState<boolean>(() => {
+        const item = localStorage.getItem("showAdjacentCodes");
+        return item ? (JSON.parse(item) as boolean) : true;
+    });
+    const [lastSelectedAccount, setLastSelectedAccount] = useState<
+        string | null
+    >(() => {
         return localStorage.getItem("lastSelectedAccount");
     });
     const [selectedLanguage, setLanguage] = useState<Language>(() => {
-        const userLang = window.Telegram.WebApp.initDataUnsafe.user?.language_code as Language | undefined;
-        const fallbackLang = (userLang && languages.includes(userLang)) ? userLang : defaultLanguage;
-        return localStorage.getItem("selectedLanguage") as Language | null ?? fallbackLang;
+        const userLang = window.Telegram.WebApp.initDataUnsafe.user
+            ?.language_code as Language | undefined;
+        const fallbackLang =
+            userLang && languages.includes(userLang)
+                ? userLang
+                : defaultLanguage;
+        return (
+            (localStorage.getItem("selectedLanguage") as Language | null) ??
+            fallbackLang
+        );
     });
 
     const settingsManager: SettingsManager = {
@@ -93,6 +121,11 @@ export const SettingsManagerProvider: FC<PropsWithChildren> = ({ children }) => 
             setKeepUnlocked(keep);
             localStorage.setItem("keepUnlocked", JSON.stringify(keep));
         },
+        showAdjacentCodes,
+        setShowAdjacentCodes(show: boolean) {
+            setShowAdjacentCodes(show);
+            localStorage.setItem("showAdjacentCodes", JSON.stringify(show));
+        },
         biometricsEnabled,
         setBiometricsEnabled(enable: boolean) {
             setBiometricsEnabled(enable);
@@ -102,10 +135,12 @@ export const SettingsManagerProvider: FC<PropsWithChildren> = ({ children }) => 
         setLanguage(language: Language) {
             setLanguage(language);
             localStorage.setItem("selectedLanguage", language);
-        }
+        },
     };
 
-    return <SettingsManagerContext.Provider value={settingsManager}>
-        {children}
-    </SettingsManagerContext.Provider>
+    return (
+        <SettingsManagerContext.Provider value={settingsManager}>
+            {children}
+        </SettingsManagerContext.Provider>
+    );
 };

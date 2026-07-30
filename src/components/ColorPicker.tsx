@@ -1,9 +1,9 @@
-import { FC, useState } from "react";
-import Colorful from "@uiw/react-color-colorful";
-import type { ColorfulProps } from "@uiw/react-color-colorful";
-import { IconButton, Popover } from "@mui/material";
 import { Palette, PaletteOutlined } from "@mui/icons-material";
-import { hsvaToHex, type HsvaColor } from "@uiw/color-convert";
+import { IconButton, Popover } from "@mui/material";
+import { type HsvaColor, hsvaToHex } from "@uiw/color-convert";
+import type { ColorfulProps } from "@uiw/react-color-colorful";
+import Colorful from "@uiw/react-color-colorful";
+import { type FC, useState } from "react";
 
 interface ColorPickerProps extends ColorfulProps {
     selected: boolean;
@@ -40,7 +40,7 @@ const ColorPicker: FC<ColorPickerProps> = (props) => {
                             outlineStyle: "solid",
                             outlineWidth: 2,
                             fontSize: 26,
-                            padding: '1.1px',
+                            padding: "1.1px",
                             borderRadius: 9999999,
                             outlineColor: String(props.color),
                         }}
