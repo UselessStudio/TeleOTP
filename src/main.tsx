@@ -35,6 +35,7 @@ const IconBrowser = lazy(() => import("./pages/IconBrowser.tsx"));
 const ExportAccounts = lazy(() => import("./pages/export/ExportAccounts.tsx"));
 const QrExport = lazy(() => import("./pages/export/QrExport.tsx"));
 const LinkExport = lazy(() => import("./pages/export/LinkExport.tsx"));
+const FileTransfer = lazy(() => import("./pages/export/FileTransfer.tsx"));
 const SelectLanguage = lazy(() => import("./pages/SelectLanguage.tsx"));
 const UserErrorPage = lazy(() => import("./pages/UserErrorPage.tsx"));
 
@@ -69,6 +70,7 @@ const router = createBrowserRouter(
             <Route path="export" element={<ExportAccounts />} />
             <Route path="export/qr" element={<QrExport />} />
             <Route path="export/link" element={<LinkExport />} />
+            <Route path="export/file" element={<FileTransfer />} />
             {import.meta.env.DEV && (
                 <Route path="devtools" element={<DevToolsPage />} />
             )}

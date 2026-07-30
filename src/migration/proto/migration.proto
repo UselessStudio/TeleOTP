@@ -38,3 +38,19 @@ message Payload {
     int32 batch_index = 4;
     int32 batch_id = 5;
 }
+
+// A lossless TeleOTP backup. Unlike Payload, which follows Google
+// Authenticator's interchange format, this keeps every account field.
+message Backup {
+    message Account {
+        string uri = 1;
+        string label = 2;
+        optional string issuer = 3;
+        string icon = 4;
+        string color = 5;
+        int32 order = 6;
+    }
+
+    uint32 version = 1;
+    repeated Account accounts = 2;
+}

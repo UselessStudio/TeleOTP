@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="robots" content="noindex, nofollow" />
+        <title>Download TeleOTP backup</title>
+        <style>
+            :root {
+                color-scheme: light dark;
+                font-family: Inter, system-ui, sans-serif;
+            }
+            body {
+                min-height: 100vh;
+                margin: 0;
+                display: grid;
+                place-items: center;
+                text-align: center;
+                background: Canvas;
+                color: CanvasText;
+            }
+            main { padding: 2rem; }
+            button {
+                border: 0;
+                border-radius: 0.5rem;
+                padding: 0.8rem 1.2rem;
+                font: inherit;
+                font-weight: 700;
+                color: white;
+                background: #1976d2;
+                cursor: pointer;
+            }
+            p { max-width: 28rem; color: GrayText; }
+        </style>
+    </head>
+    <body>
+        <main>
+            <h1>TeleOTP backup</h1>
+            <p id="status">Your download should start automatically.</p>
+            <button id="download" type="button">Download backup</button>
+        </main>
+        <script>
+            const encoded = location.hash.slice(1);
+            history.replaceState(null, "", location.pathname + location.search);
+            const button = document.querySelector("#download");
+            const status = document.querySelector("#status");
+            let url;
+
+            try {
+                const base64 = encoded.replaceAll("-", "+").replaceAll("_", "/");
+                const padded = base64 + "=".repeat((4 - (base64.length % 4)) % 4);
+                const binary = atob(padded);
+                const data = Uint8Array.from(binary, (character) =>
+                    character.charCodeAt(0),
+                );
+                url = URL.createObjectURL(
+                    new Blob([data], { type: "application/x-protobuf" }),
+                );
+            } catch (_error) {
+                status.textContent = "This backup link is invalid.";
+                button.hidden = true;
+            }
+
+            const download = () => {
+                if (!url) return;
+                const anchor = document.createElement("a");
+                anchor.href = url;
+                anchor.download = `teleotp-backup-${new Date().toISOString().slice(0, 10)}.teleotp`;
+                anchor.click();
+            };
+
+            button.addEventListener("click", download);
+            if (url) download();
+            window.addEventListener("pagehide", () => {
+                if (url) URL.revokeObjectURL(url);
+            });
+        </script>
+    </body>
+</html>

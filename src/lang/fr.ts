@@ -36,6 +36,18 @@ export const lang = {
     CopyLinkAction: "Copier le lien",
     "Export.ViaLink": "Par lien",
     "Export.ViaQR": "Par QR",
+    "Export.ViaFile": "Importer ou exporter un fichier",
+    FileTransferTitle: "Fichier de sauvegarde",
+    FileTransferDescription:
+        "Exportez tous les comptes dans un seul fichier ou importez-les depuis une sauvegarde TeleOTP.",
+    FileImportAction: "Importer un fichier",
+    FileExportAction: "Exporter un fichier",
+    FileImportInvalid: "Ce fichier de sauvegarde TeleOTP n’est pas valide.",
+    FileImportSuccess: "{count} nouveaux comptes importés.",
+    FileExportTooLarge:
+        "Cette sauvegarde est trop volumineuse pour être transmise au navigateur. Exportez moins de comptes à la fois.",
+    FileTransferWarning:
+        "Gardez ce fichier secret. Il contient tout le nécessaire pour générer vos codes.",
     LinkExportTitle: "Exporter le lien",
     LinkExportDescription:
         "Copiez le lien pour déplacer des comptes vers un autre utilisateur de Telegram. Ou conservez-le, pour avoir une sauvegarde.",

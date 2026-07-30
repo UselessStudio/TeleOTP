@@ -35,6 +35,18 @@ export const lang = {
     CopyLinkAction: "Скопировать ссылку",
     "Export.ViaLink": "Через ссылку",
     "Export.ViaQR": "Через QR-код",
+    "Export.ViaFile": "Импорт или экспорт файла",
+    FileTransferTitle: "Файл резервной копии",
+    FileTransferDescription:
+        "Экспортируйте все аккаунты в один файл или импортируйте их из резервной копии TeleOTP.",
+    FileImportAction: "Импортировать файл",
+    FileExportAction: "Экспортировать файл",
+    FileImportInvalid: "Это недопустимый файл резервной копии TeleOTP.",
+    FileImportSuccess: "Импортировано новых аккаунтов: {count}.",
+    FileExportTooLarge:
+        "Эта резервная копия слишком велика для передачи в браузер. Экспортируйте меньше аккаунтов за один раз.",
+    FileTransferWarning:
+        "Храните файл в секрете. Он содержит всё необходимое для генерации ваших кодов.",
     LinkExportTitle: "Экспортировать ссылку",
     LinkExportDescription:
         "Скопируйте ссылку для перемещения аккаунтов другому пользователю Telegram. Или просто сохраните её, чтобы создать резервную копию.",

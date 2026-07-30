@@ -1,4 +1,8 @@
-import { LinkOutlined, QrCode } from "@mui/icons-material";
+import {
+    InsertDriveFileOutlined,
+    LinkOutlined,
+    QrCode,
+} from "@mui/icons-material";
 import { Stack, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import ExportAnimation from "../../assets/export_lottie.json?url";
@@ -32,25 +36,28 @@ export default function ExportAccounts() {
             <Typography variant="subtitle2" align="center">
                 {l10n("ExportAccountsText")}
             </Typography>
-            <Stack
-                direction="row"
-                sx={{ width: "100%", paddingTop: 1 }}
-                spacing={2}
-            >
+            <Stack sx={{ width: "100%", paddingTop: 1 }} spacing={1}>
                 <FlatButton
-                    onClick={() => {
-                        navigate("link");
-                    }}
-                    text={l10n("Export.ViaLink")}
-                    icon={LinkOutlined}
+                    onClick={() => navigate("file")}
+                    text={l10n("Export.ViaFile")}
+                    icon={InsertDriveFileOutlined}
                 />
-                <FlatButton
-                    onClick={() => {
-                        navigate("qr");
-                    }}
-                    text={l10n("Export.ViaQR")}
-                    icon={QrCode}
-                />
+                <Stack direction="row" spacing={1}>
+                    <FlatButton
+                        onClick={() => {
+                            navigate("link");
+                        }}
+                        text={l10n("Export.ViaLink")}
+                        icon={LinkOutlined}
+                    />
+                    <FlatButton
+                        onClick={() => {
+                            navigate("qr");
+                        }}
+                        text={l10n("Export.ViaQR")}
+                        icon={QrCode}
+                    />
+                </Stack>
             </Stack>
         </Stack>
     );

@@ -38,11 +38,24 @@ export const lang = {
 
     ExportAccountsTitle: "Export accounts",
     ExportAccountsText:
-        "You can export accounts to TeleOTP using a link, or to Google Authenticator (or similar) using a QR code.",
+        "Move your accounts with a backup file, a TeleOTP link, or a QR code for Google Authenticator and similar apps.",
     GoBackAction: "Go back",
     CopyLinkAction: "Copy link",
     "Export.ViaLink": "Via link",
     "Export.ViaQR": "Via QR",
+    "Export.ViaFile": "Import or export a file",
+
+    FileTransferTitle: "Backup file",
+    FileTransferDescription:
+        "Export all accounts to one file, or import accounts from a TeleOTP backup.",
+    FileImportAction: "Import file",
+    FileExportAction: "Export file",
+    FileImportInvalid: "This is not a valid TeleOTP backup file.",
+    FileImportSuccess: "Imported {count} new accounts.",
+    FileExportTooLarge:
+        "This backup is too large to hand off to your browser. Export fewer accounts at a time.",
+    FileTransferWarning:
+        "Keep the file secret. It contains everything needed to generate your codes.",
 
     LinkExportTitle: "Export link",
     LinkExportDescription:

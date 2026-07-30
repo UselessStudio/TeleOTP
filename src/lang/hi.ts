@@ -35,6 +35,18 @@ export const lang = {
     CopyLinkAction: "लिंक कॉपी करें",
     "Export.ViaLink": "लिंक के माध्यम से",
     "Export.ViaQR": "QR के माध्यम से",
+    "Export.ViaFile": "फ़ाइल आयात या निर्यात करें",
+    FileTransferTitle: "बैकअप फ़ाइल",
+    FileTransferDescription:
+        "सभी खातों को एक फ़ाइल में निर्यात करें या TeleOTP बैकअप से खाते आयात करें।",
+    FileImportAction: "फ़ाइल आयात करें",
+    FileExportAction: "फ़ाइल निर्यात करें",
+    FileImportInvalid: "यह मान्य TeleOTP बैकअप फ़ाइल नहीं है।",
+    FileImportSuccess: "{count} नए खाते आयात किए गए।",
+    FileExportTooLarge:
+        "यह बैकअप ब्राउज़र में भेजने के लिए बहुत बड़ा है। एक बार में कम खाते निर्यात करें।",
+    FileTransferWarning:
+        "फ़ाइल को गोपनीय रखें। इसमें आपके कोड जनरेट करने के लिए आवश्यक सभी जानकारी है।",
     LinkExportTitle: "निर्यात लिंक",
     LinkExportDescription:
         "खातों को अन्य Telegram उपयोगकर्ता में स्थानांतरित करने के लिए लिंक कॉपी करें। या बस इसे बैकअप के लिए रखें।",
