@@ -47,9 +47,9 @@ const Decrypt: FC = () => {
     useTelegramMainButton(
         decryptAccounts,
         l10n("DecryptAction"),
-        unlocking ||
-            (encryptionManager?.credentialType === "pin" &&
-                password.length !== 4),
+        unlocking,
+        false,
+        encryptionManager?.credentialType !== "pin",
     );
 
     const [biometricsRequested, setBiometricsRequested] = useState(false);
