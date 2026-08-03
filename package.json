@@ -58,7 +58,7 @@
     "jsdom": "^30.0.1",
     "protobufjs-cli": "^2.6.1",
     "typescript": "^7.0.2",
-    "vite": "^8.1.5",
+    "vite": "^8.2.0",
     "vite-plugin-mkcert": "^2.1.0",
     "vite-plugin-svgr": "^5.2.0",
     "vitest": "^4.1.10"
