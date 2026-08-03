@@ -54,7 +54,7 @@
     "@types/node": "^26.1.2",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^6.0.4",
+    "@vitejs/plugin-react": "^6.0.5",
     "jsdom": "^30.0.1",
     "protobufjs-cli": "^2.6.1",
     "typescript": "^7.0.2",
